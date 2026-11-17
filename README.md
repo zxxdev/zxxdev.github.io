@@ -34,15 +34,20 @@ pull request, automated checks and an automatic deployment.
 
 ## What it does
 
-Today, the first version:
+Today:
 
-- A provisional home page, with light and dark colours that follow the system setting.
+- The visual base: colour tokens, type scale and self-hosted IBM Plex fonts.
+- Light and dark themes. The site follows the system setting until the visitor picks one with the
+  switch; the choice is remembered and applied before the page is drawn, so there is no flash.
+- A header with the main navigation, which folds into a menu button on small screens, a skip link
+  for keyboard users, a footer and a "page not found" page.
+- Placeholder pages for Projects and About, which say what is coming.
 - Automatic checks on every pull request: lint, formatting, type checking, a dependency audit, a
   security scan and a full build.
 - Automatic publishing to GitHub Pages on every merge to `main`.
 
-Coming next (see [roadmap](#limitations-and-roadmap)): the visual design, the about page, project
-pages written in Markdown, live data from GitHub, Spanish and English versions, end-to-end and
+Coming next (see [roadmap](#limitations-and-roadmap)): the home and about content, project pages
+written in Markdown, live data from GitHub, Spanish and English versions, end-to-end and
 accessibility tests, and search.
 
 ## How it works
@@ -71,6 +76,8 @@ flowchart LR
 | Decision                                | Why                                                                                       | Record                                                   |
 | --------------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------- |
 | Astro with static output                | A content site needs HTML, not a running server: faster, cheaper and with less to secure. | [ADR 0001](docs/adr/0001-use-astro-for-a-static-site.md) |
+| Design tokens and themes                | Colours are named and defined once; pages use names, so dark mode needs no extra classes. | [ADR 0002](docs/adr/0002-design-tokens-and-theme.md) |
+| Self-hosted fonts                       | No request to a font server: the visitor's IP stays here and nothing else must be online. | [ADR 0002](docs/adr/0002-design-tokens-and-theme.md) |
 | Strict TypeScript                       | Mistakes such as a possibly missing value are caught when building, not by a visitor.     | —                                                        |
 | Actions pinned by commit SHA            | A tag can be moved to different code; a commit SHA cannot.                                | —                                                        |
 | 7-day release cooldown for dependencies | A hijacked version is usually caught and removed before a week has passed.                | [Dependency security](#dependency-security)              |
@@ -118,9 +125,12 @@ Requirements: Node.js 26 and pnpm 12 (the exact version is pinned in `package.js
 ├── docs/adr/               # architecture decision records
 ├── public/                 # files copied as they are (favicon)
 ├── src/
+│   ├── components/         # header, footer, theme switch
+│   ├── data/               # navigation and links
 │   ├── layouts/            # the HTML shell shared by every page
 │   ├── pages/              # one file per page; the path is the URL
-│   └── styles/             # global CSS and Tailwind
+│   ├── scripts/            # browser code (theme handling)
+│   └── styles/             # design tokens, fonts and Tailwind
 ├── astro.config.mjs
 ├── eslint.config.js
 └── pnpm-workspace.yaml     # pnpm settings, including the supply-chain protections
@@ -161,19 +171,20 @@ days. When a security fix cannot wait, the exception is added explicitly
 
 ## Limitations and roadmap
 
-The site is at its first step. Planned, in order:
+Done so far: the pipeline (checks and deployment) and the visual design. Planned, in order:
 
-1. Visual design: colours, typography, light and dark mode with a switch, mobile layout.
-2. Home and about pages with real content.
-3. Project pages from Markdown files with a validated schema.
-4. Data from the GitHub API at build time, with a cache and a fallback if the API fails.
-5. Spanish and English versions.
-6. End-to-end tests with Playwright, accessibility checks with axe and Lighthouse budgets.
-7. Search with Pagefind, sitemap and social preview images.
+1. Home and about pages with real content.
+2. Project pages from Markdown files with a validated schema.
+3. Data from the GitHub API at build time, with a cache and a fallback if the API fails.
+4. Spanish and English versions.
+5. End-to-end tests with Playwright, accessibility checks with axe and Lighthouse budgets.
+6. Search with Pagefind, sitemap and social preview images.
 
 Known limitations today:
 
-- The home page is provisional and in English only.
+- The home, projects and about pages are placeholders, in English only.
+- Contrast was measured when the colours were chosen, but it is not yet checked automatically; that
+  comes with the accessibility tests.
 - Open dependency advisories, if any, are tracked as issues with the
   [`chore` label](https://github.com/zxxdev/zxxdev.github.io/issues?q=is%3Aopen+label%3Achore).
 
