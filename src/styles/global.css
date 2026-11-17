@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+/*
+ * Provisional styles. The design tokens (colour, type, spacing) and the
+ * light/dark theme arrive in the next iteration.
+ */
+@layer base {
+  html {
+    color-scheme: light dark;
+  }
+}

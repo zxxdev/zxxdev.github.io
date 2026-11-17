@@ -1,0 +1,43 @@
+# Dependabot version updates.
+# Version updates wait 7 days after release, matching minimumReleaseAge in
+# pnpm-workspace.yaml. Dependabot opens security updates at once, but pnpm will still
+# refuse a version younger than 7 days unless an explicit exception is added.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
+    groups:
+      astro:
+        patterns:
+          - "astro"
+          - "@astrojs/*"
+      lint-and-format:
+        patterns:
+          - "eslint"
+          - "@eslint/*"
+          - "typescript-eslint"
+          - "eslint-plugin-*"
+          - "prettier"
+          - "prettier-plugin-*"
+      tailwind:
+        patterns:
+          - "tailwindcss"
+          - "@tailwindcss/*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns:
+          - "*"
