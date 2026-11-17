@@ -36,7 +36,8 @@ const currentPath = Astro.url.pathname;
         >
           <path d="M4 7h16M4 12h16M4 17h16"></path>
         </svg>
-        <span data-menu-label>Open menu</span>
+        <!-- Fixed label: whether it is open is told by aria-expanded, not by the text. -->
+        <span>Menu</span>
       </button>
 
       <ul
@@ -107,13 +108,10 @@ const currentPath = Astro.url.pathname;
 <script>
   const nav = document.querySelector<HTMLElement>("[data-site-nav]");
   const button = nav?.querySelector<HTMLButtonElement>("[data-menu-button]");
-  const label = button?.querySelector<HTMLElement>("[data-menu-label]");
-
-  if (nav && button && label) {
+  if (nav && button) {
     const setOpen = (open: boolean): void => {
       nav.classList.toggle("is-open", open);
       button.setAttribute("aria-expanded", String(open));
-      label.textContent = open ? "Close menu" : "Open menu";
     };
 
     nav.classList.add("has-menu");
@@ -134,6 +132,13 @@ const currentPath = Astro.url.pathname;
     // A click outside the menu closes it.
     document.addEventListener("click", (event) => {
       if (event.target instanceof Node && !nav.contains(event.target)) setOpen(false);
+    });
+
+    // Leaving the menu with Tab closes it, so it never stays open over the page.
+    nav.addEventListener("focusout", (event) => {
+      if (!(event.relatedTarget instanceof Node) || !nav.contains(event.relatedTarget)) {
+        setOpen(false);
+      }
     });
   }
 </script>

@@ -12,7 +12,9 @@ touching every page.
 
 The chosen style is a "technical blueprint": a near-white page, ink-blue text, thin lines, numbered
 sections, with violet for identity. Three colours each have one job: cobalt for what can be
-clicked, violet for identity (the alias, labels, section numbers), teal for status.
+clicked, violet for identity (the alias, labels, section numbers), teal for status. One deliberate
+exception: visited links turn violet, the colour browsers have always used for them, so there it
+also carries a meaning.
 
 ## Options
 
@@ -41,13 +43,14 @@ main font file is preloaded.
 ## Consequences
 
 - Changing a colour, or the whole style, is a change in one file. Dark mode needs no extra classes.
-- Every text colour pair was measured for contrast before it was chosen; all pass AA. Automated
-  checks with axe arrive with the end-to-end tests.
+- The colours were chosen by computing the WCAG contrast of each text pair, aiming for AA. Nothing
+  in CI checks it yet: automated checks with axe arrive with the end-to-end tests.
 - No request goes to a font server: the visitor's IP is not sent to a third party and the site does
   not depend on another service to render.
 - Without JavaScript the site still works and follows the system theme; the switch and the mobile
   menu button are simply not shown.
 - `light-dark()` needs a browser from 2024 or later. Older browsers fall back to their default
   colours, which is acceptable for this site.
-- The fonts add under 80 KB on a first visit (one variable file covers every weight of the main
-  font; the monospaced font needs one file per weight), and the browser caches them afterwards.
+- The fonts are a few extra files on a first visit (one variable file covers every weight of the
+  main font; the monospaced font needs one file per weight), cached by the browser afterwards.
+- The `theme-color` hint for mobile browser bars follows the system setting, not the switch.

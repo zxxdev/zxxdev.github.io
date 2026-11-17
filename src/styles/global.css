@@ -8,12 +8,14 @@
  * - With no saved choice, color-scheme follows the system setting.
  * - The theme switch sets data-theme on <html>, which forces one of the two.
  *
- * Contrast ratios (WCAG 2.1) were measured for every pair used for text; all of
- * them pass level AA (4.5 or more).
+ * The values were chosen by computing the WCAG 2.1 contrast of every pair used
+ * for text, aiming for level AA (4.5 or more). CI does not check it yet: that
+ * arrives with the accessibility tests.
  *
  * Each colour has one job: cobalt ("accent") is for what can be clicked, violet
  * is for identity (the alias, labels, section numbers, technology pills) and
- * teal ("status") is for "done / CI is green".
+ * teal ("status") is for "done / CI is green". Exception: visited links are
+ * violet, the colour browsers have always used for them.
  */
 :root {
   color-scheme: light dark;
