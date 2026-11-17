@@ -1,0 +1,24 @@
+name: Bug report
+description: Something on the site is broken or looks wrong.
+labels: [bug]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: The address of the page where you saw the problem.
+      placeholder: https://zxxdev.github.io/...
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected to see instead.
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Firefox 150 on Android

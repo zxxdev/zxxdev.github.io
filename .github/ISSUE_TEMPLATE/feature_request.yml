@@ -1,0 +1,16 @@
+name: Suggestion
+description: An idea to improve the site.
+labels: [feat]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would it improve
+      description: The problem you ran into, or what you were trying to do.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+      description: How you think it could work. Rough is fine.
