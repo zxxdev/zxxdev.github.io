@@ -17,3 +17,9 @@ blockExoticSubdeps: true
 # Packages allowed (true) or explicitly denied (false) to run install scripts.
 # Every entry must be justified in the pull request that adds it.
 allowBuilds: {}
+
+overrides:
+  # @napi-rs/wasm-runtime accepts "^1.7.1 || ^2.0.0-alpha.4" as a peer, so pnpm picked
+  # the 2.0.0 beta. That beta does not work with @emnapi/core 1.x and breaks
+  # `astro check` (it reports @astrojs/check as missing). Stay on the stable line.
+  "@emnapi/runtime": ^1.11.3
