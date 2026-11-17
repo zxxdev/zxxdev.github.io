@@ -7,7 +7,10 @@ export function isTheme(value: unknown): value is Theme {
 }
 
 /** The theme on screen: the saved choice if there is one, otherwise the system's. */
-export function effectiveTheme(saved: string | undefined | null, systemPrefersDark: boolean): Theme {
+export function effectiveTheme(
+  saved: string | undefined | null,
+  systemPrefersDark: boolean,
+): Theme {
   if (isTheme(saved)) return saved;
   return systemPrefersDark ? "dark" : "light";
 }

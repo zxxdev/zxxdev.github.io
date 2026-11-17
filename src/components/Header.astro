@@ -10,8 +10,9 @@ const currentPath = Astro.url.pathname;
     <a
       href="/"
       class="font-mono text-base font-medium text-violet no-underline visited:text-violet hover:underline"
-      >zxxdev</a
     >
+      zxxdev
+    </a>
 
     <nav aria-label="Main" class="ml-auto" data-site-nav>
       <button
@@ -43,27 +44,25 @@ const currentPath = Astro.url.pathname;
         class="nav-list flex items-center gap-1 text-[0.9375rem] sm:gap-2"
         data-menu-list
       >
-        {
-          navigation.map((item) => {
-            const current = isCurrent(item.href, currentPath);
-            return (
-              <li>
-                <a
-                  href={item.href}
-                  aria-current={current ? "page" : undefined}
-                  class:list={[
-                    "block rounded-md px-2 py-2 transition-colors sm:px-3",
-                    current
-                      ? "font-medium text-text decoration-violet decoration-2 underline-offset-8 visited:text-text"
-                      : "text-muted no-underline visited:text-muted hover:text-text",
-                  ]}
-                >
-                  {item.label}
-                </a>
-              </li>
-            );
-          })
-        }
+        {navigation.map((item) => {
+          const current = isCurrent(item.href, currentPath);
+          return (
+            <li>
+              <a
+                href={item.href}
+                aria-current={current ? "page" : undefined}
+                class:list={[
+                  "block rounded-md px-2 py-2 transition-colors sm:px-3",
+                  current
+                    ? "font-medium text-text decoration-violet decoration-2 underline-offset-8 visited:text-text"
+                    : "text-muted no-underline visited:text-muted hover:text-text",
+                ]}
+              >
+                {item.label}
+              </a>
+            </li>
+          );
+        })}
       </ul>
     </nav>
 
