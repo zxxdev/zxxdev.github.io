@@ -1,6 +1,7 @@
 # Dependabot version updates.
-# Security updates are not delayed by the cooldown; version updates wait 7 days
-# after release, matching the minimumReleaseAge setting in pnpm-workspace.yaml.
+# Version updates wait 7 days after release, matching minimumReleaseAge in
+# pnpm-workspace.yaml. Dependabot opens security updates at once, but pnpm will still
+# refuse a version younger than 7 days unless an explicit exception is added.
 version: 2
 updates:
   - package-ecosystem: npm

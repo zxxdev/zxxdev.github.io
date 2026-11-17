@@ -16,10 +16,15 @@ blockExoticSubdeps: true
 
 # Packages allowed (true) or explicitly denied (false) to run install scripts.
 # Every entry must be justified in the pull request that adds it.
-allowBuilds: {}
+allowBuilds:
+  # macOS-only optional dependency. Its install script rebuilds a native file that the
+  # package already ships prebuilt, so the script is denied instead of approved.
+  fsevents: false
 
 overrides:
   # @napi-rs/wasm-runtime accepts "^1.7.1 || ^2.0.0-alpha.4" as a peer, so pnpm picked
   # the 2.0.0 beta. That beta does not work with @emnapi/core 1.x and breaks
   # `astro check` (it reports @astrojs/check as missing). Stay on the stable line.
+  # @emnapi/core 2.0.0-beta.2 still appears in the lockfile: rolldown's WebAssembly
+  # binding pins it, and that binding is only installed on wasm32 platforms.
   "@emnapi/runtime": ^1.11.3

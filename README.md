@@ -73,7 +73,7 @@ flowchart LR
 | Astro with static output                | A content site needs HTML, not a running server: faster, cheaper and with less to secure. | [ADR 0001](docs/adr/0001-use-astro-for-a-static-site.md) |
 | Strict TypeScript                       | Mistakes such as a possibly missing value are caught when building, not by a visitor.     | —                                                        |
 | Actions pinned by commit SHA            | A tag can be moved to different code; a commit SHA cannot.                                | —                                                        |
-| 7-day release cooldown for dependencies | Most hijacked packages are detected and removed within hours.                             | [Dependency security](#dependency-security)              |
+| 7-day release cooldown for dependencies | A hijacked version is usually caught and removed before a week has passed.                | [Dependency security](#dependency-security)              |
 
 All records: [docs/adr](docs/adr/README.md).
 
@@ -141,8 +141,10 @@ How changes are proposed and reviewed: [CONTRIBUTING.md](CONTRIBUTING.md).
 ### Dependency security
 
 Attacks on npm packages usually follow the same pattern: an attacker takes over a maintainer's
-account, publishes a version with malware that runs on install, and it is removed a few hours
-later. The settings in [`pnpm-workspace.yaml`](pnpm-workspace.yaml) are aimed at exactly that:
+account and publishes a version with malware that runs on install. It stays available until
+someone detects it, usually within hours or days (see pnpm's
+[supply-chain security guide](https://pnpm.io/supply-chain-security)). The settings in
+[`pnpm-workspace.yaml`](pnpm-workspace.yaml) are aimed at exactly that:
 
 | Setting                                            | Effect                                                                                                         |
 | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
@@ -151,7 +153,7 @@ later. The settings in [`pnpm-workspace.yaml`](pnpm-workspace.yaml) are aimed at
 | `strictDepBuilds: true` and an empty `allowBuilds` | No dependency may run an install script unless it is approved one by one.                                      |
 | `blockExoticSubdeps: true`                         | Indirect dependencies must come from the registry, not from git repositories or URLs.                          |
 | Lockfile and `--frozen-lockfile`                   | CI installs exactly what was reviewed.                                                                         |
-| Dependabot `cooldown`                              | Update pull requests also wait 7 days. Security fixes are not delayed.                                         |
+| Dependabot `cooldown`                              | Update pull requests also wait 7 days. Dependabot opens security fixes at once, but pnpm still refuses a version younger than 7 days unless an explicit exception (`minimumReleaseAgeExclude`) is added and explained in the pull request. |
 
 ## Limitations and roadmap
 
@@ -168,9 +170,8 @@ The site is at its first step. Planned, in order:
 Known limitations today:
 
 - The home page is provisional and in English only.
-- One moderate advisory affects a development-only tool (`minimatch`, used by ESLint). It never
-  reaches the published site. The fixed versions are newer than the 7-day cooldown and will arrive
-  through Dependabot.
+- Open dependency advisories, if any, are tracked as issues with the
+  [`chore` label](https://github.com/zxxdev/zxxdev.github.io/issues?q=is%3Aopen+label%3Achore).
 
 ## License
 
