@@ -1,0 +1,86 @@
+---
+/*
+ * Light/dark switch. Hidden until its script runs: without JavaScript the site
+ * simply follows the system setting, and a button that does nothing is worse
+ * than no button.
+ */
+---
+
+<button
+  type="button"
+  data-theme-toggle
+  hidden
+  class="inline-flex size-10 items-center justify-center rounded-md border border-border bg-surface text-text transition-colors hover:border-muted"
+>
+  <!-- Moon: shown in the light theme (click to go dark). -->
+  <svg
+    data-icon="moon"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width="20"
+    height="20"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.75"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z"></path>
+  </svg>
+  <!-- Sun: shown in the dark theme (click to go light). -->
+  <svg
+    data-icon="sun"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width="20"
+    height="20"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.75"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="4"></circle>
+    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+  </svg>
+</button>
+
+<style>
+  [data-theme-toggle] [data-icon="sun"],
+  [data-theme-toggle][data-current="dark"] [data-icon="moon"] {
+    display: none;
+  }
+
+  [data-theme-toggle][data-current="dark"] [data-icon="sun"] {
+    display: block;
+  }
+</style>
+
+<script>
+  import { applyTheme, effectiveTheme, otherTheme } from "../scripts/theme";
+
+  const button = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
+  const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+  function render(target: HTMLButtonElement): void {
+    const current = effectiveTheme(document.documentElement.dataset["theme"], systemDark.matches);
+    const label = `Switch to ${otherTheme(current)} theme`;
+    target.dataset["current"] = current;
+    target.setAttribute("aria-label", label);
+    target.title = label;
+  }
+
+  if (button) {
+    button.hidden = false;
+    render(button);
+    button.addEventListener("click", () => {
+      const current = effectiveTheme(document.documentElement.dataset["theme"], systemDark.matches);
+      applyTheme(otherTheme(current));
+      render(button);
+    });
+    // With no saved choice, follow the system if it changes while the page is open.
+    systemDark.addEventListener("change", () => render(button));
+  }
+</script>

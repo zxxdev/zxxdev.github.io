@@ -1,0 +1,24 @@
+---
+import { repositoryUrl } from "../data/navigation";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-auto border-t border-border">
+  <div class="mx-auto flex max-w-5xl flex-wrap items-center gap-x-3 gap-y-1 px-4 py-6 text-sm text-muted sm:px-6">
+    <span>
+      © {year} <span class="font-mono text-violet">zxxdev</span>
+    </span>
+    <span aria-hidden="true">·</span>
+    <span>
+      Built with{" "}
+      <a href="https://astro.build" class="text-muted visited:text-muted">
+        Astro
+      </a>
+    </span>
+    <span aria-hidden="true">·</span>
+    <a href={repositoryUrl} class="text-muted visited:text-muted">
+      Source on GitHub
+    </a>
+  </div>
+</footer>
