@@ -1,0 +1,20 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { profileUrl } from "../data/navigation";
+---
+
+<BaseLayout
+  title="About · zxxdev"
+  description="From running systems and supporting users to building backend services and platforms."
+>
+  <section class="max-w-[42rem] py-16 sm:py-24">
+    <p class="font-mono text-sm text-violet">02</p>
+    <h1 class="mt-3 text-h2 font-semibold tracking-tight sm:text-h1">About</h1>
+    <p class="mt-6 text-muted">
+      This page is on its way. Until then, my GitHub profile shows what I'm working on.
+    </p>
+    <p class="mt-8">
+      <a href={profileUrl}>Go to my GitHub profile</a>
+    </p>
+  </section>
+</BaseLayout>

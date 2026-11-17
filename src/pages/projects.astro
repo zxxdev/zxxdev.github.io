@@ -1,0 +1,17 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { profileUrl } from "../data/navigation";
+---
+
+<BaseLayout title="Projects · zxxdev" description="What I'm building, with its actual status.">
+  <section class="max-w-[42rem] py-16 sm:py-24">
+    <p class="font-mono text-sm text-violet">01</p>
+    <h1 class="mt-3 text-h2 font-semibold tracking-tight sm:text-h1">Projects</h1>
+    <p class="mt-6 text-muted">
+      This site is the first one. The rest show up here as they reach their first release.
+    </p>
+    <p class="mt-8">
+      <a href={profileUrl}>See what I'm building on GitHub</a>
+    </p>
+  </section>
+</BaseLayout>
