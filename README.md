@@ -146,14 +146,18 @@ someone detects it, usually within hours or days (see pnpm's
 [supply-chain security guide](https://pnpm.io/supply-chain-security)). The settings in
 [`pnpm-workspace.yaml`](pnpm-workspace.yaml) are aimed at exactly that:
 
-| Setting                                            | Effect                                                                                                         |
-| -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `minimumReleaseAge: 10080`                         | No version younger than 7 days is installed.                                                                   |
-| `trustPolicy: no-downgrade`                        | A version published with weaker evidence than the previous ones (for example, without provenance) is rejected. |
-| `strictDepBuilds: true` and an empty `allowBuilds` | No dependency may run an install script unless it is approved one by one.                                      |
-| `blockExoticSubdeps: true`                         | Indirect dependencies must come from the registry, not from git repositories or URLs.                          |
-| Lockfile and `--frozen-lockfile`                   | CI installs exactly what was reviewed.                                                                         |
-| Dependabot `cooldown`                              | Update pull requests also wait 7 days. Dependabot opens security fixes at once, but pnpm still refuses a version younger than 7 days unless an explicit exception (`minimumReleaseAgeExclude`) is added and explained in the pull request. |
+| Setting                                   | Effect                                                                                                         |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `minimumReleaseAge: 10080`                | No version younger than 7 days is installed.                                                                   |
+| `trustPolicy: no-downgrade`               | A version published with weaker evidence than the previous ones (for example, without provenance) is rejected. |
+| `strictDepBuilds: true` and `allowBuilds` | No dependency may run an install script unless it is approved one by one. Today none is approved.             |
+| `blockExoticSubdeps: true`                | Indirect dependencies must come from the registry, not from git repositories or URLs.                          |
+| Lockfile and `--frozen-lockfile`          | CI installs exactly what was reviewed.                                                                         |
+| Dependabot `cooldown`                     | Update pull requests also wait 7 days.                                                                         |
+
+Dependabot opens security updates without waiting, but pnpm still refuses a version younger than 7
+days. When a security fix cannot wait, the exception is added explicitly
+(`minimumReleaseAgeExclude`) and explained in the pull request.
 
 ## Limitations and roadmap
 
