@@ -150,7 +150,7 @@ someone detects it, usually within hours or days (see pnpm's
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `minimumReleaseAge: 10080`                | No version younger than 7 days is installed.                                                                   |
 | `trustPolicy: no-downgrade`               | A version published with weaker evidence than the previous ones (for example, without provenance) is rejected. |
-| `strictDepBuilds: true` and `allowBuilds` | No dependency may run an install script unless it is approved one by one. Today none is approved.             |
+| `strictDepBuilds: true` and `allowBuilds` | No dependency may run an install script unless it is approved one by one. Today none is approved.              |
 | `blockExoticSubdeps: true`                | Indirect dependencies must come from the registry, not from git repositories or URLs.                          |
 | Lockfile and `--frozen-lockfile`          | CI installs exactly what was reviewed.                                                                         |
 | Dependabot `cooldown`                     | Update pull requests also wait 7 days.                                                                         |
