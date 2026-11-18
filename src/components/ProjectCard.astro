@@ -27,16 +27,20 @@ const coverName = project.repo.split("/")[1] ?? project.title;
   class="relative overflow-hidden rounded-xl border border-border transition-colors focus-within:outline-2 focus-within:outline-offset-3 focus-within:outline-violet hover:border-tone-line"
 >
   <div class="relative aspect-[16/10] border-b border-border">
-    <ProjectCover id={id} name={coverName} caption={project.cover.caption} art={project.cover.art} />
-    <span
-      class="absolute top-3 left-3 inline-flex h-6 items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 font-mono text-xs text-text"
-    >
+    <ProjectCover
+      id={id}
+      name={coverName}
+      caption={project.cover.caption}
+      art={project.cover.art}
+    />
+    <span class="absolute top-3 left-3 inline-flex h-6 items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 font-mono text-xs text-text">
       <span
         aria-hidden="true"
         class:list={[
           "size-1.5 rounded-full",
           project.status.kind === "live" ? "bg-status" : "bg-violet",
-        ]}></span>
+        ]}
+      ></span>
       {project.status.label}
     </span>
   </div>
@@ -52,13 +56,11 @@ const coverName = project.repo.split("/")[1] ?? project.title;
     <p class="mt-0.5 font-mono text-xs text-muted">{project.repo}</p>
     <p class="mt-2.5 text-sm leading-relaxed text-muted">{project.summary}</p>
     <ul aria-label="Stack" class="mt-4 flex flex-wrap gap-1.5">
-      {
-        project.stack.map((item) => (
-          <li>
-            <TechPill name={item} />
-          </li>
-        ))
-      }
+      {project.stack.map((item) => (
+        <li>
+          <TechPill name={item} />
+        </li>
+      ))}
     </ul>
   </div>
 </li>

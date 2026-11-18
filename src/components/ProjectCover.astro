@@ -33,29 +33,29 @@ const patternId = `grid-${id}`;
   <rect width="640" height="400" class="fill-tone-bg"></rect>
   <rect width="640" height="400" fill={`url(#${patternId})`}></rect>
 
-  {
-    art === "browser" && (
-      <g fill="none" class="stroke-tone-line" stroke-width="2">
-        <rect x="400" y="110" width="200" height="132" rx="8" />
-        <path d="M400 136h200" />
-        <circle cx="416" cy="123" r="3" />
-        <circle cx="428" cy="123" r="3" />
-        <circle cx="440" cy="123" r="3" />
-        <path d="M420 162h96M420 182h140M420 202h70" />
-      </g>
-    )
-  }
-  {
-    art === "arrow" && (
-      <path
-        d="M448 128 l64 40 -64 40 0 -22 -80 0 0 -36 80 0z"
-        fill="none"
-        class="stroke-tone-line"
-        stroke-width="2"
-      />
-    )
-  }
+  {art === "browser" && (
+    <g fill="none" class="stroke-tone-line" stroke-width="2">
+      <rect x="400" y="110" width="200" height="132" rx="8" />
+      <path d="M400 136h200" />
+      <circle cx="416" cy="123" r="3" />
+      <circle cx="428" cy="123" r="3" />
+      <circle cx="440" cy="123" r="3" />
+      <path d="M420 162h96M420 182h140M420 202h70" />
+    </g>
+  )}
+  {art === "arrow" && (
+    <path
+      d="M448 128 l64 40 -64 40 0 -22 -80 0 0 -36 80 0z"
+      fill="none"
+      class="stroke-tone-line"
+      stroke-width="2"
+    />
+  )}
 
-  <text x="40" y="214" class="fill-text font-sans" font-size="32" font-weight="500">{name}</text>
-  <text x="40" y="244" class="fill-tone-text font-mono" font-size="13">{caption}</text>
+  <text x="40" y="214" class="fill-text font-sans" font-size="32" font-weight="500">
+    {name}
+  </text>
+  <text x="40" y="244" class="fill-tone-text font-mono" font-size="13">
+    {caption}
+  </text>
 </svg>

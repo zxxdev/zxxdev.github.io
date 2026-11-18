@@ -41,23 +41,24 @@ import { path } from "../data/profile";
     </div>
 
     <section aria-labelledby="path-title" class="mt-14" data-tone="violet">
-      <h2 id="path-title" class="border-b border-border pb-3.5 text-h3 font-medium tracking-[-0.01em]">
+      <h2
+        id="path-title"
+        class="border-b border-border pb-3.5 text-h3 font-medium tracking-[-0.01em]"
+      >
         The path so far
       </h2>
       <ol class="mt-6">
-        {
-          path.map((stage, index) => (
-            <li class="relative border-l border-border pb-7 pl-6 last:pb-0">
-              <span
-                aria-hidden="true"
-                class="absolute top-1.5 -left-[5px] size-[9px] rounded-full bg-tone-line"
-              />
-              <p class="font-mono text-xs text-muted">{String(index + 1).padStart(2, "0")}</p>
-              <h3 class="font-semibold">{stage.title}</h3>
-              <p class="mt-1 text-[0.9375rem] text-muted">{stage.summary}</p>
-            </li>
-          ))
-        }
+        {path.map((stage, index) => (
+          <li class="relative border-l border-border pb-7 pl-6 last:pb-0">
+            <span
+              aria-hidden="true"
+              class="absolute top-1.5 -left-[5px] size-[9px] rounded-full bg-tone-line"
+            />
+            <p class="font-mono text-xs text-muted">{String(index + 1).padStart(2, "0")}</p>
+            <h3 class="font-semibold">{stage.title}</h3>
+            <p class="mt-1 text-[0.9375rem] text-muted">{stage.summary}</p>
+          </li>
+        ))}
       </ol>
     </section>
 

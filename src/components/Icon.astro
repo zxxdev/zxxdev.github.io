@@ -23,20 +23,16 @@ const { name, size = 18 } = Astro.props;
   aria-hidden="true"
 >
   {name === "check" && <path d="m5 12 4 4L19 6" />}
-  {
-    name === "document" && (
-      <>
-        <path d="M7 3h7l5 5v13H7z" />
-        <path d="M14 3v5h5M10 13h6M10 17h6" />
-      </>
-    )
-  }
-  {
-    name === "person" && (
-      <>
-        <circle cx="12" cy="8" r="3.5" />
-        <path d="M5 20c1.2-3.5 3.8-5.5 7-5.5s5.8 2 7 5.5" />
-      </>
-    )
-  }
+  {name === "document" && (
+    <>
+      <path d="M7 3h7l5 5v13H7z" />
+      <path d="M14 3v5h5M10 13h6M10 17h6" />
+    </>
+  )}
+  {name === "person" && (
+    <>
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M5 20c1.2-3.5 3.8-5.5 7-5.5s5.8 2 7 5.5" />
+    </>
+  )}
 </svg>
