@@ -1,5 +1,5 @@
 ---
-import plexSansLatin from "@fontsource-variable/ibm-plex-sans/files/ibm-plex-sans-latin-wght-normal.woff2?url";
+import geistLatin from "@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import "../styles/global.css";
@@ -22,10 +22,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0e131b" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#080808" media="(prefers-color-scheme: dark)" />
     <!-- Only the main font is preloaded; the rest load when a page needs them. -->
-    <link rel="preload" href={plexSansLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin />
     <!--
       Runs before the page is painted, so a saved theme is applied without a flash
       of the other one. With no saved choice it does nothing and CSS follows the
@@ -41,11 +41,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     </script>
   </head>
   <body class="flex min-h-dvh flex-col bg-bg text-text antialiased">
-    <div
-      aria-hidden="true"
-      class="h-[3px] w-full bg-linear-to-r from-accent to-violet"
-      data-top-line
-    ></div>
+    <div aria-hidden="true" class="h-[3px] w-full bg-brand" data-top-line></div>
     <a
       href="#content"
       class="sr-only rounded-md bg-accent px-4 py-2 font-medium text-on-accent no-underline focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-30 visited:text-on-accent"

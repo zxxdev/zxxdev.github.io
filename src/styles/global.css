@@ -8,29 +8,34 @@
  * - With no saved choice, color-scheme follows the system setting.
  * - The theme switch sets data-theme on <html>, which forces one of the two.
  *
- * The values were chosen by computing the WCAG 2.1 contrast of every pair used
- * for text, aiming for level AA (4.5 or more). CI does not check it yet: that
- * arrives with the accessibility tests.
+ * The look is "sharp": near-black and neutral greys with no tint, cards with no
+ * fill and a 1 px border, and nothing blurred (no glows, gradients or shadows).
+ * Every text pair was computed against WCAG 2.1 and meets level AA; the figures
+ * are in docs/adr/0003-sharp-redesign-and-project-tones.md.
  *
- * Each colour has one job: cobalt ("accent") is for what can be clicked, violet
- * is for identity (the alias, labels, section numbers, technology pills) and
- * teal ("status") is for "done / CI is green". Exception: visited links are
- * violet, the colour browsers have always used for them.
+ * Each colour has one job: violet is the identity and the primary action
+ * ("brand" is its button shade), cobalt ("accent") is for links inside text and
+ * teal ("status") is for "done / live". Visited links stay violet, the colour
+ * browsers have always used for them.
  */
 :root {
   color-scheme: light dark;
 
-  --c-bg: light-dark(#f7f8fa, #0e131b);
-  --c-surface: light-dark(#ffffff, #161d28);
-  --c-border: light-dark(#d9dee7, #2a3445);
-  --c-text: light-dark(#131a26, #e3e8f0);
-  --c-muted: light-dark(#566074, #94a0b4);
+  --c-bg: light-dark(#ffffff, #080808);
+  --c-surface: light-dark(#ffffff, #101010);
+  --c-surface-2: light-dark(#f4f4f4, #171717);
+  --c-border: light-dark(#e6e6e6, #202020);
+  --c-border-strong: light-dark(#d4d4d4, #2e2e2e);
+  --c-text: light-dark(#0a0a0a, #ededed);
+  --c-muted: light-dark(#5e5e5e, #a3a3a3);
   --c-accent: light-dark(#1d4ed8, #7aa5ff);
-  --c-status: light-dark(#0f766e, #5eead4);
-  --c-on-accent: light-dark(#ffffff, #0e131b);
+  --c-on-accent: light-dark(#ffffff, #080808);
   --c-violet: light-dark(#6d28d9, #b9a2ff);
-  --c-pill-bg: light-dark(#efeafd, #251e3f);
-  --c-pill-text: light-dark(#5b21b6, #cdbcff);
+  --c-status: light-dark(#0f766e, #5eead4);
+  --c-brand: light-dark(#6d28d9, #7c3aed);
+  --c-brand-hover: light-dark(#5b21b6, #6d28d9);
+  --c-on-brand: #ffffff;
+  --c-selection: light-dark(#e2d8fc, #261d45);
 }
 
 :root[data-theme="light"] {
@@ -41,39 +46,92 @@
   color-scheme: dark;
 }
 
+/*
+ * Project tones: a closed list, one per kind of project, so colour means
+ * something and twelve projects do not turn into a rainbow. A component sets
+ * data-tone and uses only the --tone-* names.
+ *
+ * - bg: solid fill of a generated cover or an icon tile.
+ * - grid: the blueprint lines on a cover (decorative).
+ * - line: drawings, icons and the card border on hover.
+ * - text: coloured text on the tone's own bg.
+ */
+[data-tone="violet"] {
+  --tone-bg: light-dark(#f1ecfe, #1a1430);
+  --tone-grid: light-dark(#e2d8fc, #261d45);
+  --tone-line: light-dark(#6d28d9, #b9a2ff);
+  --tone-text: light-dark(#5b21b6, #b9a2ff);
+}
+
+[data-tone="cobalt"] {
+  --tone-bg: light-dark(#e9effd, #0f1a33);
+  --tone-grid: light-dark(#d6e2fb, #17284d);
+  --tone-line: light-dark(#1d4ed8, #7aa5ff);
+  --tone-text: light-dark(#1e40af, #7aa5ff);
+}
+
+[data-tone="teal"] {
+  --tone-bg: light-dark(#e3f6f3, #0b2422);
+  --tone-grid: light-dark(#c9ece6, #12352f);
+  --tone-line: light-dark(#0f766e, #5eead4);
+  --tone-text: light-dark(#115e59, #5eead4);
+}
+
+/* In light theme amber text uses the darker shade: #b45309 on its bg is only 4.56. */
+[data-tone="amber"] {
+  --tone-bg: light-dark(#fdf3e1, #2a1d08);
+  --tone-grid: light-dark(#f8e3bd, #3d2b0e);
+  --tone-line: light-dark(#b45309, #f5b942);
+  --tone-text: light-dark(#92400e, #f5b942);
+}
+
 /* Tailwind utilities generated from the tokens: bg-bg, text-muted, border-border... */
 @theme inline {
   --color-bg: var(--c-bg);
   --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
   --color-border: var(--c-border);
+  --color-border-strong: var(--c-border-strong);
   --color-text: var(--c-text);
   --color-muted: var(--c-muted);
   --color-accent: var(--c-accent);
-  --color-status: var(--c-status);
   --color-on-accent: var(--c-on-accent);
   --color-violet: var(--c-violet);
-  --color-pill-bg: var(--c-pill-bg);
-  --color-pill-text: var(--c-pill-text);
+  --color-status: var(--c-status);
+  --color-brand: var(--c-brand);
+  --color-brand-hover: var(--c-brand-hover);
+  --color-on-brand: var(--c-on-brand);
+  --color-tone-bg: var(--tone-bg);
+  --color-tone-grid: var(--tone-grid);
+  --color-tone-line: var(--tone-line);
+  --color-tone-text: var(--tone-text);
 }
 
 @theme {
-  --font-sans: "IBM Plex Sans Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
-  /* Type scale: 17 px body text, headings in steps of 1.25 (21, 26, 33, 41 px). */
-  --text-body: 1.0625rem;
+  /*
+   * Type scale. Body text is 16 px. Headings are medium weight (500), never
+   * heavy: weight and blur are what made the old design look soft.
+   * - h1: the home headline, 28 px on a phone to 40 px on a wide screen.
+   * - h2: page titles (28 px). h3: section titles (22 px). h4: card titles (18 px).
+   */
+  --text-body: 1rem;
   --text-body--line-height: 1.65;
-  --text-h4: 1.3125rem;
-  --text-h4--line-height: 1.4;
-  --text-h3: 1.625rem;
+  --text-lead: 1.125rem;
+  --text-lead--line-height: 1.6;
+  --text-h4: 1.125rem;
+  --text-h4--line-height: 1.35;
+  --text-h3: 1.375rem;
   --text-h3--line-height: 1.3;
-  --text-h2: 2.0625rem;
+  --text-h2: 1.75rem;
   --text-h2--line-height: 1.2;
-  --text-h1: 2.5625rem;
+  --text-h1: clamp(1.75rem, 1.35rem + 1.6vw, 2.5rem);
   --text-h1--line-height: 1.15;
 
-  /* Corners: 6 px. Spacing keeps Tailwind's 4 px grid. */
-  --radius-md: 6px;
+  /* Corners: 8 px for small controls, 12 px (rounded-xl) for cards, pills for buttons. */
+  --radius-md: 8px;
 }
 
 @layer base {
@@ -82,6 +140,7 @@
     color: var(--c-text);
     font-family: var(--font-sans);
     -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
   }
 
   body {
@@ -107,15 +166,15 @@
     color: var(--c-violet);
   }
 
-  /* Visible keyboard focus everywhere: a 2 px ring in the accent colour. */
+  /* Visible keyboard focus everywhere: a 2 px violet ring. */
   :focus-visible {
-    outline: 2px solid var(--c-accent);
+    outline: 2px solid var(--c-violet);
     outline-offset: 2px;
     border-radius: 2px;
   }
 
   ::selection {
-    background-color: var(--c-pill-bg);
+    background-color: var(--c-selection);
     color: var(--c-text);
   }
 }
