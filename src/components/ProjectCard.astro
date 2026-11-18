@@ -1,0 +1,64 @@
+---
+/*
+ * A project card: cover, status tag, title, repository and stack.
+ *
+ * - The whole card can be clicked: the title link is stretched over it with
+ *   ::after, and the focus ring is drawn on the card (:focus-within).
+ * - The status tag sits on a solid background, so its contrast does not depend
+ *   on what the cover shows.
+ * - On hover only the border changes, to the project's tone. No movement and
+ *   no zoom: they make the page look soft.
+ */
+import type { FeaturedProject } from "../data/profile";
+import ProjectCover from "./ProjectCover.astro";
+import TechPill from "./TechPill.astro";
+
+interface Props {
+  project: FeaturedProject;
+}
+
+const { project } = Astro.props;
+const id = project.repo.replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+const coverName = project.repo.split("/")[1] ?? project.title;
+---
+
+<li
+  data-tone={project.tone}
+  class="relative overflow-hidden rounded-xl border border-border transition-colors focus-within:outline-2 focus-within:outline-offset-3 focus-within:outline-violet hover:border-tone-line"
+>
+  <div class="relative aspect-[16/10] border-b border-border">
+    <ProjectCover id={id} name={coverName} caption={project.cover.caption} art={project.cover.art} />
+    <span
+      class="absolute top-3 left-3 inline-flex h-6 items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 font-mono text-xs text-text"
+    >
+      <span
+        aria-hidden="true"
+        class:list={[
+          "size-1.5 rounded-full",
+          project.status.kind === "live" ? "bg-status" : "bg-violet",
+        ]}></span>
+      {project.status.label}
+    </span>
+  </div>
+  <div class="px-5 pt-4.5 pb-5">
+    <h3 class="text-h4 font-semibold tracking-tight">
+      <a
+        href={project.href}
+        class="text-text no-underline visited:text-text after:absolute after:inset-0 focus-visible:outline-none"
+      >
+        {project.title}
+      </a>
+    </h3>
+    <p class="mt-0.5 font-mono text-xs text-muted">{project.repo}</p>
+    <p class="mt-2.5 text-sm leading-relaxed text-muted">{project.summary}</p>
+    <ul aria-label="Stack" class="mt-4 flex flex-wrap gap-1.5">
+      {
+        project.stack.map((item) => (
+          <li>
+            <TechPill name={item} />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</li>
