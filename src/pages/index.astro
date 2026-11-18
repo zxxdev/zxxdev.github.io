@@ -9,8 +9,7 @@ import { featuredProjects, principles, technologies } from "../data/profile";
   description="Systems engineer. Backend services and platforms, with tests, CI and documented decisions."
 >
   <section class="max-w-[42rem] pt-16 pb-12 sm:pt-24 sm:pb-16">
-    <p class="font-mono text-sm text-violet">zxxdev</p>
-    <h1 class="mt-3 text-h2 font-semibold tracking-tight text-balance sm:text-h1">
+    <h1 class="text-h2 font-semibold tracking-tight text-balance sm:text-h1">
       Systems engineer building backend services and the platforms they run on.
     </h1>
     <p class="mt-6 text-muted">
@@ -20,7 +19,7 @@ import { featuredProjects, principles, technologies } from "../data/profile";
     <div class="mt-8 flex flex-wrap gap-3">
       <a
         href="/projects/"
-        class="inline-flex h-11 items-center rounded-md bg-accent px-5 font-medium text-on-accent no-underline visited:text-on-accent hover:opacity-90"
+        class="inline-flex h-11 items-center rounded-md bg-accent px-5 font-medium text-on-accent no-underline transition-opacity visited:text-on-accent hover:opacity-85"
       >
         View projects
       </a>
@@ -34,8 +33,7 @@ import { featuredProjects, principles, technologies } from "../data/profile";
   </section>
 
   <section aria-labelledby="projects-title" class="border-t border-border py-12 sm:py-16">
-    <p class="font-mono text-sm text-violet">01</p>
-    <h2 id="projects-title" class="mt-2 text-h3 font-semibold tracking-tight">
+    <h2 id="projects-title" class="text-h3 font-semibold tracking-tight">
       Projects
     </h2>
     <p class="mt-3 max-w-[42rem] text-muted">
@@ -45,7 +43,24 @@ import { featuredProjects, principles, technologies } from "../data/profile";
       {featuredProjects.map((project) => (
         <li class="flex flex-col rounded-md border border-border bg-surface p-5">
           <h3 class="font-mono text-base font-medium">
-            <a href={project.href}>{project.name}</a>
+            <a href={project.href}>
+              {project.name}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="14"
+                height="14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                class="ml-1 inline-block align-[-1px]"
+              >
+                <path d="M7 17 17 7M8 7h9v9"></path>
+              </svg>
+            </a>
           </h3>
           <p class="mt-2 text-muted">{project.summary}</p>
           <ul aria-label="Stack" class="mt-4 flex flex-wrap gap-2">
@@ -64,11 +79,10 @@ import { featuredProjects, principles, technologies } from "../data/profile";
   </section>
 
   <section aria-labelledby="work-title" class="border-t border-border py-12 sm:py-16">
-    <p class="font-mono text-sm text-violet">02</p>
-    <h2 id="work-title" class="mt-2 text-h3 font-semibold tracking-tight">
+    <h2 id="work-title" class="text-h3 font-semibold tracking-tight">
       How I work
     </h2>
-    <ul class="mt-8 grid gap-6 sm:grid-cols-3">
+    <ul class="mt-8 grid items-start gap-6 sm:grid-cols-3">
       {principles.map((principle) => (
         <li class="border-l-2 border-violet pl-4">
           <h3 class="font-semibold">{principle.title}</h3>
@@ -79,15 +93,14 @@ import { featuredProjects, principles, technologies } from "../data/profile";
   </section>
 
   <section aria-labelledby="tech-title" class="border-t border-border py-12 sm:py-16">
-    <p class="font-mono text-sm text-violet">03</p>
-    <h2 id="tech-title" class="mt-2 text-h3 font-semibold tracking-tight">
+    <h2 id="tech-title" class="text-h3 font-semibold tracking-tight">
       Technologies
     </h2>
     <p class="mt-3 text-muted">Only what actually shows up in the repos.</p>
-    <dl class="mt-8 grid gap-6 sm:grid-cols-2">
+    <dl class="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-2">
       {technologies.map((group) => (
         <div>
-          <dt class="text-sm font-medium text-text">{group.title}</dt>
+          <dt class="text-base font-semibold text-text">{group.title}</dt>
           <dd class="mt-3">
             <ul class="flex flex-wrap gap-2">
               {group.items.map((item) => (
