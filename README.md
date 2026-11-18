@@ -41,14 +41,16 @@ Today:
   switch; the choice is remembered and applied before the page is drawn, so there is no flash.
 - A header with the main navigation, which folds into a menu button on small screens, a skip link
   for keyboard users, a footer and a "page not found" page.
-- Placeholder pages for Projects and About, which say what is coming.
+- A home page with the headline, featured projects, how I work and the technologies used in the
+  repos, and an About page with the story and the path so far. Their content lives in typed data
+  files (`src/data/profile.ts`), not in the markup.
+- A placeholder Projects page, which says what is coming.
 - Automatic checks on every pull request: lint, formatting, type checking, a dependency audit, a
   security scan and a full build.
 - Automatic publishing to GitHub Pages on every merge to `main`.
 
-Coming next (see [roadmap](#limitations-and-roadmap)): the home and about content, project pages
-written in Markdown, live data from GitHub, Spanish and English versions, end-to-end and
-accessibility tests, and search.
+Coming next (see [roadmap](#limitations-and-roadmap)): project pages written in Markdown, live data
+from GitHub, Spanish and English versions, end-to-end and accessibility tests, and search.
 
 ## How it works
 
@@ -70,6 +72,8 @@ flowchart LR
 - **GitHub Actions** runs two workflows: `ci.yml` checks every pull request, and `deploy.yml` builds
   `main` and publishes it to Pages. A third one, `codeql.yml`, scans the code and the workflows.
 - **GitHub Pages** only serves files. There is no server or database behind the site.
+
+More detail, including how a page is put together: [docs/architecture.md](docs/architecture.md).
 
 ## Technical decisions
 
@@ -122,11 +126,13 @@ Requirements: Node.js 26 and pnpm 12 (the exact version is pinned in `package.js
 │   ├── workflows/          # ci.yml, deploy.yml, codeql.yml
 │   ├── ISSUE_TEMPLATE/     # bug report and suggestion forms
 │   └── dependabot.yml      # weekly updates with a 7-day cooldown
-├── docs/adr/               # architecture decision records
+├── docs/
+│   ├── adr/                # architecture decision records
+│   └── architecture.md     # how the site is built and published
 ├── public/                 # files copied as they are (favicon)
 ├── src/
-│   ├── components/         # header, footer, theme switch
-│   ├── data/               # navigation and links
+│   ├── components/         # header, footer, theme switch, technology label
+│   ├── data/               # navigation, and the content of the home and about pages
 │   ├── layouts/            # the HTML shell shared by every page
 │   ├── pages/              # one file per page; the path is the URL
 │   ├── scripts/            # browser code (theme handling)
@@ -138,7 +144,8 @@ Requirements: Node.js 26 and pnpm 12 (the exact version is pinned in `package.js
 
 </details>
 
-How changes are proposed and reviewed: [CONTRIBUTING.md](CONTRIBUTING.md).
+How changes are proposed and reviewed: [CONTRIBUTING.md](CONTRIBUTING.md). Rules for issues and
+pull requests: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
 
 ## Security and privacy
 
@@ -171,18 +178,20 @@ days. When a security fix cannot wait, the exception is added explicitly
 
 ## Limitations and roadmap
 
-Done so far: the pipeline (checks and deployment) and the visual design. Planned, in order:
+Done so far: the pipeline (checks and deployment), the visual design, and the home and about
+pages. Planned, in order:
 
-1. Home and about pages with real content.
-2. Project pages from Markdown files with a validated schema.
-3. Data from the GitHub API at build time, with a cache and a fallback if the API fails.
-4. Spanish and English versions.
-5. End-to-end tests with Playwright, accessibility checks with axe and Lighthouse budgets.
-6. Search with Pagefind, sitemap and social preview images.
+1. Project pages from Markdown files with a validated schema.
+2. Data from the GitHub API at build time, with a cache and a fallback if the API fails.
+3. Spanish and English versions.
+4. End-to-end tests with Playwright, accessibility checks with axe and Lighthouse budgets.
+5. Search with Pagefind, sitemap and social preview images.
 
 Known limitations today:
 
-- The home, projects and about pages are placeholders, in English only.
+- The site is in English only, and the projects page is still a placeholder.
+- The technologies list on the home page is written in a data file; it will be built from the
+  project pages once they exist.
 - Contrast was measured when the colours were chosen, but it is not yet checked automatically; that
   comes with the accessibility tests.
 - Open dependency advisories, if any, are tracked as issues with the

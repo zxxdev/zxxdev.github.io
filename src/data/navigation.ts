@@ -1,3 +1,10 @@
+/** Every page path, written once. Menus and links use these names, never a literal path. */
+export const paths = {
+  home: "/",
+  projects: "/projects/",
+  about: "/about/",
+} as const;
+
 /** Main navigation. Order here is the order on screen. */
 export interface NavItem {
   readonly href: string;
@@ -5,9 +12,9 @@ export interface NavItem {
 }
 
 export const navigation: readonly NavItem[] = [
-  { href: "/", label: "Home" },
-  { href: "/projects/", label: "Projects" },
-  { href: "/about/", label: "About" },
+  { href: paths.home, label: "Home" },
+  { href: paths.projects, label: "Projects" },
+  { href: paths.about, label: "About" },
 ];
 
 export const repositoryUrl = "https://github.com/zxxdev/zxxdev.github.io";

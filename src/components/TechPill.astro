@@ -1,0 +1,12 @@
+---
+/** A technology name in a small rounded label. Not a link: it only names things. */
+interface Props {
+  name: string;
+}
+
+const { name } = Astro.props;
+---
+
+<span class="inline-block rounded-md bg-pill-bg px-2.5 py-1 font-mono text-sm text-pill-text">
+  {name}
+</span>
