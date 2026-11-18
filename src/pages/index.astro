@@ -10,7 +10,7 @@ import { featuredProjects, principles, technologies } from "../data/profile";
 
 // Counted from the data, never typed by hand.
 const projectCount = featuredProjects.length;
-const projectWord = projectCount === 1 ? "project" : "projects";
+const statusLabel = `Building in public · ${String(projectCount)} ${projectCount === 1 ? "project" : "projects"}`;
 ---
 
 <BaseLayout
@@ -23,8 +23,7 @@ const projectWord = projectCount === 1 ? "project" : "projects";
       <span class="font-mono text-sm font-medium text-violet">@zxxdev</span>
       <span class="inline-flex h-6.5 items-center gap-2 rounded-full border border-border bg-surface px-2.5 font-mono text-xs text-text">
         <span aria-hidden="true" class="size-1.5 rounded-full bg-status"></span>
-        Building in public · {projectCount}
-        {projectWord}
+        {statusLabel}
       </span>
     </div>
     <h1 class="mt-6 max-w-[44rem] text-h1 font-medium tracking-[-0.02em] text-balance">
