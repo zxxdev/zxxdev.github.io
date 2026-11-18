@@ -1,6 +1,7 @@
 ---
 import TechPill from "../components/TechPill.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { paths } from "../data/navigation";
 import { featuredProjects, principles, technologies } from "../data/profile";
 ---
 
@@ -18,13 +19,13 @@ import { featuredProjects, principles, technologies } from "../data/profile";
     </p>
     <div class="mt-8 flex flex-wrap gap-3">
       <a
-        href="/projects/"
+        href={paths.projects}
         class="inline-flex h-11 items-center rounded-md bg-accent px-5 font-medium text-on-accent no-underline transition-opacity visited:text-on-accent hover:opacity-85"
       >
         View projects
       </a>
       <a
-        href="/about/"
+        href={paths.about}
         class="inline-flex h-11 items-center rounded-md border border-border bg-surface px-5 font-medium text-text no-underline visited:text-text hover:border-muted"
       >
         About
@@ -74,7 +75,7 @@ import { featuredProjects, principles, technologies } from "../data/profile";
       ))}
     </ul>
     <p class="mt-6">
-      <a href="/projects/">See all projects</a>
+      <a href={paths.projects}>See all projects</a>
     </p>
   </section>
 

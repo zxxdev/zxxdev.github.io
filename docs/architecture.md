@@ -15,13 +15,15 @@ flowchart LR
     D --> E[deploy.yml]
     E -->|astro build| F[dist/]
     F -->|upload artifact| G[GitHub Pages]
-    A -.->|pull request and weekly| H[codeql.yml]
+    A -.->|pull request, push to main, weekly| H[codeql.yml]
 ```
 
 - `ci.yml` runs on every pull request, on every push to `main` and once a week, because new
   vulnerabilities are published after dependencies are installed.
-- `deploy.yml` is the only workflow that can write to Pages. Its build job has read access only; the
-  deploy job gets `pages: write` and nothing else.
+- `deploy.yml` runs on every push to `main`, and can also be started by hand from the Actions tab
+  (`workflow_dispatch`) to republish `main` without a new change. It is the only workflow that can
+  write to Pages. Its build job has read access only; the deploy job gets `pages: write` and
+  `id-token: write`, and nothing else.
 - `codeql.yml` scans the TypeScript code and the workflows themselves.
 
 ## How a page is built
@@ -29,7 +31,7 @@ flowchart LR
 ```mermaid
 flowchart TB
     subgraph data[src/data]
-        N[navigation.ts<br/>menu and links]
+        N[navigation.ts<br/>page paths, menu and links]
         P[profile.ts<br/>path, principles,<br/>technologies, featured]
     end
     subgraph pages[src/pages]
@@ -50,6 +52,7 @@ flowchart TB
     P --> I
     P --> AB
     N --> H
+    N --> F
     N --> I
     N --> AB
     I --> L
