@@ -35,28 +35,28 @@ import { featuredProjects, principles, technologies } from "../data/profile";
 
   <section aria-labelledby="projects-title" class="border-t border-border py-12 sm:py-16">
     <p class="font-mono text-sm text-violet">01</p>
-    <h2 id="projects-title" class="mt-2 text-h3 font-semibold tracking-tight">Projects</h2>
+    <h2 id="projects-title" class="mt-2 text-h3 font-semibold tracking-tight">
+      Projects
+    </h2>
     <p class="mt-3 max-w-[42rem] text-muted">
       This site is the first one. The rest show up here as they reach their first release.
     </p>
     <ul class="mt-8 grid gap-4 sm:grid-cols-2">
-      {
-        featuredProjects.map((project) => (
-          <li class="flex flex-col rounded-md border border-border bg-surface p-5">
-            <h3 class="font-mono text-base font-medium">
-              <a href={project.href}>{project.name}</a>
-            </h3>
-            <p class="mt-2 text-muted">{project.summary}</p>
-            <ul aria-label="Stack" class="mt-4 flex flex-wrap gap-2">
-              {project.stack.map((item) => (
-                <li>
-                  <TechPill name={item} />
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))
-      }
+      {featuredProjects.map((project) => (
+        <li class="flex flex-col rounded-md border border-border bg-surface p-5">
+          <h3 class="font-mono text-base font-medium">
+            <a href={project.href}>{project.name}</a>
+          </h3>
+          <p class="mt-2 text-muted">{project.summary}</p>
+          <ul aria-label="Stack" class="mt-4 flex flex-wrap gap-2">
+            {project.stack.map((item) => (
+              <li>
+                <TechPill name={item} />
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
     </ul>
     <p class="mt-6">
       <a href="/projects/">See all projects</a>
@@ -65,40 +65,40 @@ import { featuredProjects, principles, technologies } from "../data/profile";
 
   <section aria-labelledby="work-title" class="border-t border-border py-12 sm:py-16">
     <p class="font-mono text-sm text-violet">02</p>
-    <h2 id="work-title" class="mt-2 text-h3 font-semibold tracking-tight">How I work</h2>
+    <h2 id="work-title" class="mt-2 text-h3 font-semibold tracking-tight">
+      How I work
+    </h2>
     <ul class="mt-8 grid gap-6 sm:grid-cols-3">
-      {
-        principles.map((principle) => (
-          <li class="border-l-2 border-violet pl-4">
-            <h3 class="font-semibold">{principle.title}</h3>
-            <p class="mt-2 text-muted">{principle.text}</p>
-          </li>
-        ))
-      }
+      {principles.map((principle) => (
+        <li class="border-l-2 border-violet pl-4">
+          <h3 class="font-semibold">{principle.title}</h3>
+          <p class="mt-2 text-muted">{principle.text}</p>
+        </li>
+      ))}
     </ul>
   </section>
 
   <section aria-labelledby="tech-title" class="border-t border-border py-12 sm:py-16">
     <p class="font-mono text-sm text-violet">03</p>
-    <h2 id="tech-title" class="mt-2 text-h3 font-semibold tracking-tight">Technologies</h2>
+    <h2 id="tech-title" class="mt-2 text-h3 font-semibold tracking-tight">
+      Technologies
+    </h2>
     <p class="mt-3 text-muted">Only what actually shows up in the repos.</p>
     <dl class="mt-8 grid gap-6 sm:grid-cols-2">
-      {
-        technologies.map((group) => (
-          <div>
-            <dt class="text-sm font-medium text-text">{group.title}</dt>
-            <dd class="mt-3">
-              <ul class="flex flex-wrap gap-2">
-                {group.items.map((item) => (
-                  <li>
-                    <TechPill name={item} />
-                  </li>
-                ))}
-              </ul>
-            </dd>
-          </div>
-        ))
-      }
+      {technologies.map((group) => (
+        <div>
+          <dt class="text-sm font-medium text-text">{group.title}</dt>
+          <dd class="mt-3">
+            <ul class="flex flex-wrap gap-2">
+              {group.items.map((item) => (
+                <li>
+                  <TechPill name={item} />
+                </li>
+              ))}
+            </ul>
+          </dd>
+        </div>
+      ))}
     </dl>
   </section>
 </BaseLayout>

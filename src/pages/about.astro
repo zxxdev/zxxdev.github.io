@@ -19,15 +19,15 @@ import { path } from "../data/profile";
       </p>
       <p>
         That work teaches things tutorials don't: what actually breaks, what people need when
-        something stops working, and what it costs to maintain what someone else left
-        half-finished. Now I build software for those same problems: support workflows,
-        deployments, observability and automation.
+        something stops working, and what it costs to maintain what someone else left half-finished.
+        Now I build software for those same problems: support workflows, deployments, observability
+        and automation.
       </p>
       <p>
-        The systems background shows in how I work. Before I call something done, I ask what
-        happens when it fails, who will maintain it and how anyone can tell it works. That's why
-        every project has tests, every important decision is written down, and every figure on this
-        site is computed by CI.
+        The systems background shows in how I work. Before I call something done, I ask what happens
+        when it fails, who will maintain it and how anyone can tell it works. That's why every
+        project has tests, every important decision is written down, and every figure on this site
+        is computed by CI.
       </p>
       <p>
         The code in these projects is written by AI agents under my direction. I decide what gets
@@ -41,21 +41,21 @@ import { path } from "../data/profile";
     </div>
 
     <section aria-labelledby="path-title" class="mt-14">
-      <h2 id="path-title" class="text-h4 font-semibold tracking-tight">The path so far</h2>
+      <h2 id="path-title" class="text-h4 font-semibold tracking-tight">
+        The path so far
+      </h2>
       <ol class="mt-6">
-        {
-          path.map((stage, index) => (
-            <li class="relative border-l border-border pb-8 pl-6 last:pb-0">
-              <span
-                aria-hidden="true"
-                class="absolute top-2 -left-[5px] size-[9px] rounded-full bg-violet"
-              />
-              <p class="font-mono text-sm text-muted">{String(index + 1).padStart(2, "0")}</p>
-              <h3 class="font-semibold">{stage.title}</h3>
-              <p class="mt-1 text-muted">{stage.summary}</p>
-            </li>
-          ))
-        }
+        {path.map((stage, index) => (
+          <li class="relative border-l border-border pb-8 pl-6 last:pb-0">
+            <span
+              aria-hidden="true"
+              class="absolute top-2 -left-[5px] size-[9px] rounded-full bg-violet"
+            />
+            <p class="font-mono text-sm text-muted">{String(index + 1).padStart(2, "0")}</p>
+            <h3 class="font-semibold">{stage.title}</h3>
+            <p class="mt-1 text-muted">{stage.summary}</p>
+          </li>
+        ))}
       </ol>
     </section>
 
