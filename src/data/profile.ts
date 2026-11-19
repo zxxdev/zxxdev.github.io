@@ -49,7 +49,8 @@ export type IconName = "check" | "document" | "person" | "badge";
 /**
  * Microsoft exams passed. The certifications they led to have expired, so the
  * site says "exams passed" and never "certified". The names are the official
- * exam titles; a retired exam is marked as such.
+ * exam titles; a retired exam is marked as such. The order is the order they
+ * were taken.
  */
 export interface Exam {
   readonly code: string;
@@ -62,15 +63,15 @@ export interface Exam {
 
 export const azureExams: readonly Exam[] = [
   {
-    code: "AZ-104",
-    area: "Azure administration",
-    name: "Microsoft Azure Administrator",
-    retired: false,
-  },
-  {
     code: "AZ-700",
     area: "Azure networking",
     name: "Designing and Implementing Microsoft Azure Networking Solutions",
+    retired: false,
+  },
+  {
+    code: "AZ-104",
+    area: "Azure administration",
+    name: "Microsoft Azure Administrator",
     retired: false,
   },
   {
