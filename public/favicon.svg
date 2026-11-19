@@ -3,15 +3,16 @@
     The site's avatar (src/components/Avatar.astro): a flat violet rounded square
     with "zx" in white (contrast 7.10). Fixed colours, the same in light and dark
     theme, like any logo. The radius is 22% of the side, as in the header.
+
+    The letters are drawn as shapes, not text, so they look the same on every
+    system and stay readable at 16 px: 16 units tall (8 px in a tab), the bars of
+    the z 4 units thick (2 whole pixels at 16 px), 3 units between the letters.
+    Each leg of the x is its own path so the crossing always stays filled.
   -->
   <rect width="32" height="32" rx="7" fill="#6d28d9" />
-  <text
-    x="16"
-    y="21"
-    fill="#ffffff"
-    font-family="ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace"
-    font-size="13"
-    font-weight="600"
-    text-anchor="middle"
-  >zx</text>
+  <g fill="#ffffff">
+    <path d="M3.5 8H14.5V12L7.5 20H14.5V24H3.5V20L10.5 12H3.5Z" />
+    <path d="M17.5 8H21L28.5 24H25Z" />
+    <path d="M25 8H28.5L21 24H17.5Z" />
+  </g>
 </svg>
