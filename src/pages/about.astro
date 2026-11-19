@@ -10,6 +10,9 @@ const sections = [
   { id: "path", label: "Path" },
   { id: "exams", label: "Azure exams" },
 ] as const;
+
+// In the intro, {" "} before each exam code keeps the space: Astro drops a line
+// break that sits next to a tag, which would print "networking(AZ-700)".
 ---
 
 <BaseLayout
@@ -71,9 +74,9 @@ const sections = [
         without passing tests and CI.
       </p>
       <p>
-        I've passed Microsoft's Azure exams in networking
-        <span class="whitespace-nowrap">(AZ-700)</span>, administration
-        <span class="whitespace-nowrap">(AZ-104)</span> and architecture design
+        I've passed Microsoft's Azure exams in networking{" "}
+        <span class="whitespace-nowrap">(AZ-700)</span>, administration{" "}
+        <span class="whitespace-nowrap">(AZ-104)</span> and architecture design{" "}
         <span class="whitespace-nowrap">(AZ-304)</span>. At home I run a small virtualization server
         where I test these projects.
       </p>
