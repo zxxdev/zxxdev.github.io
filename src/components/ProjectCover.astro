@@ -1,0 +1,56 @@
+---
+/*
+ * The background of a generated 16:10 cover, for a project that has no
+ * screenshot yet: a solid fill in the project's tone, blueprint lines every
+ * 32 px and a small drawing. Everything is solid colour, with no gradient or
+ * blur. Decorative (aria-hidden).
+ *
+ * The name and caption are NOT drawn here: text inside a scaled SVG shrinks
+ * with the card (down to about 7 px on a phone). ProjectCard writes them as
+ * HTML on top, at a fixed size.
+ */
+import type { CoverArt } from "../data/profile";
+
+interface Props {
+  /** Unique per page: it names the SVG pattern. */
+  id: string;
+  art: CoverArt;
+}
+
+const { id, art } = Astro.props;
+const patternId = `grid-${id}`;
+---
+
+<svg
+  viewBox="0 0 640 400"
+  preserveAspectRatio="xMidYMid slice"
+  aria-hidden="true"
+  class="block size-full"
+>
+  <defs>
+    <pattern id={patternId} width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" class="stroke-tone-grid" stroke-width="1"></path>
+    </pattern>
+  </defs>
+  <rect width="640" height="400" class="fill-tone-bg"></rect>
+  <rect width="640" height="400" fill={`url(#${patternId})`}></rect>
+
+  {art === "browser" && (
+    <g fill="none" class="stroke-tone-line" stroke-width="2">
+      <rect x="400" y="110" width="200" height="132" rx="8" />
+      <path d="M400 136h200" />
+      <circle cx="416" cy="123" r="3" />
+      <circle cx="428" cy="123" r="3" />
+      <circle cx="440" cy="123" r="3" />
+      <path d="M420 162h96M420 182h140M420 202h70" />
+    </g>
+  )}
+  {art === "arrow" && (
+    <path
+      d="M448 128 l64 40 -64 40 0 -22 -80 0 0 -36 80 0z"
+      fill="none"
+      class="stroke-tone-line"
+      stroke-width="2"
+    />
+  )}
+</svg>

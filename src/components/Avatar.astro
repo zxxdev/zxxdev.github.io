@@ -1,0 +1,25 @@
+---
+/*
+ * The site's avatar: a flat violet rounded square with "zx" in white (contrast
+ * 7.10). A square reads as a brand mark, not as a missing photo; the profile is
+ * pseudonymous, so there is no photo. Decorative: the alias is always written
+ * next to it.
+ *
+ * The colour is fixed on purpose, not a theme token: a logo looks the same in
+ * light and dark theme, and the same square is used as the GitHub avatar.
+ */
+interface Props {
+  size: number;
+}
+
+const { size } = Astro.props;
+const fontSize = Math.round(size * 0.36);
+---
+
+<span
+  aria-hidden="true"
+  class="inline-grid shrink-0 place-items-center rounded-[22%] bg-[#6d28d9] font-mono font-medium text-white"
+  style={`width:${size}px;height:${size}px;font-size:${fontSize}px`}
+>
+  zx
+</span>

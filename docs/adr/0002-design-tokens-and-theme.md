@@ -1,6 +1,6 @@
 # 0002. Define the design as named tokens, with a light and a dark theme
 
-- **Status:** accepted
+- **Status:** accepted; palette, fonts and colour roles superseded by [0003](0003-sharp-redesign-and-project-tones.md)
 - **Date:** 2026-11-17
 
 ## Context

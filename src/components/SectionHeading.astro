@@ -1,0 +1,24 @@
+---
+/** A section title with a 1 px rule under it and, optionally, a "See all" link on the right. */
+interface Props {
+  id: string;
+  title: string;
+  link?: { href: string; label: string };
+}
+
+const { id, title, link } = Astro.props;
+---
+
+<div class="flex items-baseline justify-between gap-4 border-b border-border pb-3.5">
+  <h2 {id} class="text-h3 font-medium tracking-[-0.01em]">
+    {title}
+  </h2>
+  {link && (
+    <a
+      href={link.href}
+      class="text-sm whitespace-nowrap text-muted no-underline visited:text-muted hover:text-text"
+    >
+      {link.label} <span aria-hidden="true">→</span>
+    </a>
+  )}
+</div>

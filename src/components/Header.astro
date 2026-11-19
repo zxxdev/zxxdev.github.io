@@ -1,16 +1,19 @@
 ---
-import { isCurrent, navigation } from "../data/navigation";
+import { isCurrent, navigation, paths } from "../data/navigation";
+import Avatar from "./Avatar.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 
 const currentPath = Astro.url.pathname;
 ---
 
-<header class="border-b border-border bg-bg">
-  <div class="mx-auto flex max-w-5xl items-center gap-3 px-4 py-3 sm:gap-6 sm:px-6">
+<!-- Sticky with a solid background: a translucent, blurred header looks soft. -->
+<header class="sticky top-0 z-20 border-b border-border bg-bg">
+  <div class="mx-auto flex h-14 max-w-5xl items-center gap-3 px-4 sm:h-15 sm:gap-6 sm:px-6">
     <a
-      href="/"
-      class="font-mono text-base font-medium text-violet no-underline visited:text-violet hover:underline"
+      href={paths.home}
+      class="flex items-center gap-2.5 font-mono text-[0.9375rem] font-medium text-text no-underline visited:text-text"
     >
+      <Avatar size={28} />
       zxxdev
     </a>
 
@@ -21,7 +24,7 @@ const currentPath = Astro.url.pathname;
         aria-expanded="false"
         aria-controls="site-nav-list"
         hidden
-        class="inline-flex h-10 items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm text-text sm:hidden"
+        class="inline-flex h-10 items-center gap-2 rounded-md border border-border bg-bg px-3 text-sm font-medium text-text sm:hidden"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +45,7 @@ const currentPath = Astro.url.pathname;
 
       <ul
         id="site-nav-list"
-        class="nav-list flex items-center gap-1 text-[0.9375rem] sm:gap-2"
+        class="nav-list flex items-center gap-1 text-sm font-medium"
         data-menu-list
       >
         {navigation.map((item) => {
@@ -53,10 +56,10 @@ const currentPath = Astro.url.pathname;
                 href={item.href}
                 aria-current={current ? "page" : undefined}
                 class:list={[
-                  "block rounded-md px-2 py-2 transition-colors sm:px-3",
+                  "block rounded-md px-3 py-1.5 no-underline transition-colors",
                   current
-                    ? "font-medium text-text decoration-violet decoration-2 underline-offset-8 visited:text-text"
-                    : "text-muted no-underline visited:text-muted hover:text-text",
+                    ? "bg-surface-2 text-text visited:text-text"
+                    : "text-muted visited:text-muted hover:text-text",
                 ]}
               >
                 {item.label}
@@ -98,9 +101,14 @@ const currentPath = Astro.url.pathname;
       padding: 0.5rem;
       gap: 0.25rem;
       background-color: var(--c-surface);
-      border: 1px solid var(--c-border);
-      border-radius: var(--radius-md);
-      box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+      border: 1px solid var(--c-border-strong);
+      border-radius: 12px;
+    }
+
+    /* Touch targets of 44 px in the open panel. */
+    [data-site-nav].has-menu.is-open .nav-list a {
+      padding-block: 0.625rem;
+      font-size: 1rem;
     }
   }
 </style>

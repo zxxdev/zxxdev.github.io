@@ -1,5 +1,9 @@
 ---
-/** A technology name in a small rounded label. Not a link: it only names things. */
+/*
+ * A technology name in a small neutral pill. Not a link: it only names things.
+ * Neutral on purpose: with many cards, coloured pills would compete with the
+ * project tones and with violet, which is kept for the identity.
+ */
 interface Props {
   name: string;
 }
@@ -7,6 +11,6 @@ interface Props {
 const { name } = Astro.props;
 ---
 
-<span class="inline-block rounded-md bg-pill-bg px-2.5 py-1 font-mono text-sm text-pill-text">
+<span class="inline-flex h-6 items-center rounded-full bg-surface-2 px-2.5 font-mono text-xs text-muted">
   {name}
 </span>

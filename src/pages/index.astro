@@ -1,109 +1,107 @@
 ---
+import Avatar from "../components/Avatar.astro";
+import Icon from "../components/Icon.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import SectionHeading from "../components/SectionHeading.astro";
 import TechPill from "../components/TechPill.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { paths } from "../data/navigation";
+import { paths, profileUrl } from "../data/navigation";
 import { featuredProjects, principles, technologies } from "../data/profile";
+
+// Counted from the data, never typed by hand.
+const projectCount = featuredProjects.length;
+const statusLabel = `Building in public · ${String(projectCount)} ${projectCount === 1 ? "project" : "projects"}`;
 ---
 
 <BaseLayout
   title="zxxdev · Systems engineer"
   description="Systems engineer. Backend services and platforms, with tests, CI and documented decisions."
 >
-  <section class="max-w-[42rem] pt-16 pb-12 sm:pt-24 sm:pb-16">
-    <h1 class="text-h2 font-semibold tracking-tight text-balance sm:text-h1">
+  <section class="pt-10 sm:pt-18">
+    <div class="flex flex-wrap items-center gap-3">
+      <Avatar size={48} />
+      <span class="font-mono text-sm font-medium text-violet">@zxxdev</span>
+      <span class="inline-flex h-6 items-center gap-2 rounded-full border border-border bg-surface px-2.5 font-mono text-xs text-text">
+        <span aria-hidden="true" class="size-1.5 rounded-full bg-status"></span>
+        {statusLabel}
+      </span>
+    </div>
+    <h1 class="mt-6 max-w-[44rem] text-h1 font-medium tracking-[-0.02em] text-balance">
       Systems engineer building backend services and the platforms they run on.
     </h1>
-    <p class="mt-6 text-muted">
+    <p class="mt-4.5 max-w-[42rem] text-lead">
       I spent years in operations: running systems, supporting users and building websites. Now I
       build software for the problems I used to solve by hand.
     </p>
-    <div class="mt-8 flex flex-wrap gap-3">
+    <div class="mt-7 flex flex-wrap gap-2.5">
       <a
         href={paths.projects}
-        class="inline-flex h-11 items-center rounded-md bg-accent px-5 font-medium text-on-accent no-underline transition-opacity visited:text-on-accent hover:opacity-85"
+        class="inline-flex h-10 items-center rounded-full bg-brand px-4.5 text-sm font-medium text-on-brand no-underline transition-colors visited:text-on-brand hover:bg-brand-hover"
       >
         View projects
       </a>
       <a
         href={paths.about}
-        class="inline-flex h-11 items-center rounded-md border border-border bg-surface px-5 font-medium text-text no-underline visited:text-text hover:border-muted"
+        class="inline-flex h-10 items-center rounded-full border border-border bg-surface-2 px-4.5 text-sm font-medium text-text no-underline transition-colors visited:text-text hover:border-border-strong"
       >
         About
+      </a>
+      <a
+        href={profileUrl}
+        class="inline-flex h-10 items-center gap-2 rounded-full border border-border px-4.5 text-sm font-medium text-text no-underline transition-colors visited:text-text hover:border-border-strong"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="16"
+          height="16"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"></path>
+        </svg>
+        GitHub
       </a>
     </div>
   </section>
 
-  <section aria-labelledby="projects-title" class="border-t border-border py-12 sm:py-16">
-    <h2 id="projects-title" class="text-h3 font-semibold tracking-tight">
-      Projects
-    </h2>
-    <p class="mt-3 max-w-[42rem] text-muted">
-      This site is the first one. The rest show up here as they reach their first release.
-    </p>
-    <ul class="mt-8 grid gap-4 sm:grid-cols-2">
+  <section aria-labelledby="projects-title" class="pt-16 sm:pt-24">
+    <SectionHeading
+      id="projects-title"
+      title="Projects"
+      link={{ href: paths.projects, label: "See all projects" }}
+    />
+    <ul class="mt-6 grid gap-4 sm:grid-cols-2">
       {featuredProjects.map((project) => (
-        <li class="flex flex-col rounded-md border border-border bg-surface p-5">
-          <h3 class="font-mono text-base font-medium">
-            <a href={project.href}>
-              {project.name}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="14"
-                height="14"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-                class="ml-1 inline-block align-[-1px]"
-              >
-                <path d="M7 17 17 7M8 7h9v9"></path>
-              </svg>
-            </a>
-          </h3>
-          <p class="mt-2 text-muted">{project.summary}</p>
-          <ul aria-label="Stack" class="mt-4 flex flex-wrap gap-2">
-            {project.stack.map((item) => (
-              <li>
-                <TechPill name={item} />
-              </li>
-            ))}
-          </ul>
-        </li>
+        <ProjectCard project={project} />
       ))}
     </ul>
-    <p class="mt-6">
-      <a href={paths.projects}>See all projects</a>
-    </p>
   </section>
 
-  <section aria-labelledby="work-title" class="border-t border-border py-12 sm:py-16">
-    <h2 id="work-title" class="text-h3 font-semibold tracking-tight">
-      How I work
-    </h2>
-    <ul class="mt-8 grid items-start gap-6 sm:grid-cols-3">
+  <section aria-labelledby="work-title" class="pt-16 sm:pt-24">
+    <SectionHeading id="work-title" title="How I work" />
+    <ul class="mt-6 grid gap-4 md:grid-cols-3">
       {principles.map((principle) => (
-        <li class="border-l-2 border-violet pl-4">
-          <h3 class="font-semibold">{principle.title}</h3>
-          <p class="mt-2 text-muted">{principle.text}</p>
+        <li data-tone={principle.tone} class="rounded-xl border border-border p-5">
+          <span class="grid size-8 place-items-center rounded-md bg-tone-bg text-tone-line">
+            <Icon name={principle.icon} />
+          </span>
+          <h3 class="mt-3.5 font-semibold">{principle.title}</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-muted">{principle.text}</p>
         </li>
       ))}
     </ul>
   </section>
 
-  <section aria-labelledby="tech-title" class="border-t border-border py-12 sm:py-16">
-    <h2 id="tech-title" class="text-h3 font-semibold tracking-tight">
-      Technologies
-    </h2>
-    <p class="mt-3 text-muted">Only what actually shows up in the repos.</p>
-    <dl class="mt-8 grid gap-x-6 gap-y-8 sm:grid-cols-2">
+  <section aria-labelledby="tech-title" class="pt-16 sm:pt-24">
+    <SectionHeading id="tech-title" title="Technologies" />
+    <p class="mt-3.5 text-sm text-muted">Only what actually shows up in the repos.</p>
+    <dl class="mt-6 grid gap-4 sm:grid-cols-2">
       {technologies.map((group) => (
-        <div>
-          <dt class="text-base font-semibold text-text">{group.title}</dt>
+        <div class="rounded-xl border border-border px-5 pt-4.5 pb-5">
+          <dt class="text-sm font-medium">{group.title}</dt>
           <dd class="mt-3">
-            <ul class="flex flex-wrap gap-2">
+            <ul class="flex flex-wrap gap-1.5">
               {group.items.map((item) => (
                 <li>
                   <TechPill name={item} />
