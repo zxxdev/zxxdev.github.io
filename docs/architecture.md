@@ -49,6 +49,8 @@ flowchart TB
         PC[ProjectCard.astro]
         CV[ProjectCover.astro<br/>generated cover]
         TP[TechPill.astro]
+        SH[SectionHeading.astro]
+        IC[Icon.astro]
     end
     S[src/styles/global.css<br/>design tokens and project tones]
 
@@ -74,6 +76,8 @@ flowchart TB
     PC --> CV
     PC --> TP
     I --> TP
+    I --> SH
+    I --> IC
     S --> L
     L --> O[dist/*.html]
 ```
@@ -96,8 +100,9 @@ so pages use names such as `text-muted` and never a colour code. Why it is done 
 
 Each project has a **tone** from a closed list (`violet`, `cobalt`, `teal`, `amber`), typed in
 `src/data/profile.ts`. A card sets `data-tone`, and `global.css` turns that into four colours
-(`--tone-bg`, `--tone-grid`, `--tone-line`, `--tone-text`) that only the cover and the icon tiles
-use. Until a project has a screenshot, `ProjectCover.astro` draws its cover as an inline SVG from
+(`--tone-bg`, `--tone-grid`, `--tone-line`, `--tone-text`) used by its cover and by its border on
+hover. The How I work icons and the About timeline reuse the same tones by meaning. Until a project
+has a screenshot, `ProjectCover.astro` draws its cover as an inline SVG from
 the same data, so there are no image files to keep in sync. Why the look is flat and sharp:
 [ADR 0003](adr/0003-sharp-redesign-and-project-tones.md).
 

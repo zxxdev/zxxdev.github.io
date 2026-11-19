@@ -13,7 +13,7 @@
  * - On hover only the border changes, to the project's tone. No movement and
  *   no zoom: they make the page look soft.
  */
-import type { FeaturedProject } from "../data/profile";
+import { statusLabel, type FeaturedProject } from "../data/profile";
 import ProjectCover from "./ProjectCover.astro";
 import TechPill from "./TechPill.astro";
 
@@ -48,7 +48,7 @@ const coverName = project.repo.split("/")[1] ?? project.title;
           project.status.kind === "live" ? "bg-status" : "border border-muted",
         ]}
       ></span>
-      {project.status.label}
+      {statusLabel(project.status)}
     </span>
   </div>
   <div class="px-5 pt-4.5 pb-5">

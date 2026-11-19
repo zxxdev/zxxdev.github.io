@@ -45,8 +45,9 @@ Today:
 - A home page with the headline, project cards, how I work and the technologies used in the repos,
   and an About page with the story and the path so far. Their content lives in typed data files
   (`src/data/profile.ts`), not in the markup.
-- Project cards with a generated cover in the project's colour and a status tag taken from the
-  project's own version. The Projects page lists them too.
+- Project cards with a generated cover in the project's colour and a status tag built from the
+  version the project declares (for now copied into the data file; reading it from GitHub comes
+  with the live data). The Projects page lists them too.
 - Automatic checks on every pull request: lint, formatting, type checking, a dependency audit, a
   security scan and a full build.
 - Automatic publishing to GitHub Pages on every merge to `main`.

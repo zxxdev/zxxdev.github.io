@@ -30,28 +30,40 @@ with a meaning.
 
 Option 3.
 
-- **Fonts:** Geist Sans and Geist Mono instead of IBM Plex, self-hosted. Headings are weight 500,
-  never 650 or 700.
+- **Fonts:** Geist Sans and Geist Mono instead of IBM Plex, self-hosted. Page and section headings
+  are weight 500; card and list item titles are 600. Nothing heavier.
 - **Colour roles:**
   - violet is the identity and the primary button (`brand`);
   - cobalt is for links inside text;
   - teal is for "live".
 - **Project tones:** a closed list, `violet` (web), `cobalt` (backend), `teal` (platform) and
   `amber` (tools and games). It is typed in `src/data/profile.ts`, so a tone outside the list is a
-  type error. Tones colour the generated covers and the icon tiles, and nothing else.
+  type error. A project's tone colours its generated cover and its card border on hover. The same
+  four colours are reused, by meaning, in two other places: the How I work icons (teal for "tested",
+  the colour of a green CI; cobalt for "decisions"; violet for "AI-assisted", the identity) and the
+  dots of the path on the About page (violet). They are never used for text blocks, technology
+  pills or the project status.
 - **Nothing blurred:** no glows, gradients, shadows or backdrop blur. The header is sticky with a
   solid background.
 
 Contrast, computed with the WCAG 2.1 formula:
 
-| Pair                                 | Dark  | Light |
-| ------------------------------------ | ----- | ----- |
-| Text on background                   | 17.11 | 19.80 |
-| Muted text on background             | 7.94  | 6.48  |
-| Muted text on `surface-2` (pills)    | 7.11  | 5.90  |
-| White on the primary button          | 5.70  | 7.10  |
-| White on the button when hovered     | 7.10  | 8.98  |
-| Tone text on its own tone background | ≥7.12 | ≥6.44 |
+| Pair                                          | Dark  | Light |
+| --------------------------------------------- | ----- | ----- |
+| Text on background                            | 17.11 | 19.80 |
+| Text on `surface` (status tags)               | 16.25 | 19.80 |
+| Muted text on background                      | 7.94  | 6.48  |
+| Muted text on `surface-2` (pills)             | 7.11  | 5.90  |
+| Link (`accent`) on background                 | 8.25  | 6.70  |
+| Violet (alias, visited links) on background   | 9.23  | 7.10  |
+| White on the primary button                   | 5.70  | 7.10  |
+| White on the button when hovered              | 7.10  | 8.98  |
+| Skip link: `on-accent` on `accent`            | 8.25  | 6.70  |
+| Text on the selection colour                  | 13.35 | 14.58 |
+| Violet tone text on its tone background       | 8.15  | 7.77  |
+| Cobalt tone text on its tone background       | 7.12  | 7.57  |
+| Teal tone text on its tone background         | 11.01 | 6.77  |
+| Amber tone text on its tone background        | 9.31  | 6.44  |
 
 ## Consequences
 

@@ -94,12 +94,25 @@ export const technologies: readonly TechnologyGroup[] = [
 
 /**
  * Where a project stands. "live" is published and in use as it is; "early" is
- * an alpha or a first version. The label is what the card says, so it must be
- * true: take it from the project's own version, never from a wish.
+ * an alpha or a first version, and carries the version string exactly as the
+ * project declares it (for example "0.1.0-alpha"). The card's label is built
+ * from it by statusLabel(), so it is never typed by hand.
  */
-export interface ProjectStatus {
-  readonly kind: "live" | "early";
-  readonly label: string;
+export type ProjectStatus =
+  | { readonly kind: "live" }
+  | { readonly kind: "early"; readonly version: string };
+
+/**
+ * The text of a project's status tag.
+ * - live: "Live".
+ * - early with a pre-release tag: "0.1.0-alpha" becomes "Alpha · 0.1.0".
+ * - early without one: "0.3.0" becomes "v0.3.0".
+ */
+export function statusLabel(status: ProjectStatus): string {
+  if (status.kind === "live") return "Live";
+  const [core = status.version, pre] = status.version.split("-", 2);
+  if (!pre) return `v${core}`;
+  return `${pre.charAt(0).toUpperCase()}${pre.slice(1)} · ${core}`;
 }
 
 /** The drawing on a generated cover, until the project has a screenshot. */
@@ -128,7 +141,7 @@ export const featuredProjects: readonly FeaturedProject[] = [
     href: "https://github.com/zxxdev/zxxdev.github.io",
     stack: ["Astro", "TypeScript", "Tailwind CSS", "GitHub Actions"],
     tone: "violet",
-    status: { kind: "live", label: "Live" },
+    status: { kind: "live" },
     cover: { caption: "astro · static · github pages", art: "browser" },
   },
   {
@@ -139,8 +152,8 @@ export const featuredProjects: readonly FeaturedProject[] = [
     href: "https://github.com/zxxdev/TrailMate",
     stack: ["Lua", "Go", "luacheck", "busted"],
     tone: "amber",
-    // The version declared in the addon's .toc file: 0.1.0-alpha.
-    status: { kind: "early", label: "Alpha · 0.1.0" },
+    // As declared in the addon's TrailMate.toc ("## Version: 0.1.0-alpha").
+    status: { kind: "early", version: "0.1.0-alpha" },
     cover: { caption: "wow forever · leveling coach", art: "arrow" },
   },
 ];
