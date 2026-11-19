@@ -48,22 +48,22 @@ Option 3.
 
 Contrast, computed with the WCAG 2.1 formula:
 
-| Pair                                          | Dark  | Light |
-| --------------------------------------------- | ----- | ----- |
-| Text on background                            | 17.11 | 19.80 |
-| Text on `surface` (status tags)               | 16.25 | 19.80 |
-| Muted text on background                      | 7.94  | 6.48  |
-| Muted text on `surface-2` (pills)             | 7.11  | 5.90  |
-| Link (`accent`) on background                 | 8.25  | 6.70  |
-| Violet (alias, visited links) on background   | 9.23  | 7.10  |
-| White on the primary button                   | 5.70  | 7.10  |
-| White on the button when hovered              | 7.10  | 8.98  |
-| Skip link: `on-accent` on `accent`            | 8.25  | 6.70  |
-| Text on the selection colour                  | 13.35 | 14.58 |
-| Violet tone text on its tone background       | 8.15  | 7.77  |
-| Cobalt tone text on its tone background       | 7.12  | 7.57  |
-| Teal tone text on its tone background         | 11.01 | 6.77  |
-| Amber tone text on its tone background        | 9.31  | 6.44  |
+| Pair                                        | Dark  | Light |
+| ------------------------------------------- | ----- | ----- |
+| Text on background                          | 17.11 | 19.80 |
+| Text on `surface` (status tags)             | 16.25 | 19.80 |
+| Muted text on background                    | 7.94  | 6.48  |
+| Muted text on `surface-2` (pills)           | 7.11  | 5.90  |
+| Link (`accent`) on background               | 8.25  | 6.70  |
+| Violet (alias, visited links) on background | 9.23  | 7.10  |
+| White on the primary button                 | 5.70  | 7.10  |
+| White on the button when hovered            | 7.10  | 8.98  |
+| Skip link: `on-accent` on `accent`          | 8.25  | 6.70  |
+| Text on the selection colour                | 13.35 | 14.58 |
+| Violet tone text on its tone background     | 8.15  | 7.77  |
+| Cobalt tone text on its tone background     | 7.12  | 7.57  |
+| Teal tone text on its tone background       | 11.01 | 6.77  |
+| Amber tone text on its tone background      | 9.31  | 6.44  |
 
 ## Consequences
 

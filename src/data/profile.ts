@@ -99,8 +99,7 @@ export const technologies: readonly TechnologyGroup[] = [
  * from it by statusLabel(), so it is never typed by hand.
  */
 export type ProjectStatus =
-  | { readonly kind: "live" }
-  | { readonly kind: "early"; readonly version: string };
+  { readonly kind: "live" } | { readonly kind: "early"; readonly version: string };
 
 /**
  * The text of a project's status tag.
