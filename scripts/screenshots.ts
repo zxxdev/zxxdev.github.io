@@ -44,7 +44,14 @@ const shots: readonly Shot[] = [
     out: "src/assets/projects/zxxdev-github-io.png",
   },
   // README: the home page in both themes, and on a phone.
-  { path: "/", width: 1280, height: 800, theme: "dark", scale: 1, out: "docs/images/home-dark.png" },
+  {
+    path: "/",
+    width: 1280,
+    height: 800,
+    theme: "dark",
+    scale: 1,
+    out: "docs/images/home-dark.png",
+  },
   {
     path: "/",
     width: 1280,
@@ -53,7 +60,14 @@ const shots: readonly Shot[] = [
     scale: 1,
     out: "docs/images/home-light.png",
   },
-  { path: "/", width: 390, height: 844, theme: "dark", scale: 2, out: "docs/images/home-mobile.png" },
+  {
+    path: "/",
+    width: 390,
+    height: 844,
+    theme: "dark",
+    scale: 2,
+    out: "docs/images/home-mobile.png",
+  },
 ];
 
 const browser = await chromium.launch();
