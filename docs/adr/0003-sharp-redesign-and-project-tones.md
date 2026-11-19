@@ -39,10 +39,10 @@ Option 3.
 - **Project tones:** a closed list, `violet` (web), `cobalt` (backend), `teal` (platform) and
   `amber` (tools and games). It is typed in `src/data/profile.ts`, so a tone outside the list is a
   type error. A project's tone colours its generated cover and its card border on hover. The same
-  four colours are reused, by meaning, in two other places: the How I work icons (teal for "tested",
-  the colour of a green CI; cobalt for "decisions"; violet for "AI-assisted", the identity) and the
-  dots of the path on the About page (violet). They are never used for text blocks, technology
-  pills or the project status.
+  four colours are reused, by meaning, in a few other places: the How I work icons (teal for
+  "tested", the colour of a green CI; cobalt for "decisions"; violet for "AI-assisted", the
+  identity), and the dots of the path and the Azure exam icons on the About page (violet). They are
+  never used for text blocks, technology pills or the project status.
 - **Nothing blurred:** no glows, gradients, shadows or backdrop blur. The header is sticky with a
   solid background.
 
