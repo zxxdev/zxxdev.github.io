@@ -25,6 +25,8 @@ interface Shot {
   readonly scale: 1 | 2;
   /** Part of the page to keep, in CSS pixels. Without it, the whole viewport. */
   readonly clip?: { x: number; y: number; width: number; height: number };
+  /** With a crop: what must fit entirely inside it (CSS selectors), or the script fails. */
+  readonly keep?: readonly string[];
   readonly out: string;
 }
 
@@ -41,6 +43,8 @@ const shots: readonly Shot[] = [
     theme: "dark",
     scale: 2,
     clip: { x: 128, y: 66, width: 765, height: 478 },
+    // The headline and the row of buttons below it (top and bottom of the introduction).
+    keep: ["main > section:first-child h1", "main > section:first-child > div:last-child"],
     out: "src/assets/projects/zxxdev-github-io.png",
   },
   // README: the home page in both themes, and on a phone.
@@ -79,11 +83,32 @@ try {
       colorScheme: shot.theme,
       reducedMotion: "reduce",
     });
-    await page.goto(new URL(shot.path, base).href, { waitUntil: "networkidle" });
-    // Wait for the web fonts, or the text is drawn in a fallback font.
-    await page.evaluate(async () => {
+    const url = new URL(shot.path, base).href;
+    const response = await page.goto(url, { waitUntil: "networkidle" });
+    // A 404 or an error page would be saved as if it were the site.
+    if (!response?.ok()) {
+      throw new Error(`${url} answered ${String(response?.status() ?? "nothing")}`);
+    }
+    // Wait for the web fonts, or the text is drawn in a fallback font. Fail if the main one is missing.
+    const fontLoaded = await page.evaluate(async () => {
       await document.fonts.ready;
+      return document.fonts.check('16px "Geist Variable"');
     });
+    if (!fontLoaded) throw new Error(`${url}: the Geist font did not load`);
+    // A fixed crop silently cuts the wrong area if the layout moves: check what it must hold.
+    if (shot.clip && shot.keep) {
+      const { x, y, width, height } = shot.clip;
+      for (const selector of shot.keep) {
+        const box = await page.locator(selector).first().boundingBox();
+        const inside =
+          box !== null &&
+          box.x >= x &&
+          box.y >= y &&
+          box.x + box.width <= x + width &&
+          box.y + box.height <= y + height;
+        if (!inside) throw new Error(`${shot.out}: "${selector}" is not fully inside the crop`);
+      }
+    }
     await mkdir(dirname(shot.out), { recursive: true });
     await page.screenshot(shot.clip ? { path: shot.out, clip: shot.clip } : { path: shot.out });
     await page.close();

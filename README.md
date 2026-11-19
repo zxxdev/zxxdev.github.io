@@ -56,14 +56,13 @@ Today:
   Projects page lists them too.
 - An About page with links to its sections, which mark the one being read, and the Azure exams
   passed.
+- Automatic checks on every pull request: lint, formatting, type checking, a dependency audit, a
+  security scan and a full build.
+- Automatic publishing to GitHub Pages on every merge to `main`.
 
 <img src="docs/images/home-mobile.png" width="260" alt="The home page on a phone, in dark theme: the menu button, the alias, the headline and the three buttons.">
 
 <sub>The home page on a 390 px wide phone.</sub>
-
-- Automatic checks on every pull request: lint, formatting, type checking, a dependency audit, a
-  security scan and a full build.
-- Automatic publishing to GitHub Pages on every merge to `main`.
 
 Coming next (see [roadmap](#limitations-and-roadmap)): project pages written in Markdown, live data
 from GitHub, Spanish and English versions, end-to-end and accessibility tests, and search.

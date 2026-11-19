@@ -192,7 +192,7 @@ export const featuredProjects: readonly FeaturedProject[] = [
     cover: {
       kind: "screenshot",
       image: siteCover,
-      alt: "The home page of this site in dark theme: the headline, a short introduction and three buttons.",
+      alt: "The home page of this site in dark theme, with the headline and a short introduction.",
     },
   },
   {
