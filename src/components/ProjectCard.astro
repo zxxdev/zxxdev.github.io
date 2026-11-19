@@ -5,6 +5,9 @@
  * - The whole card can be clicked: the title link is stretched over it with
  *   ::after, and the focus ring is drawn on the card when the link has
  *   keyboard focus (:has(:focus-visible)), not after a mouse click.
+ * - A screenshot cover sits on the project's tone like a window peeking in from
+ *   the bottom right: the status tag gets the space above it, and the card
+ *   keeps its colour.
  * - The cover's name and caption are HTML at a fixed size, so they stay
  *   readable at any card width. The status tag, the name and the title all
  *   start 20 px from the edge.
@@ -37,8 +40,8 @@ const coverName = project.repo.split("/")[1] ?? project.title;
         src={project.cover.image}
         alt={project.cover.alt}
         widths={[400, 640, 960, 1280]}
-        sizes="(min-width: 1024px) 496px, (min-width: 640px) 50vw, 100vw"
-        class="size-full object-cover object-left-top"
+        sizes="(min-width: 1024px) 476px, (min-width: 640px) 48vw, 95vw"
+        class="absolute top-14 right-0 bottom-0 left-5 h-[calc(100%-3.5rem)] w-[calc(100%-1.25rem)] rounded-tl-lg border-t border-l border-tone-line/40 object-cover object-left-top"
       />
     ) : (
       <>
