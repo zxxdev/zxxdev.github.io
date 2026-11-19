@@ -151,29 +151,42 @@ const sections = [
     }
   };
 
-  if (targets.length > 0 && "IntersectionObserver" in window) {
-    const first = targets[0];
-    if (first) mark(first.id);
-    // A section counts as "being read" when it crosses a line a third of the way down the screen.
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) mark(entry.target.id);
-        }
-      },
-      { rootMargin: "-33% 0px -66% 0px" },
-    );
-    for (const target of targets) observer.observe(target);
-
-    // The last section may be too short to reach that line: at the bottom of the page, mark it.
+  /**
+   * The current section is the last one whose top has passed a line a third of
+   * the way down the screen. At the very bottom of the page it is the last
+   * section, which may be too short to ever reach that line.
+   */
+  const update = (): void => {
     const last = targets[targets.length - 1];
+    const atBottom =
+      window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+    if (atBottom && last) {
+      mark(last.id);
+      return;
+    }
+    const line = window.innerHeight / 3;
+    let current = targets[0];
+    for (const target of targets) {
+      if (target.getBoundingClientRect().top <= line) current = target;
+    }
+    if (current) mark(current.id);
+  };
+
+  if (targets.length > 0) {
+    let queued = false;
     window.addEventListener(
       "scroll",
       () => {
-        const atBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 2;
-        if (atBottom && last) mark(last.id);
+        if (queued) return;
+        queued = true;
+        // At most one update per frame.
+        requestAnimationFrame(() => {
+          queued = false;
+          update();
+        });
       },
       { passive: true },
     );
+    update();
   }
 </script>
