@@ -44,7 +44,42 @@ export const path: readonly PathStage[] = [
 export type Tone = "violet" | "cobalt" | "teal" | "amber";
 
 /** Line icons drawn by the Icon component. */
-export type IconName = "check" | "document" | "person";
+export type IconName = "check" | "document" | "person" | "badge";
+
+/**
+ * Microsoft exams passed. The certifications they led to have expired, so the
+ * site says "exams passed" and never "certified". The names are the official
+ * exam titles; a retired exam is marked as such.
+ */
+export interface Exam {
+  readonly code: string;
+  /** Short plain-language area, used as the card title. */
+  readonly area: string;
+  /** The official exam title. */
+  readonly name: string;
+  readonly retired: boolean;
+}
+
+export const azureExams: readonly Exam[] = [
+  {
+    code: "AZ-104",
+    area: "Azure administration",
+    name: "Microsoft Azure Administrator",
+    retired: false,
+  },
+  {
+    code: "AZ-700",
+    area: "Azure networking",
+    name: "Designing and Implementing Microsoft Azure Networking Solutions",
+    retired: false,
+  },
+  {
+    code: "AZ-304",
+    area: "Azure architecture design",
+    name: "Microsoft Azure Architect Design",
+    retired: true,
+  },
+];
 
 /** One of the "How I work" points, shared with the GitHub profile. */
 export interface Principle {

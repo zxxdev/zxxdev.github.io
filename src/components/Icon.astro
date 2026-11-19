@@ -29,6 +29,12 @@ const { name, size = 18 } = Astro.props;
       <path d="M14 3v5h5M10 13h6M10 17h6" />
     </>
   )}
+  {name === "badge" && (
+    <>
+      <circle cx="12" cy="9" r="5" />
+      <path d="m9 13.5-1.5 7.5L12 19l4.5 2-1.5-7.5" />
+    </>
+  )}
   {name === "person" && (
     <>
       <circle cx="12" cy="8" r="3.5" />
