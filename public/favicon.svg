@@ -5,14 +5,17 @@
     theme, like any logo. The radius is 22% of the side, as in the header.
 
     The letters are drawn as shapes, not text, so they look the same on every
-    system and stay readable at 16 px: 16 units tall (8 px in a tab), the bars of
-    the z 4 units thick (2 whole pixels at 16 px), 3 units between the letters.
-    Each leg of the x is its own path so the crossing always stays filled.
+    system and stay readable at 16 px, where 2 units are 1 pixel:
+    - 14 units tall (7 px in a tab), from y 8 to 22. One unit above the exact
+      centre on purpose: centred, every edge would fall on half a pixel and blur.
+    - The bars of the z are 4 units thick (2 whole pixels at 16 px), the
+      diagonals about 2.9 units; 3 units between the letters.
+    - Each leg of the x is its own path, so the crossing always stays filled.
   -->
   <rect width="32" height="32" rx="7" fill="#6d28d9" />
   <g fill="#ffffff">
-    <path d="M3.5 8H14.5V12L7.5 20H14.5V24H3.5V20L10.5 12H3.5Z" />
-    <path d="M17.5 8H21L28.5 24H25Z" />
-    <path d="M25 8H28.5L21 24H17.5Z" />
+    <path d="M4.5 8H14.5V12L8.5 18H14.5V22H4.5V18L10.5 12H4.5Z" />
+    <path d="M17.5 8H20.75L27.5 22H24.25Z" />
+    <path d="M24.25 8H27.5L20.75 22H17.5Z" />
   </g>
 </svg>
