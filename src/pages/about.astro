@@ -11,7 +11,7 @@ import { path } from "../data/profile";
   <article class="max-w-[42rem] pt-10 sm:pt-18">
     <h1 class="text-h2 font-medium tracking-[-0.02em]">About</h1>
 
-    <div class="mt-6 space-y-5 text-[1.0625rem]">
+    <div class="mt-6 space-y-5 text-lead">
       <p>
         I'm a computer engineer. I've spent years on the operations side: running systems,
         supporting users and building websites.
@@ -52,11 +52,11 @@ import { path } from "../data/profile";
           <li class="relative border-l border-border pb-7 pl-6 last:pb-0">
             <span
               aria-hidden="true"
-              class="absolute top-1.5 -left-[5px] size-[9px] rounded-full bg-tone-line"
+              class="absolute top-1 -left-1 size-[9px] rounded-full bg-tone-line"
             />
             <p class="font-mono text-xs text-muted">{String(index + 1).padStart(2, "0")}</p>
             <h3 class="font-semibold">{stage.title}</h3>
-            <p class="mt-1 text-[0.9375rem] text-muted">{stage.summary}</p>
+            <p class="mt-1 text-sm text-muted">{stage.summary}</p>
           </li>
         ))}
       </ol>
