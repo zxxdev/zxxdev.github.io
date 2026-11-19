@@ -23,6 +23,11 @@ const sections = [
       Section links. Sticky under the site header (56 px, 60 px from sm). Without
       JavaScript they are plain anchor links; the script below only marks the
       section being read with aria-current.
+
+      The sections use scroll-mt-32 (128 px) so a link does not hide the title:
+      header 56-60 px + this bar about 53 px (one row of text-sm links, py-2.5)
+      = about 113 px, plus some air. If the bar grows to two rows, raise it, and
+      ANCHOR_OFFSET in the script with it.
     -->
     <nav
       aria-label="On this page"
@@ -148,20 +153,26 @@ const sections = [
     }
   };
 
+  /** Where a section lands after its link is clicked: the scroll-mt-32 offset, 128 px. */
+  const ANCHOR_OFFSET = 128;
+
   /**
    * The current section is the last one whose top has passed a line a third of
-   * the way down the screen. At the very bottom of the page it is the last
-   * section, which may be too short to ever reach that line.
+   * the way down the screen, and never above the anchor offset, so the section
+   * a link just jumped to is the one marked even on a short screen. At the very
+   * bottom of a page that scrolls, it is the last section, which may be too
+   * short to ever reach that line.
    */
   const update = (): void => {
     const last = targets[targets.length - 1];
+    const scrolled = window.scrollY > 0;
     const atBottom =
       window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
-    if (atBottom && last) {
+    if (scrolled && atBottom && last) {
       mark(last.id);
       return;
     }
-    const line = window.innerHeight / 3;
+    const line = Math.max(window.innerHeight / 3, ANCHOR_OFFSET + 1);
     let current = targets[0];
     for (const target of targets) {
       if (target.getBoundingClientRect().top <= line) current = target;
@@ -171,19 +182,17 @@ const sections = [
 
   if (targets.length > 0) {
     let queued = false;
-    window.addEventListener(
-      "scroll",
-      () => {
-        if (queued) return;
-        queued = true;
-        // At most one update per frame.
-        requestAnimationFrame(() => {
-          queued = false;
-          update();
-        });
-      },
-      { passive: true },
-    );
+    // At most one update per frame, on scroll and when the window changes size.
+    const schedule = (): void => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        update();
+      });
+    };
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
     update();
   }
 </script>
