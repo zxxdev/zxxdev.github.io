@@ -43,8 +43,11 @@ const shots: readonly Shot[] = [
     theme: "dark",
     scale: 2,
     clip: { x: 128, y: 66, width: 765, height: 478 },
-    // The headline and the row of buttons below it (top and bottom of the introduction).
-    keep: ["main > section:first-child h1", "main > section:first-child > div:last-child"],
+    // The headline and the last button (top and bottom right of the introduction).
+    keep: [
+      "main > section:first-child h1",
+      "main > section:first-child > div:last-child > a:last-child",
+    ],
     out: "src/assets/projects/zxxdev-github-io.png",
   },
   // README: the home page in both themes, and on a phone.
