@@ -1,12 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <style>
-    rect { fill: #1d4ed8; }
-    text { fill: #ffffff; }
-    @media (prefers-color-scheme: dark) {
-      rect { fill: #7aa5ff; }
-      text { fill: #0e131b; }
-    }
-  </style>
-  <rect width="32" height="32" rx="6" />
-  <text x="16" y="21.5" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="13" font-weight="700" text-anchor="middle">zx</text>
+  <!--
+    The site's avatar (src/components/Avatar.astro): a flat violet rounded square
+    with "zx" in white (contrast 7.10). Fixed colours, the same in light and dark
+    theme, like any logo. The radius is 22% of the side, as in the header.
+  -->
+  <rect width="32" height="32" rx="7" fill="#6d28d9" />
+  <text
+    x="16"
+    y="21"
+    fill="#ffffff"
+    font-family="ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace"
+    font-size="13"
+    font-weight="600"
+    text-anchor="middle"
+  >zx</text>
 </svg>
