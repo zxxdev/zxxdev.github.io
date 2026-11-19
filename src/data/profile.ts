@@ -5,6 +5,9 @@
  * Privacy rule for everything in this file: no employers, city, dates or real
  * name. The story is told in a generic way on purpose.
  */
+import type { ImageMetadata } from "astro";
+// Made by scripts/screenshots.ts, never by hand: rerun it when the design changes.
+import siteCover from "../assets/projects/zxxdev-github-io.png";
 
 /** One step of the path on the About page. The order here is the order lived. */
 export interface PathStage {
@@ -49,7 +52,8 @@ export type IconName = "check" | "document" | "person" | "badge";
 /**
  * Microsoft exams passed. The certifications they led to have expired, so the
  * site says "exams passed" and never "certified". The names are the official
- * exam titles; a retired exam is marked as such.
+ * exam titles; a retired exam is marked as such. The order is the order they
+ * were taken.
  */
 export interface Exam {
   readonly code: string;
@@ -62,15 +66,15 @@ export interface Exam {
 
 export const azureExams: readonly Exam[] = [
   {
-    code: "AZ-104",
-    area: "Azure administration",
-    name: "Microsoft Azure Administrator",
-    retired: false,
-  },
-  {
     code: "AZ-700",
     area: "Azure networking",
     name: "Designing and Implementing Microsoft Azure Networking Solutions",
+    retired: false,
+  },
+  {
+    code: "AZ-104",
+    area: "Azure administration",
+    name: "Microsoft Azure Administrator",
     retired: false,
   },
   {
@@ -152,6 +156,15 @@ export function statusLabel(status: ProjectStatus): string {
 /** The drawing on a generated cover, until the project has a screenshot. */
 export type CoverArt = "browser" | "arrow";
 
+/**
+ * A card's cover: a real screenshot when the project has one, or a cover
+ * generated from the project's tone until then. A screenshot needs its
+ * alternative text.
+ */
+export type ProjectCoverData =
+  | { readonly kind: "generated"; readonly caption: string; readonly art: CoverArt }
+  | { readonly kind: "screenshot"; readonly image: ImageMetadata; readonly alt: string };
+
 /** Projects shown on the home page. Until WEB-04 brings project pages, they live here. */
 export interface FeaturedProject {
   readonly title: string;
@@ -163,7 +176,7 @@ export interface FeaturedProject {
   readonly stack: readonly string[];
   readonly tone: Tone;
   readonly status: ProjectStatus;
-  readonly cover: { readonly caption: string; readonly art: CoverArt };
+  readonly cover: ProjectCoverData;
 }
 
 export const featuredProjects: readonly FeaturedProject[] = [
@@ -176,7 +189,11 @@ export const featuredProjects: readonly FeaturedProject[] = [
     stack: ["Astro", "TypeScript", "Tailwind CSS", "GitHub Actions"],
     tone: "violet",
     status: { kind: "live" },
-    cover: { caption: "astro · static · github pages", art: "browser" },
+    cover: {
+      kind: "screenshot",
+      image: siteCover,
+      alt: "The home page of this site in dark theme, with the headline and a short introduction.",
+    },
   },
   {
     title: "TrailMate",
@@ -188,6 +205,7 @@ export const featuredProjects: readonly FeaturedProject[] = [
     tone: "amber",
     // As declared in the addon's TrailMate.toc ("## Version: 0.1.0-alpha").
     status: { kind: "early", version: "0.1.0-alpha" },
-    cover: { caption: "wow forever · leveling coach", art: "arrow" },
+    // Generated until there are in-game screenshots without character or realm names.
+    cover: { kind: "generated", caption: "wow forever · leveling coach", art: "arrow" },
   },
 ];
