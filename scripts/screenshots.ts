@@ -23,19 +23,24 @@ interface Shot {
   readonly theme: "light" | "dark";
   /** 2 for a sharp image that Astro scales down; 1 for files shown as they are. */
   readonly scale: 1 | 2;
+  /** Part of the page to keep, in CSS pixels. Without it, the whole viewport. */
+  readonly clip?: { x: number; y: number; width: number; height: number };
   readonly out: string;
 }
 
 const base = process.env["SITE_URL"] ?? "http://127.0.0.1:4321";
 
 const shots: readonly Shot[] = [
-  // Cover of the site's own project card: the first screen in dark theme, 16:10.
+  // Cover of the site's own project card, in dark theme and 16:10. Only the
+  // introduction (below the header, above "Projects"): with the project cards in
+  // it, the cover would show the card inside itself.
   {
     path: "/",
     width: 1280,
     height: 800,
     theme: "dark",
     scale: 2,
+    clip: { x: 128, y: 66, width: 765, height: 478 },
     out: "src/assets/projects/zxxdev-github-io.png",
   },
   // README: the home page in both themes, and on a phone.
@@ -66,7 +71,7 @@ try {
       await document.fonts.ready;
     });
     await mkdir(dirname(shot.out), { recursive: true });
-    await page.screenshot({ path: shot.out });
+    await page.screenshot(shot.clip ? { path: shot.out, clip: shot.clip } : { path: shot.out });
     await page.close();
     console.log(`${shot.out}  ${String(shot.width)}x${String(shot.height)} ${shot.theme}`);
   }
