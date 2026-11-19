@@ -13,6 +13,7 @@
  * - On hover only the border changes, to the project's tone. No movement and
  *   no zoom: they make the page look soft.
  */
+import { Image } from "astro:assets";
 import { statusLabel, type FeaturedProject } from "../data/profile";
 import ProjectCover from "./ProjectCover.astro";
 import TechPill from "./TechPill.astro";
@@ -30,15 +31,29 @@ const coverName = project.repo.split("/")[1] ?? project.title;
   data-tone={project.tone}
   class="relative overflow-hidden rounded-xl border border-border transition-colors hover:border-tone-line has-focus-visible:outline-2 has-focus-visible:outline-offset-3 has-focus-visible:outline-violet"
 >
-  <div class="relative aspect-[16/10] border-b border-border">
-    <ProjectCover id={id} art={project.cover.art} />
-    <div
-      aria-hidden="true"
-      class="absolute inset-y-0 left-5 flex max-w-[55%] flex-col justify-center"
-    >
-      <span class="text-h3 font-medium text-text">{coverName}</span>
-      <span class="mt-1 font-mono text-xs text-tone-text">{project.cover.caption}</span>
-    </div>
+  <div class="relative aspect-[16/10] border-b border-border bg-tone-bg">
+    {
+      project.cover.kind === "screenshot" ? (
+        <Image
+          src={project.cover.image}
+          alt={project.cover.alt}
+          widths={[400, 640, 960, 1280]}
+          sizes="(min-width: 1024px) 496px, (min-width: 640px) 50vw, 100vw"
+          class="size-full object-cover object-left-top"
+        />
+      ) : (
+        <>
+          <ProjectCover id={id} art={project.cover.art} />
+          <div
+            aria-hidden="true"
+            class="absolute inset-y-0 left-5 flex max-w-[55%] flex-col justify-center"
+          >
+            <span class="text-h3 font-medium text-text">{coverName}</span>
+            <span class="mt-1 font-mono text-xs text-tone-text">{project.cover.caption}</span>
+          </div>
+        </>
+      )
+    }
     <span class="absolute top-5 left-5 inline-flex h-6 items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 font-mono text-xs text-text">
       <!-- Live: a filled teal dot. Early: an empty ring, so the shape tells them apart too. -->
       <span
