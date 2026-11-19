@@ -79,15 +79,15 @@ More detail, including how a page is put together: [docs/architecture.md](docs/a
 
 ## Technical decisions
 
-| Decision                                | Why                                                                                       | Record                                                   |
-| --------------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| Astro with static output                | A content site needs HTML, not a running server: faster, cheaper and with less to secure. | [ADR 0001](docs/adr/0001-use-astro-for-a-static-site.md) |
-| Design tokens and themes                | Colours are named and defined once; pages use names, so dark mode needs no extra classes. | [ADR 0002](docs/adr/0002-design-tokens-and-theme.md)     |
-| Self-hosted fonts                       | No request to a font server: the visitor's IP stays here and nothing else must be online. | [ADR 0002](docs/adr/0002-design-tokens-and-theme.md)     |
+| Decision                                | Why                                                                                       | Record                                                        |
+| --------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Astro with static output                | A content site needs HTML, not a running server: faster, cheaper and with less to secure. | [ADR 0001](docs/adr/0001-use-astro-for-a-static-site.md)      |
+| Design tokens and themes                | Colours are named and defined once; pages use names, so dark mode needs no extra classes. | [ADR 0002](docs/adr/0002-design-tokens-and-theme.md)          |
+| Self-hosted fonts                       | No request to a font server: the visitor's IP stays here and nothing else must be online. | [ADR 0002](docs/adr/0002-design-tokens-and-theme.md)          |
 | Sharp look, one colour per project kind | Nothing blurred, and colour that means something instead of decoration.                   | [ADR 0003](docs/adr/0003-sharp-redesign-and-project-tones.md) |
-| Strict TypeScript                       | Mistakes such as a possibly missing value are caught when building, not by a visitor.     | —                                                        |
-| Actions pinned by commit SHA            | A tag can be moved to different code; a commit SHA cannot.                                | —                                                        |
-| 7-day release cooldown for dependencies | A hijacked version is usually caught and removed before a week has passed.                | [Dependency security](#dependency-security)              |
+| Strict TypeScript                       | Mistakes such as a possibly missing value are caught when building, not by a visitor.     | —                                                             |
+| Actions pinned by commit SHA            | A tag can be moved to different code; a commit SHA cannot.                                | —                                                             |
+| 7-day release cooldown for dependencies | A hijacked version is usually caught and removed before a week has passed.                | [Dependency security](#dependency-security)                   |
 
 All records: [docs/adr](docs/adr/README.md).
 
