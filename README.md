@@ -36,15 +36,17 @@ pull request, automated checks and an automatic deployment.
 
 Today:
 
-- The visual base: colour tokens, type scale and self-hosted IBM Plex fonts.
+- A sharp visual design: near-black and neutral greys, cards with a hairline border and no blur,
+  self-hosted Geist fonts, and one colour per kind of project from a closed list.
 - Light and dark themes. The site follows the system setting until the visitor picks one with the
   switch; the choice is remembered and applied before the page is drawn, so there is no flash.
 - A header with the main navigation, which folds into a menu button on small screens, a skip link
   for keyboard users, a footer and a "page not found" page.
-- A home page with the headline, featured projects, how I work and the technologies used in the
-  repos, and an About page with the story and the path so far. Their content lives in typed data
-  files (`src/data/profile.ts`), not in the markup.
-- A placeholder Projects page, which says what is coming.
+- A home page with the headline, project cards, how I work and the technologies used in the repos,
+  and an About page with the story and the path so far. Their content lives in typed data files
+  (`src/data/profile.ts`), not in the markup.
+- Project cards with a generated cover in the project's colour and a status tag taken from the
+  project's own version. The Projects page lists them too.
 - Automatic checks on every pull request: lint, formatting, type checking, a dependency audit, a
   security scan and a full build.
 - Automatic publishing to GitHub Pages on every merge to `main`.
@@ -82,6 +84,7 @@ More detail, including how a page is put together: [docs/architecture.md](docs/a
 | Astro with static output                | A content site needs HTML, not a running server: faster, cheaper and with less to secure. | [ADR 0001](docs/adr/0001-use-astro-for-a-static-site.md) |
 | Design tokens and themes                | Colours are named and defined once; pages use names, so dark mode needs no extra classes. | [ADR 0002](docs/adr/0002-design-tokens-and-theme.md)     |
 | Self-hosted fonts                       | No request to a font server: the visitor's IP stays here and nothing else must be online. | [ADR 0002](docs/adr/0002-design-tokens-and-theme.md)     |
+| Sharp look, one colour per project kind | Nothing blurred, and colour that means something instead of decoration.                   | [ADR 0003](docs/adr/0003-sharp-redesign-and-project-tones.md) |
 | Strict TypeScript                       | Mistakes such as a possibly missing value are caught when building, not by a visitor.     | —                                                        |
 | Actions pinned by commit SHA            | A tag can be moved to different code; a commit SHA cannot.                                | —                                                        |
 | 7-day release cooldown for dependencies | A hijacked version is usually caught and removed before a week has passed.                | [Dependency security](#dependency-security)              |
@@ -131,7 +134,7 @@ Requirements: Node.js 26 and pnpm 12 (the exact version is pinned in `package.js
 │   └── architecture.md     # how the site is built and published
 ├── public/                 # files copied as they are (favicon)
 ├── src/
-│   ├── components/         # header, footer, theme switch, technology label
+│   ├── components/         # header, footer, theme switch, project card and cover, avatar
 │   ├── data/               # navigation, and the content of the home and about pages
 │   ├── layouts/            # the HTML shell shared by every page
 │   ├── pages/              # one file per page; the path is the URL
@@ -189,7 +192,8 @@ pages. Planned, in order:
 
 Known limitations today:
 
-- The site is in English only, and the projects page is still a placeholder.
+- The site is in English only. Projects have cards but no page of their own yet, and the covers are
+  generated until real screenshots are added.
 - The technologies list on the home page is written in a data file; it will be built from the
   project pages once they exist.
 - Contrast was measured when the colours were chosen, but it is not yet checked automatically; that

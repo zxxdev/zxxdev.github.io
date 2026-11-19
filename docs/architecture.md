@@ -32,7 +32,7 @@ flowchart LR
 flowchart TB
     subgraph data[src/data]
         N[navigation.ts<br/>page paths, menu and links]
-        P[profile.ts<br/>path, principles,<br/>technologies, featured]
+        P[profile.ts<br/>path, principles, tones,<br/>technologies, projects]
     end
     subgraph pages[src/pages]
         I[index.astro]
@@ -45,16 +45,21 @@ flowchart TB
         H[Header.astro]
         F[Footer.astro]
         T[ThemeToggle.astro]
+        A[Avatar.astro]
+        PC[ProjectCard.astro]
+        CV[ProjectCover.astro<br/>generated cover]
         TP[TechPill.astro]
     end
-    S[src/styles/global.css<br/>design tokens]
+    S[src/styles/global.css<br/>design tokens and project tones]
 
     P --> I
     P --> AB
+    P --> PR
     N --> H
     N --> F
     N --> I
     N --> AB
+    N --> NF
     I --> L
     AB --> L
     PR --> L
@@ -62,6 +67,12 @@ flowchart TB
     L --> H
     L --> F
     H --> T
+    H --> A
+    I --> A
+    I --> PC
+    PR --> PC
+    PC --> CV
+    PC --> TP
     I --> TP
     S --> L
     L --> O[dist/*.html]
@@ -82,6 +93,13 @@ Colours, type sizes and corners are design tokens defined once in `src/styles/gl
 its light and dark value side by side (`light-dark()`). Tailwind generates utility classes from them,
 so pages use names such as `text-muted` and never a colour code. Why it is done this way:
 [ADR 0002](adr/0002-design-tokens-and-theme.md).
+
+Each project has a **tone** from a closed list (`violet`, `cobalt`, `teal`, `amber`), typed in
+`src/data/profile.ts`. A card sets `data-tone`, and `global.css` turns that into four colours
+(`--tone-bg`, `--tone-grid`, `--tone-line`, `--tone-text`) that only the cover and the icon tiles
+use. Until a project has a screenshot, `ProjectCover.astro` draws its cover as an inline SVG from
+the same data, so there are no image files to keep in sync. Why the look is flat and sharp:
+[ADR 0003](adr/0003-sharp-redesign-and-project-tones.md).
 
 ## What changes later
 
