@@ -57,7 +57,11 @@ Today:
   per project with what it solves, how it works, the decisions behind it and its stack.
 - Project cards with a real screenshot as the cover when the project has one, or a cover generated
   in the project's colour until then, and a status tag built from the version the project declares
-  (for now copied into the project file; reading it from GitHub comes with the live data).
+  (copied into the project file from the project's own version file).
+- Data from GitHub for each project, asked for while the site is built: the date of the last change
+  on every card, and the latest release, stars and languages on each project page. If GitHub does
+  not answer, the build uses a saved copy (`src/data/github-snapshot.json`), still publishes, and
+  the page says which one it shows and from when. The site rebuilds every week to keep it fresh.
 - An About page with links to its sections, which mark the one being read, and the Azure exams
   passed.
 - Automatic checks on every pull request: lint, formatting, type checking, unit tests, a dependency
@@ -68,7 +72,8 @@ Today:
 
 <sub>The home page on a 390 px wide phone.</sub>
 
-Coming next (see [roadmap](#limitations-and-roadmap)): live data from GitHub, Spanish and English versions, end-to-end and accessibility tests, and search.
+Coming next (see [roadmap](#limitations-and-roadmap)): Spanish and English versions, end-to-end and
+accessibility tests, and search.
 
 ## How it works
 
@@ -101,6 +106,7 @@ More detail, including how a page is put together: [docs/architecture.md](docs/a
 | Design tokens and themes                | Colours are named and defined once; pages use names, so dark mode needs no extra classes. | [ADR 0002](docs/adr/0002-design-tokens-and-theme.md)          |
 | Self-hosted fonts                       | No request to a font server: the visitor's IP stays here and nothing else must be online. | [ADR 0002](docs/adr/0002-design-tokens-and-theme.md)          |
 | Sharp look, one colour per project kind | Nothing blurred, and colour that means something instead of decoration.                   | [ADR 0003](docs/adr/0003-sharp-redesign-and-project-tones.md) |
+| GitHub data at build time, with a fallback | No API limit or token in the visitor's browser, and a GitHub outage never stops a deployment. | [ADR 0005](docs/adr/0005-github-data-at-build-time.md) |
 | Projects as Markdown with a schema      | Adding a project is adding a file, and a broken file stops the build instead of the page. | [ADR 0004](docs/adr/0004-projects-as-a-content-collection.md) |
 | Strict TypeScript                       | Mistakes such as a possibly missing value are caught when building, not by a visitor.     | —                                                             |
 | Actions pinned by commit SHA            | A tag can be moved to different code; a commit SHA cannot.                                | —                                                             |
@@ -115,7 +121,7 @@ All records: [docs/adr](docs/adr/README.md).
 | Lint                  | ESLint with the strict TypeScript and Astro rules                     | Every pull request                      |
 | Formatting            | Prettier, with the Astro and Tailwind plugins                         | Every pull request                      |
 | Types                 | `astro check` (TypeScript in strict mode)                             | Every pull request                      |
-| Unit tests            | Vitest: the project schema, the list helpers and the top-level routes | Every pull request                      |
+| Unit tests            | Vitest: the project schema, the list helpers, the top-level routes and the GitHub data, with the API simulated | Every pull request                      |
 | Project data          | The content schema, while building                                    | Every pull request and every deployment |
 | Known vulnerabilities | `pnpm audit`, fails on high or critical                               | Every pull request and weekly           |
 | Code scanning         | CodeQL for TypeScript and for the workflows                           | Every pull request and weekly           |
@@ -140,6 +146,7 @@ Requirements: Node.js 26 and pnpm 12 (the exact version is pinned in `package.js
 | `pnpm build`                        | Builds the site into `dist/`.                      |
 | `pnpm preview`                      | Serves the built site locally.                     |
 | `pnpm screenshots`                  | Remakes the screenshots from the running preview.  |
+| `pnpm github:snapshot`              | Refreshes the saved copy of GitHub data.           |
 
 <details>
 <summary>Folder structure</summary>
@@ -156,6 +163,7 @@ Requirements: Node.js 26 and pnpm 12 (the exact version is pinned in `package.js
 │   └── architecture.md     # how the site is built and published
 ├── public/                 # files copied as they are (favicon)
 ├── scripts/
+│   ├── github-snapshot.ts  # refreshes the saved copy of GitHub data
 │   └── screenshots.ts      # Playwright: takes the screenshots from the running preview
 ├── src/
 │   ├── assets/projects/    # project cover screenshots, optimised by Astro when building
@@ -164,7 +172,7 @@ Requirements: Node.js 26 and pnpm 12 (the exact version is pinned in `package.js
 │   ├── content.config.ts   # the projects collection and its schema
 │   ├── data/               # navigation, technologies, tones, home and about page content
 │   ├── layouts/            # the HTML shell shared by every page
-│   ├── lib/                # the project schema and list helpers, kept apart for unit tests
+│   ├── lib/                # project schema, list helpers and GitHub data, kept apart for unit tests
 │   ├── pages/              # one file per page; the path is the URL ([id] makes one per project)
 │   ├── scripts/            # browser code (theme handling)
 │   └── styles/             # design tokens, fonts and Tailwind
@@ -210,13 +218,13 @@ days. When a security fix cannot wait, the exception is added explicitly
 
 ## Limitations and roadmap
 
-Done so far: the pipeline (checks and deployment), the visual design, the home and about pages, and
-the projects as Markdown files with their own pages. Planned, in order:
+Done so far: the pipeline (checks and deployment), the visual design, the home and about pages, the
+projects as Markdown files with their own pages, and GitHub data with a saved fallback. Planned, in
+order:
 
-1. Data from the GitHub API at build time, with a cache and a fallback if the API fails.
-2. Spanish and English versions.
-3. End-to-end tests with Playwright, accessibility checks with axe and Lighthouse budgets.
-4. Search with Pagefind, sitemap and social preview images.
+1. Spanish and English versions.
+2. End-to-end tests with Playwright, accessibility checks with axe and Lighthouse budgets.
+3. Search with Pagefind, sitemap and social preview images.
 
 Known limitations today:
 
@@ -224,9 +232,13 @@ Known limitations today:
   screenshots without character or realm names.
 - Screenshots are remade by running the script, not on every build: after a design change, they
   are out of date until someone runs `pnpm screenshots`.
-- The test that keeps top-level routes clear of repository names only knows the repositories that
-  have a project file (and the profile repository). It will use the account's full list once the
-  site reads it from the GitHub API.
+- The saved copy of GitHub data is refreshed by hand (`pnpm github:snapshot`, then a pull request).
+  When GitHub fails, the site shows that copy with its date, which can be older than a week.
+- The test that keeps top-level routes clear of repository names reads the account's repository
+  list from the saved copy, so a repository created after the last refresh is only covered once it
+  has a project file or the copy is refreshed.
+- The version in each status tag is copied from the project into its file by hand; none of the
+  repositories has a GitHub release yet to read it from.
 - The project pages have no architecture diagram yet; each one links to its repository's
   documentation instead.
 - Contrast was measured when the colours were chosen, but it is not yet checked automatically; that
