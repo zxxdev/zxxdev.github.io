@@ -141,6 +141,8 @@
     font-family: var(--font-sans);
     -webkit-text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
+    /* The sticky header is 60 px: keep focused elements and anchors out from under it. */
+    scroll-padding-top: 5rem;
   }
 
   body {
@@ -197,10 +199,24 @@
     letter-spacing: -0.01em;
   }
 
+  .project-text h3 {
+    margin-top: 2rem;
+    font-size: var(--text-h4);
+    line-height: var(--text-h4--line-height);
+    font-weight: 500;
+  }
+
   .project-text p,
   .project-text ul,
-  .project-text ol {
-    margin-top: 0.875rem;
+  .project-text ol,
+  .project-text pre {
+    margin-top: 1rem;
+  }
+
+  /* A heading sits closer to its own text than paragraphs sit to each other. */
+  .project-text h2 + *,
+  .project-text h3 + * {
+    margin-top: 0.75rem;
   }
 
   .project-text ul,
@@ -228,7 +244,15 @@
     font-weight: 600;
   }
 
-  .project-text code {
+  .project-text pre {
+    overflow-x: auto;
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    padding: 1rem;
+    font-size: 0.875rem;
+  }
+
+  .project-text :not(pre) > code {
     border-radius: 4px;
     background-color: var(--c-surface-2);
     padding: 0.1em 0.35em;

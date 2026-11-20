@@ -52,8 +52,9 @@ describe("technologies built from the projects", () => {
     ]);
   });
 
-  it("offers in the filter only the technologies of some stack", () => {
-    expect(filterTechnologies(projects)).toEqual(["TypeScript", "Lua", "Astro", "busted"]);
+  it("offers in the filter the languages and frameworks of some stack, not shared tooling", () => {
+    // busted is in a stack, but test runners are not filter groups; Vitest is only tooling.
+    expect(filterTechnologies(projects)).toEqual(["TypeScript", "Lua", "Astro"]);
   });
 });
 

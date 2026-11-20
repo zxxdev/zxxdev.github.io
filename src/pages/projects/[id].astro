@@ -33,7 +33,7 @@ const repositoryUrl = `https://github.com/${data.repo}`;
   <article data-tone={data.tone} class="pt-8 sm:pt-12">
     <a
       href={paths.projects}
-      class="text-sm text-muted no-underline visited:text-muted hover:text-text"
+      class="inline-flex h-8 items-center gap-1 text-sm text-muted no-underline visited:text-muted hover:text-text"
     >
       <span aria-hidden="true">←</span> All projects
     </a>
@@ -67,16 +67,20 @@ const repositoryUrl = `https://github.com/${data.repo}`;
           {id}
           project={data}
           sizes="(min-width: 1024px) 476px, (min-width: 768px) 46vw, 95vw"
+          loading="eager"
+          tagSpace={false}
         />
       </div>
     </div>
 
     <div class="mt-12 grid gap-10 border-t border-border pt-10 sm:mt-16 lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-16">
-      <div class="project-text max-w-[42rem]">
+      <!-- 36rem keeps lines under about 78 characters. -->
+      <div class="project-text max-w-[36rem]">
         <Content />
       </div>
 
-      <aside aria-label="Project facts">
+      <!-- On wide screens the facts stay in view while the text scrolls (header 60 px + 36 px). -->
+      <aside aria-label="Project facts" class="lg:sticky lg:top-24 lg:self-start">
         <dl class="grid gap-6">
           <div>
             <dt class="text-sm font-medium">Stack</dt>

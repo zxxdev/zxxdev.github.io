@@ -53,8 +53,14 @@ export function technologiesInUse(projects: readonly UsesTechnologies[]): Techno
     .filter((group) => group.items.length > 0);
 }
 
-/** The filter's buttons: every technology in some project's stack, in catalog order. */
+/**
+ * The filter's buttons: the technologies in some project's stack that belong
+ * to a group marked `filter` (languages and frameworks, not shared tooling),
+ * in catalog order.
+ */
 export function filterTechnologies(projects: readonly UsesTechnologies[]): Technology[] {
   const used = new Set(projects.flatMap((project) => project.stack));
-  return technologyGroups.flatMap((group) => group.items.filter((item) => used.has(item)));
+  return technologyGroups
+    .filter((group) => group.filter)
+    .flatMap((group) => group.items.filter((item) => used.has(item)));
 }

@@ -3,8 +3,9 @@
  * What fills a project's 16:10 cover box, on the card and on the project's page.
  *
  * - A screenshot sits on the project's tone like a window peeking in from the
- *   bottom right. The space above it is left for the status tag, which the
- *   card places on top.
+ *   bottom right. On a card, the space above it is left for the status tag,
+ *   which the card places on top; on a project's page the tag is in the header,
+ *   so the window gets the same 32 px margin at the top and the left.
  * - Without a screenshot, a cover generated in the project's tone, with the
  *   repository name and a caption written as HTML at a fixed size, so they stay
  *   readable at any width. They start 20 px from the edge, like the tag.
@@ -21,9 +22,17 @@ interface Props {
   project: Project;
   /** The `sizes` attribute of the screenshot: how wide it is shown. */
   sizes: string;
+  /**
+   * "eager" when the cover is the main image of the page (a project's page),
+   * so the browser fetches it at once; "lazy" in lists, where it waits until
+   * the card is near the screen.
+   */
+  loading?: "eager" | "lazy";
+  /** Leave room above a screenshot for a status tag (true on cards). */
+  tagSpace?: boolean;
 }
 
-const { id, project, sizes } = Astro.props;
+const { id, project, sizes, loading = "lazy", tagSpace = true } = Astro.props;
 const coverName = project.repo.split("/")[1] ?? project.title;
 ---
 
@@ -33,7 +42,14 @@ const coverName = project.repo.split("/")[1] ?? project.title;
     alt={project.cover.alt}
     widths={[400, 640, 960, 1280]}
     {sizes}
-    class="absolute top-14 right-0 bottom-0 left-5 h-[calc(100%-3.5rem)] w-[calc(100%-1.25rem)] rounded-tl-lg border-t border-l border-tone-line/40 object-cover object-left-top"
+    {loading}
+    fetchpriority={loading === "eager" ? "high" : "auto"}
+    class:list={[
+      "absolute right-0 bottom-0 rounded-tl-lg border-t border-l border-tone-line/40 object-cover object-left-top",
+      tagSpace
+        ? "top-14 left-5 h-[calc(100%-3.5rem)] w-[calc(100%-1.25rem)]"
+        : "top-8 left-8 h-[calc(100%-2rem)] w-[calc(100%-2rem)]",
+    ]}
   />
 ) : (
   <>
