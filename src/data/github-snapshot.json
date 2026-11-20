@@ -1,0 +1,50 @@
+{
+  "fetchedAt": "2026-11-20T18:49:53.576Z",
+  "repositories": [
+    "TrailMate",
+    "zxxdev",
+    "zxxdev.github.io"
+  ],
+  "stats": {
+    "zxxdev/trailmate": {
+      "fullName": "zxxdev/TrailMate",
+      "pushedAt": "2026-11-18T21:18:02Z",
+      "stars": 0,
+      "languages": [
+        {
+          "name": "Lua",
+          "share": 0.9709515572334522
+        },
+        {
+          "name": "Go",
+          "share": 0.02904844276654779
+        }
+      ],
+      "latestRelease": null
+    },
+    "zxxdev/zxxdev.github.io": {
+      "fullName": "zxxdev/zxxdev.github.io",
+      "pushedAt": "2026-11-20T18:35:08Z",
+      "stars": 0,
+      "languages": [
+        {
+          "name": "Astro",
+          "share": 0.5902691887959258
+        },
+        {
+          "name": "TypeScript",
+          "share": 0.24683521280465623
+        },
+        {
+          "name": "CSS",
+          "share": 0.14872680974899963
+        },
+        {
+          "name": "Other",
+          "share": 0.014168788650418334
+        }
+      ],
+      "latestRelease": null
+    }
+  }
+}

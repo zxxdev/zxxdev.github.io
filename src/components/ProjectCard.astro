@@ -16,6 +16,8 @@
 import type { CollectionEntry } from "astro:content";
 import { projectPath } from "../data/navigation";
 import { technologySlug } from "../data/technologies";
+import { formatDate, isoDate } from "../lib/format";
+import { repositoryStats } from "../lib/github-data";
 import ProjectVisual from "./ProjectVisual.astro";
 import StatusTag from "./StatusTag.astro";
 import TechPill from "./TechPill.astro";
@@ -25,6 +27,8 @@ interface Props {
 }
 
 const { id, data } = Astro.props.project;
+// From GitHub when the site was built (or the saved copy): never typed by hand.
+const stats = await repositoryStats(data.repo);
 ---
 
 <li
@@ -49,7 +53,16 @@ const { id, data } = Astro.props.project;
         {data.title}
       </a>
     </h3>
-    <p class="mt-0.5 font-mono text-xs text-muted">{data.repo}</p>
+    <p class="mt-0.5 font-mono text-xs text-muted">
+      {data.repo}
+      {stats && (
+        <>
+          <span aria-hidden="true"> · </span>
+          <span class="sr-only">, </span>updated{" "}
+          <time datetime={isoDate(stats.pushedAt)}>{formatDate(stats.pushedAt)}</time>
+        </>
+      )}
+    </p>
     <p class="mt-2.5 text-sm leading-relaxed text-muted">{data.summary}</p>
     <ul aria-label="Stack" class="mt-4 flex flex-wrap gap-1.5">
       {data.stack.map((item) => (

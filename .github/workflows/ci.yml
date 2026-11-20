@@ -53,5 +53,10 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
+      # The build asks the GitHub API for each project's data. This run's own token
+      # (read-only here, see "permissions" above) raises the rate limit; if the API
+      # fails anyway, the build uses the saved copy and still passes.
       - name: Build
         run: pnpm build
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

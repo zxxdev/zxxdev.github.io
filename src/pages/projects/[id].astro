@@ -8,11 +8,15 @@
  */
 import type { GetStaticPaths } from "astro";
 import { getCollection, render, type CollectionEntry } from "astro:content";
+import GitHubFacts from "../../components/GitHubFacts.astro";
 import ProjectVisual from "../../components/ProjectVisual.astro";
 import StatusTag from "../../components/StatusTag.astro";
 import TechPill from "../../components/TechPill.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { paths } from "../../data/navigation";
+import { formatDate, isoDate } from "../../lib/format";
+import { getGitHubData } from "../../lib/github-data";
+import { statsKey } from "../../lib/github";
 
 export const getStaticPaths = (async () => {
   const projects = await getCollection("projects");
@@ -27,6 +31,8 @@ const { project } = Astro.props;
 const { id, data } = project;
 const { Content } = await render(project);
 const repositoryUrl = `https://github.com/${data.repo}`;
+const github = await getGitHubData();
+const stats = github.stats[statsKey(data.repo)];
 ---
 
 <BaseLayout title={`${data.title} · Projects · zxxdev`} description={data.summary}>
@@ -114,7 +120,25 @@ const repositoryUrl = `https://github.com/${data.repo}`;
               <a href={repositoryUrl}>{data.repo}</a>
             </dd>
           </div>
+          {stats && <GitHubFacts {stats} />}
         </dl>
+        {stats && (
+          <p class="mt-6 text-xs leading-relaxed text-muted">
+            {github.source === "live" ? (
+              <>
+                From the GitHub API on{" "}
+                <time datetime={isoDate(github.fetchedAt)}>{formatDate(github.fetchedAt)}</time>,
+                when this page was built.
+              </>
+            ) : (
+              <>
+                Saved copy from{" "}
+                <time datetime={isoDate(github.fetchedAt)}>{formatDate(github.fetchedAt)}</time>:
+                GitHub did not answer when this page was built.
+              </>
+            )}
+          </p>
+        )}
       </aside>
     </div>
   </article>
