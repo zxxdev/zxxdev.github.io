@@ -13,7 +13,7 @@
 import { existsSync, readdirSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import snapshot from "../src/data/github-snapshot.json";
-import { snapshotSchema } from "../src/lib/github";
+import { snapshotSchema, statsKey } from "../src/lib/github";
 import { projectFiles, projectRepositories } from "../src/lib/project-files";
 
 const pagesDir = new URL("../src/pages/", import.meta.url);
@@ -62,6 +62,13 @@ describe("top-level routes", () => {
   it("reads a repository from every project file", () => {
     expect(projectFiles().length).toBeGreaterThan(0);
     expect(projectRepositories()).toHaveLength(projectFiles().length);
+  });
+
+  it("has GitHub figures for every project in the saved copy", () => {
+    // Otherwise a new project would show no GitHub data whenever GitHub is down.
+    const saved = snapshotSchema.parse(snapshot);
+    const missing = projectRepositories().filter((fullName) => !(statsKey(fullName) in saved.stats));
+    expect(missing, "run pnpm github:snapshot and commit the result").toEqual([]);
   });
 
   it("knows the account's repositories from the saved GitHub data", () => {

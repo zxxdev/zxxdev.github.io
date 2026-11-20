@@ -32,9 +32,13 @@ const repositorySchema = z.object({
 const repositoryListSchema = z.array(repositorySchema);
 /** Language name → bytes of code in it, as GitHub's linguist counts them. */
 const languagesSchema = z.record(z.string(), z.number().int().nonnegative());
+/** A link the site will print: only ever to GitHub itself, over HTTPS. */
+const githubUrl = z.url().refine((url) => url.startsWith("https://github.com/"), {
+  message: "Expected a https://github.com/ link",
+});
 const releaseSchema = z.object({
   tag_name: z.string().min(1),
-  html_url: z.url(),
+  html_url: githubUrl,
   published_at: z.iso.datetime().nullable(),
 });
 
@@ -193,19 +197,40 @@ function parse<T>(schema: z.ZodType<T>, value: unknown, path: string): T {
   return result.data;
 }
 
+/** Most repositories GitHub returns in one page of the list. */
+const PAGE_SIZE = 100;
+/** A ceiling, so a misbehaving API cannot keep the build asking forever. */
+const MAX_PAGES = 10;
+
+/**
+ * Every public repository of the account, page by page: a full page means
+ * there may be more. Stopping at the first page would leave repositories out,
+ * and the route test relies on this list being complete.
+ */
+async function fetchRepositoryList(options: FetchOptions) {
+  const all: z.output<typeof repositorySchema>[] = [];
+  for (let page = 1; page <= MAX_PAGES; page += 1) {
+    const path = `/users/${ACCOUNT}/repos?type=owner&per_page=${String(PAGE_SIZE)}&page=${String(page)}`;
+    const batch = parse(repositoryListSchema, await getJson(path, options), path);
+    all.push(...batch);
+    if (batch.length < PAGE_SIZE) return all;
+  }
+  throw new GitHubError(`more than ${String(PAGE_SIZE * MAX_PAGES)} repositories: list not complete`);
+}
+
 /**
  * Fetches the account's repository list, then languages and latest release
  * for each repository in `fullNames` (owner/name). Throws GitHubError on any
  * failure, so the caller can fall back to the saved copy as a whole.
  *
- * Requests: 1 for the list plus 2 per repository.
+ * Requests: 1 for the list (one more per extra 100 repositories) plus 2 per
+ * repository.
  */
 export async function fetchGitHubSnapshot(
   fullNames: readonly string[],
   options: FetchOptions = {},
 ): Promise<GitHubSnapshot> {
-  const listPath = `/users/${ACCOUNT}/repos?type=owner&per_page=100`;
-  const list = parse(repositoryListSchema, await getJson(listPath, options), listPath);
+  const list = await fetchRepositoryList(options);
   const byName = new Map(list.map((repository) => [statsKey(repository.full_name), repository]));
 
   const stats: Record<string, RepositoryStats> = {};
@@ -251,9 +276,11 @@ export interface LoadOptions extends FetchOptions {
 }
 
 /**
- * Live data if GitHub answers, the saved copy if not. Never throws for a
- * GitHub problem; it throws only if the saved copy itself is broken, because
- * then there is nothing true left to show.
+ * Live data if GitHub answers, the saved copy if not. Whatever goes wrong while
+ * fetching, the build goes on with the saved copy and says why in the log; it
+ * throws only if the saved copy itself is broken, because then there is
+ * nothing true left to show. The copy was checked before the fetch, so that
+ * check cannot be skipped by a GitHub failure.
  */
 export async function loadGitHubData(
   fullNames: readonly string[],
@@ -266,11 +293,20 @@ export async function loadGitHubData(
     try {
       return { ...(await fetchGitHubSnapshot(fullNames, options)), source: "live" };
     } catch (error) {
-      if (!(error instanceof GitHubError)) throw error;
-      options.warn?.(
-        `GitHub data: ${error.message}. Using the saved copy from ${saved.data.fetchedAt}.`,
-      );
+      const reason =
+        error instanceof GitHubError
+          ? error.message
+          : `unexpected ${error instanceof Error ? error.name : "error"}: ${String(error)}`;
+      options.warn?.(`GitHub data: ${reason}. Using the saved copy from ${saved.data.fetchedAt}.`);
     }
+  }
+
+  // A project added after the copy was saved has no figures in it: say so.
+  const missing = fullNames.filter((fullName) => !(statsKey(fullName) in saved.data.stats));
+  if (missing.length > 0) {
+    options.warn?.(
+      `GitHub data: the saved copy has nothing for ${missing.join(", ")}; run pnpm github:snapshot.`,
+    );
   }
   return { ...saved.data, source: "snapshot" };
 }

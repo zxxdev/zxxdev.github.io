@@ -33,9 +33,12 @@ Option 3.
 
 - `src/lib/github.ts` asks for the account's repository list (one request) and, for each project's
   repository, its languages and latest release (two requests). Each request has a 5-second timeout.
-  Every answer is checked against a small schema; anything unexpected counts as a failure.
-- **All or nothing.** If any request fails, the whole saved copy is used. A page never mixes fresh
-  and saved numbers, and the note under the figures names the one it shows.
+  Every answer is checked against a small schema; anything unexpected counts as a failure. The
+  repository list is read page by page, 100 repositories at a time.
+- **All or nothing.** If anything fails while fetching (a request, an unreadable answer, even an
+  error nobody foresaw), the whole saved copy is used and the build log says why. A page never mixes
+  fresh and saved numbers, and the note under the figures names the one it shows. The only error
+  that stops the build is a broken saved copy, because then nothing true is left to show.
 - The data is fetched once per build and shared by every page.
 - In GitHub Actions the build gets the run's own short-lived token, read-only in these workflows,
   through `GITHUB_TOKEN`. It is used on the build machine only and never written into a page. A
@@ -55,4 +58,12 @@ Option 3.
 - Tests never touch the network: they pass a fake `fetch` that plays the API, including errors,
   timeouts, rate limits and answers of the wrong shape.
 - The route test reads the account's repository list from the saved copy, so it covers every
-  repository GitHub listed at the last refresh, not only those with a project page.
+  repository GitHub listed at the last refresh, not only those with a project page. Another test
+  fails if the saved copy has no figures for a project, so a new project cannot be published
+  without them.
+- The token is in the environment of the whole build step, so any tool the build runs could read
+  it. It is read-only and expires when the run ends, so the risk is small; moving the fetch to a
+  step of its own that writes a JSON file would narrow it, at the cost of one more moving part.
+- Requests go one after the other, each with its own 5-second limit. With a dozen projects and a
+  slow GitHub, a build could wait a couple of minutes before falling back; an overall time limit
+  would be the fix if that ever matters.

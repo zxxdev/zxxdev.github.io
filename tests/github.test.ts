@@ -70,7 +70,7 @@ function fakeFetch(routes: Record<string, Route>) {
 }
 
 const healthy: Record<string, Route> = {
-  "/users/zxxdev/repos?type=owner&per_page=100": { status: 200, body: repositoryList },
+  "/users/zxxdev/repos?type=owner&per_page=100&page=1": { status: 200, body: repositoryList },
   "/repos/zxxdev/TrailMate/languages": { status: 200, body: { Lua: 780, Go: 200, Shell: 20 } },
   "/repos/zxxdev/TrailMate/releases/latest": {
     status: 200,
@@ -150,7 +150,7 @@ describe("fetchGitHubSnapshot", () => {
 
   it("fails on an HTTP error and says the rate limit was reached", async () => {
     const { fetch } = fakeFetch({
-      "/users/zxxdev/repos?type=owner&per_page=100": {
+      "/users/zxxdev/repos?type=owner&per_page=100&page=1": {
         status: 403,
         body: { message: "API rate limit exceeded" },
         headers: { "x-ratelimit-remaining": "0" },
@@ -194,9 +194,69 @@ describe("fetchGitHubSnapshot", () => {
       GitHubError,
     );
   });
+
+  it("reads every page of the repository list, not just the first 100", async () => {
+    const filler = Array.from({ length: 100 }, (_, index) => ({
+      name: `repo-${String(index)}`,
+      full_name: `zxxdev/repo-${String(index)}`,
+      pushed_at: "2026-11-01T00:00:00Z",
+      stargazers_count: 0,
+      fork: false,
+    }));
+    const { fetch, calls } = fakeFetch({
+      ...healthy,
+      "/users/zxxdev/repos?type=owner&per_page=100&page=1": { status: 200, body: filler },
+      "/users/zxxdev/repos?type=owner&per_page=100&page=2": { status: 200, body: repositoryList },
+    });
+    const result = await fetchGitHubSnapshot(["zxxdev/TrailMate"], { fetch, now });
+    expect(result.repositories).toHaveLength(102);
+    expect(result.stats["zxxdev/trailmate"]?.stars).toBe(3);
+    expect(calls.filter((call) => call.url.includes("/users/"))).toHaveLength(2);
+  });
+
+  it("refuses a release link that does not point to github.com", async () => {
+    const { fetch } = fakeFetch({
+      ...healthy,
+      "/repos/zxxdev/TrailMate/releases/latest": {
+        status: 200,
+        body: { tag_name: "v1", html_url: "javascript:alert(1)", published_at: null },
+      },
+    });
+    await expect(fetchGitHubSnapshot(["zxxdev/TrailMate"], { fetch, now })).rejects.toThrow(
+      /releases\/latest: unexpected answer at html_url/,
+    );
+  });
 });
 
 describe("loadGitHubData", () => {
+  it("falls back on any failure, even one that is not a GitHub error", async () => {
+    const { fetch } = fakeFetch(healthy);
+    const warnings: string[] = [];
+    const broken = () => {
+      throw new TypeError("clock broke");
+    };
+    const result = await loadGitHubData(["zxxdev/TrailMate"], {
+      fetch,
+      now: broken,
+      snapshot: saved,
+      warn: (message) => warnings.push(message),
+    });
+    expect(result.source).toBe("snapshot");
+    expect(warnings[0]).toMatch(/unexpected TypeError: TypeError: clock broke/);
+  });
+
+  it("warns when the saved copy has nothing for a project", async () => {
+    const warnings: string[] = [];
+    await loadGitHubData(["zxxdev/TrailMate", "zxxdev/new-project"], {
+      snapshot: saved,
+      offline: true,
+      warn: (message) => warnings.push(message),
+    });
+    expect(warnings).toEqual([
+      "GitHub data: the saved copy has nothing for zxxdev/new-project; run pnpm github:snapshot.",
+    ]);
+  });
+
   it("uses live data when GitHub answers", async () => {
     const { fetch } = fakeFetch(healthy);
     const result = await loadGitHubData(["zxxdev/TrailMate"], { fetch, now, snapshot: saved });
