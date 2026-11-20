@@ -32,14 +32,20 @@ function failedFields(input: unknown): string[] {
   return result.error.issues.map((issue) => issue.path.join("."));
 }
 
+/** A copy of the valid project without some of its fields. */
+function validWithout(...fields: (keyof typeof valid)[]): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(valid).filter(([key]) => !(fields as string[]).includes(key)),
+  );
+}
+
 describe("project schema", () => {
   it("accepts a complete project", () => {
     expect(schema.safeParse(valid).success).toBe(true);
   });
 
   it("fills in the optional fields: no tooling and not featured", () => {
-    const { tooling: _tooling, featured: _featured, ...minimal } = valid;
-    const result = schema.parse(minimal);
+    const result = schema.parse(validWithout("tooling", "featured"));
     expect(result.tooling).toEqual([]);
     expect(result.featured).toBe(false);
   });
@@ -53,8 +59,7 @@ describe("project schema", () => {
   });
 
   it("rejects a missing required field", () => {
-    const { summary: _summary, ...withoutSummary } = valid;
-    expect(failedFields(withoutSummary)).toContain("summary");
+    expect(failedFields(validWithout("summary"))).toContain("summary");
   });
 
   it("rejects a misspelt field instead of ignoring it", () => {
