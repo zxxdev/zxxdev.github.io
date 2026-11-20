@@ -18,6 +18,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "screenshots": "node scripts/screenshots.ts",
+    "github:snapshot": "node scripts/github-snapshot.ts",
     "test": "vitest run"
   },
   "dependencies": {

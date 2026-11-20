@@ -4,20 +4,20 @@
  * repository's name, the two would clash, so this test fails when one does.
  *
  * Top-level names come from src/pages/ (each file or folder is a route) and
- * from public/ (copied as they are). Repository names come from the project
- * files and from the account's profile repository. Until the site reads the
- * account's full repository list from the GitHub API, a repository with no
- * project file here is not covered.
+ * from public/ (copied as they are). Repository names come from the account's
+ * repository list in the saved GitHub data (src/data/github-snapshot.json,
+ * refreshed with `pnpm github:snapshot`) and from the project files, so a
+ * project added after the last refresh is covered too. The test reads files
+ * only; it never calls GitHub.
  */
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import snapshot from "../src/data/github-snapshot.json";
+import { snapshotSchema } from "../src/lib/github";
+import { projectFiles, projectRepositories } from "../src/lib/project-files";
 
 const pagesDir = new URL("../src/pages/", import.meta.url);
 const publicDir = new URL("../public/", import.meta.url);
-const projectsDir = new URL("../src/content/projects/", import.meta.url);
-
-/** The profile repository (zxxdev/zxxdev): it has no project file. */
-const accountRepositories = ["zxxdev"];
 
 /** "about.astro" is served as /about/, "projects" as /projects/... */
 function topLevelNames(pageEntries: readonly string[], publicEntries: readonly string[]) {
@@ -33,23 +33,17 @@ function entriesOf(dir: URL): string[] {
   return existsSync(dir) ? readdirSync(dir) : [];
 }
 
-const projectFiles = readdirSync(projectsDir).filter((name) => name.endsWith(".md"));
-
-/** The repository name of each project file, from its `repo: owner/name` line. */
-function projectRepositories(): string[] {
-  return projectFiles.map((file) => {
-    const text = readFileSync(new URL(file, projectsDir), "utf8");
-    const match = /^repo:\s*["']?[\w.-]+\/([\w.-]+?)["']?\s*$/m.exec(text);
-    // A file the test cannot read must fail, not be skipped without a word.
-    if (!match?.[1]) throw new Error(`${file}: no "repo: owner/name" line found`);
-    return match[1];
-  });
-}
-
 /** Names in both lists, ignoring case (Pages paths should not rely on case). */
 function collisions(routes: readonly string[], repositories: readonly string[]) {
   const taken = new Set(repositories.map((name) => name.toLowerCase()));
   return routes.filter((route) => taken.has(route.toLowerCase()));
+}
+
+/** Every repository name the account is known to have. */
+function accountRepositories(): string[] {
+  const saved = snapshotSchema.parse(snapshot);
+  const fromProjects = projectRepositories().map((fullName) => fullName.split("/")[1] ?? fullName);
+  return [...saved.repositories, ...fromProjects];
 }
 
 describe("top-level routes", () => {
@@ -65,9 +59,14 @@ describe("top-level routes", () => {
     ]);
   });
 
-  it("reads a repository name from every project file", () => {
-    expect(projectFiles.length).toBeGreaterThan(0);
-    expect(projectRepositories()).toHaveLength(projectFiles.length);
+  it("reads a repository from every project file", () => {
+    expect(projectFiles().length).toBeGreaterThan(0);
+    expect(projectRepositories()).toHaveLength(projectFiles().length);
+  });
+
+  it("knows the account's repositories from the saved GitHub data", () => {
+    // The profile repository has no project file: it can only come from the list.
+    expect(snapshotSchema.parse(snapshot).repositories).toContain("zxxdev");
   });
 
   it("has no dynamic route at the top level", () => {
@@ -79,7 +78,6 @@ describe("top-level routes", () => {
 
   it("never uses the name of one of the account's repositories", () => {
     const routes = topLevelNames(entriesOf(pagesDir), entriesOf(publicDir));
-    const repositories = [...accountRepositories, ...projectRepositories()];
-    expect(collisions(routes, repositories)).toEqual([]);
+    expect(collisions(routes, accountRepositories())).toEqual([]);
   });
 });
