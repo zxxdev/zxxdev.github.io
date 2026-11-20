@@ -210,7 +210,8 @@ export async function fetchGitHubSnapshot(
     const releasePath = `/repos/${repository.full_name}/releases/latest`;
     const languages = parse(languagesSchema, await getJson(languagesPath, options), languagesPath);
     const releaseAnswer = await getJson(releasePath, options, true);
-    const release = releaseAnswer === null ? null : parse(releaseSchema, releaseAnswer, releasePath);
+    const release =
+      releaseAnswer === null ? null : parse(releaseSchema, releaseAnswer, releasePath);
 
     stats[statsKey(fullName)] = {
       fullName: repository.full_name,
@@ -259,7 +260,9 @@ export async function loadGitHubData(
       return { ...(await fetchGitHubSnapshot(fullNames, options)), source: "live" };
     } catch (error) {
       if (!(error instanceof GitHubError)) throw error;
-      options.warn?.(`GitHub data: ${error.message}. Using the saved copy from ${saved.data.fetchedAt}.`);
+      options.warn?.(
+        `GitHub data: ${error.message}. Using the saved copy from ${saved.data.fetchedAt}.`,
+      );
     }
   }
   return { ...saved.data, source: "snapshot" };

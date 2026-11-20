@@ -127,7 +127,10 @@ describe("fetchGitHubSnapshot", () => {
   });
 
   it("treats a repository with no release as having none, not as an error", async () => {
-    const { fetch } = fakeFetch({ ...healthy, "/repos/zxxdev/TrailMate/releases/latest": { status: 404 } });
+    const { fetch } = fakeFetch({
+      ...healthy,
+      "/repos/zxxdev/TrailMate/releases/latest": { status: 404 },
+    });
     const result = await fetchGitHubSnapshot(["zxxdev/TrailMate"], { fetch, now });
     expect(result.stats["zxxdev/trailmate"]?.latestRelease).toBeNull();
   });
@@ -150,7 +153,9 @@ describe("fetchGitHubSnapshot", () => {
         headers: { "x-ratelimit-remaining": "0" },
       },
     });
-    await expect(fetchGitHubSnapshot([], { fetch, now })).rejects.toThrow(/HTTP 403, rate limit reached/);
+    await expect(fetchGitHubSnapshot([], { fetch, now })).rejects.toThrow(
+      /HTTP 403, rate limit reached/,
+    );
   });
 
   it("fails on an answer with a different shape", async () => {
@@ -187,7 +192,10 @@ describe("loadGitHubData", () => {
   });
 
   it("falls back to the whole saved copy, and says so, when GitHub fails", async () => {
-    const { fetch } = fakeFetch({ ...healthy, "/repos/zxxdev/TrailMate/languages": { status: 502 } });
+    const { fetch } = fakeFetch({
+      ...healthy,
+      "/repos/zxxdev/TrailMate/languages": { status: 502 },
+    });
     const warnings: string[] = [];
     const result = await loadGitHubData(["zxxdev/TrailMate"], {
       fetch,
