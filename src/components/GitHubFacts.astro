@@ -1,0 +1,86 @@
+---
+/*
+ * What GitHub says about a project's repository, for the side column of its
+ * page: last update, GitHub release, stars and languages. Every figure comes
+ * from the GitHub API when the site was built, or from the saved copy if
+ * GitHub did not answer; the page says which, and from when, under it.
+ *
+ * - The short facts are label/value rows, so they read as data at a glance.
+ * - "GitHub release", not "latest version": the version on the status tag
+ *   comes from the project's own files, and a repository can have a version
+ *   without having published a release on GitHub.
+ * - Stars are left out while there are none: a 0 tells the visitor nothing.
+ *   When there are some, the real number is shown, without a link.
+ * - The language bar is decorative (aria-hidden): the list under it says the
+ *   same in words. Each language keeps one shade of the project's tone, with
+ *   the same swatch in the list; "Other" is not a language, so it is grey.
+ */
+import { formatDate, formatShare, isoDate } from "../lib/format";
+import type { RepositoryStats } from "../lib/github";
+
+interface Props {
+  stats: RepositoryStats;
+}
+
+const { stats } = Astro.props;
+// Shade per position: the main language solid, then lighter. 25% is the
+// lightest that still stands out from the empty track on a dark background.
+const shades = ["opacity-100", "opacity-65", "opacity-40", "opacity-25"];
+const shadeOf = (name: string, index: number): string[] =>
+  name === "Other" ? ["bg-border-strong"] : ["bg-tone-line", shades[index] ?? "opacity-25"];
+---
+
+<dl class="grid gap-2 text-sm">
+  <div class="flex justify-between gap-4">
+    <dt class="text-muted">Last updated</dt>
+    <dd class="font-mono">
+      <time datetime={isoDate(stats.pushedAt)}>{formatDate(stats.pushedAt)}</time>
+    </dd>
+  </div>
+  <div class="flex justify-between gap-4">
+    <dt class="text-muted">GitHub release</dt>
+    <dd class="font-mono">
+      {stats.latestRelease ? (
+        <a href={stats.latestRelease.url}>{stats.latestRelease.tag}</a>
+      ) : (
+        <span class="font-sans text-muted">None yet</span>
+      )}
+    </dd>
+  </div>
+  {stats.stars > 0 && (
+    <div class="flex justify-between gap-4">
+      <dt class="text-muted">Stars</dt>
+      <dd class="font-mono">{stats.stars}</dd>
+    </div>
+  )}
+</dl>
+
+{stats.languages.length > 0 && (
+  <div class="mt-5">
+    <p id="github-languages" class="text-sm text-muted">
+      Languages
+    </p>
+    <div aria-hidden="true" class="mt-2.5 flex h-2 gap-0.5 overflow-hidden rounded-full">
+      {stats.languages.map((language, index) => (
+        <span
+          class:list={["h-full min-w-0.5", shadeOf(language.name, index)]}
+          style={`width: ${String(language.share * 100)}%`}
+        />
+      ))}
+    </div>
+    <ul aria-labelledby="github-languages" class="mt-2.5 grid gap-1 text-sm">
+      {stats.languages.map((language, index) => (
+        <li class="flex justify-between gap-4">
+          <span class="flex items-center gap-2">
+            <span
+              aria-hidden="true"
+              class:list={["size-2 shrink-0 rounded-xs", shadeOf(language.name, index)]}
+            />
+            {language.name}
+          </span>
+          <span class="font-mono text-xs leading-5 text-muted">{formatShare(language.share)}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}

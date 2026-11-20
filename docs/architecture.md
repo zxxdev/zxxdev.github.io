@@ -2,7 +2,8 @@
 
 The site is a set of static files. Everything happens at build time: Astro turns the pages, the data
 files and the styles into HTML and CSS, and GitHub Pages serves the result. There is no server code,
-database or API behind it.
+database or API behind it. The only outside call is to the GitHub API, made by the build, never by
+the visitor's browser.
 
 ## From a change to the live site
 
@@ -20,8 +21,9 @@ flowchart LR
 
 - `ci.yml` runs on every pull request, on every push to `main` and once a week, because new
   vulnerabilities are published after dependencies are installed.
-- `deploy.yml` runs on every push to `main`, and can also be started by hand from the Actions tab
-  (`workflow_dispatch`) to republish `main` without a new change. It is the only workflow that can
+- `deploy.yml` runs on every push to `main`, every Monday (so the GitHub data is at most a week
+  old), and can also be started by hand from the Actions tab (`workflow_dispatch`) to republish
+  `main` without a new change. It is the only workflow that can
   write to Pages. Its build job has read access only; the deploy job gets `pages: write` and
   `id-token: write`, and nothing else.
 - `codeql.yml` scans the TypeScript code and the workflows themselves.
@@ -119,8 +121,28 @@ has a screenshot, `ProjectCover.astro` draws its cover as an inline SVG from
 the same data, so there are no image files to keep in sync. Why the look is flat and sharp:
 [ADR 0003](adr/0003-sharp-redesign-and-project-tones.md).
 
+## GitHub data
+
+```mermaid
+flowchart LR
+    P[project files<br/>owner/name] --> F[lib/github.ts]
+    F -->|1 + 2 per project requests,<br/>5 s timeout each| API[GitHub API]
+    API -->|answers checked<br/>against schemas| OK{All fine?}
+    OK -->|yes| L[live data]
+    OK -->|no| S[src/data/github-snapshot.json]
+    L --> PG[cards and project pages]
+    S --> PG
+    SC[pnpm github:snapshot] -->|same code| S
+```
+
+- `src/lib/github.ts` asks for the account's repository list, then each project's languages and
+  latest release. It is fetched once per build (`src/lib/github-data.ts`) and shared by every page.
+- If any request fails, times out or returns something unexpected, the whole saved copy is used. A
+  page never mixes fresh and saved figures; a note under them says which one it shows and its date.
+- In GitHub Actions the build uses the run's own read-only token (`GITHUB_TOKEN`). It stays on the
+  build machine. `GITHUB_DATA=snapshot` skips the network, for a build with no connection.
+- Why it works this way: [ADR 0005](adr/0005-github-data-at-build-time.md).
+
 ## What changes later
 
-- **GitHub data** (languages, last change, releases) is fetched at build time, with a cache and a
-  fallback so a failing API never breaks a deployment.
 - **Languages:** Spanish and English, each with its own path (`/es/…`, `/en/…`).

@@ -30,6 +30,9 @@ nothing to host, leave nothing to patch and read well on a phone.
 - The technologies on the home page are collected from the projects, so nothing is listed that no
   project uses.
 - The filter on the Projects page is a small script. Without JavaScript the whole list still shows.
+- The dates, stars, releases and languages on these pages come from the GitHub API while the site
+  is built, never from the visitor's browser. If GitHub does not answer, the build uses a saved
+  copy, still publishes, and says so under the figures.
 - Every change goes through a pull request with lint, type checks, unit tests, a dependency audit
   and a full build before it can be merged.
 
@@ -43,9 +46,11 @@ nothing to host, leave nothing to patch and read well on a phone.
   one colour per kind of project, from a closed list of four.
 - [Projects as a content collection](https://github.com/zxxdev/zxxdev.github.io/blob/main/docs/adr/0004-projects-as-a-content-collection.md):
   one Markdown file per project, with a schema the build enforces.
+- [GitHub data at build time](https://github.com/zxxdev/zxxdev.github.io/blob/main/docs/adr/0005-github-data-at-build-time.md):
+  no rate limit or token in the browser, and a GitHub outage never stops a deployment.
 
 ## Not done yet
 
-Live data from the GitHub API, the Spanish version, end-to-end and accessibility tests, and search.
+The Spanish version, end-to-end and accessibility tests, and search.
 They are listed in order in the
 [roadmap](https://github.com/zxxdev/zxxdev.github.io#limitations-and-roadmap).

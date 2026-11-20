@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Weekly rebuild, so the GitHub data on the site (last change, stars, releases)
+  # is never more than a week old even when nothing else changes.
+  schedule:
+    - cron: "41 5 * * 1"
 
 # Only one deployment at a time; never cancel one that is already running.
 concurrency:
@@ -38,8 +42,12 @@ jobs:
 
       # No "configure-pages" step: the site URL is fixed in astro.config.mjs, and that step
       # would need extra permissions on this job.
+      # This run's own read-only token, for the GitHub data fetched while building.
+      # It is used on the build machine only and never written into a page.
       - name: Build
         run: pnpm build
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Upload site
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
