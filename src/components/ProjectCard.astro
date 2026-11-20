@@ -55,11 +55,15 @@ const stats = await repositoryStats(data.repo);
     </h3>
     <p class="mt-0.5 font-mono text-xs text-muted">
       {data.repo}
+      {/* The date part never splits: if it does not fit, it moves down whole, dot included. */}
       {stats && (
         <>
-          <span aria-hidden="true"> · </span>
-          <span class="sr-only">, </span>updated{" "}
-          <time datetime={isoDate(stats.pushedAt)}>{formatDate(stats.pushedAt)}</time>
+          {" "}
+          <span class="whitespace-nowrap">
+            <span aria-hidden="true">· </span>
+            <span class="sr-only">, </span>updated{" "}
+            <time datetime={isoDate(stats.pushedAt)}>{formatDate(stats.pushedAt)}</time>
+          </span>
         </>
       )}
     </p>

@@ -85,8 +85,15 @@ const stats = github.stats[statsKey(data.repo)];
         <Content />
       </div>
 
-      <!-- On wide screens the facts stay in view while the text scrolls (header 60 px + 36 px). -->
-      <aside aria-label="Project facts" class="lg:sticky lg:top-24 lg:self-start">
+      <!--
+        On wide screens the facts stay in view while the text scrolls (header
+        60 px + 36 px), but only when the window is at least 800 px tall: the
+        column is about 600 px, and on a shorter laptop its end would be cut.
+      -->
+      <aside
+        aria-label="Project facts"
+        class="lg:top-24 lg:self-start lg:[@media(min-height:50rem)]:sticky"
+      >
         <dl class="grid gap-6">
           <div>
             <dt class="text-sm font-medium">Stack</dt>
@@ -120,24 +127,33 @@ const stats = github.stats[statsKey(data.repo)];
               <a href={repositoryUrl}>{data.repo}</a>
             </dd>
           </div>
-          {stats && <GitHubFacts {stats} />}
         </dl>
+        <!--
+          What comes from GitHub, apart from what the project file says, so the
+          note at the end clearly speaks about this block only.
+        -->
         {stats && (
-          <p class="mt-6 text-xs leading-relaxed text-muted">
-            {github.source === "live" ? (
-              <>
-                From the GitHub API on{" "}
-                <time datetime={isoDate(github.fetchedAt)}>{formatDate(github.fetchedAt)}</time>,
-                when this page was built.
-              </>
-            ) : (
-              <>
-                Saved copy from{" "}
-                <time datetime={isoDate(github.fetchedAt)}>{formatDate(github.fetchedAt)}</time>:
-                GitHub did not answer when this page was built.
-              </>
-            )}
-          </p>
+          <section aria-labelledby="on-github" class="mt-6 border-t border-border pt-6">
+            <h2 id="on-github" class="mb-4 font-mono text-xs text-muted">
+              On GitHub
+            </h2>
+            <GitHubFacts {stats} />
+            <p class="mt-4 text-xs leading-relaxed text-muted">
+              {github.source === "live" ? (
+                <>
+                  From the GitHub API on{" "}
+                  <time datetime={isoDate(github.fetchedAt)}>{formatDate(github.fetchedAt)}</time>,
+                  when this page was built.
+                </>
+              ) : (
+                <>
+                  Saved copy from{" "}
+                  <time datetime={isoDate(github.fetchedAt)}>{formatDate(github.fetchedAt)}</time>:
+                  GitHub did not answer when this page was built.
+                </>
+              )}
+            </p>
+          </section>
         )}
       </aside>
     </div>
