@@ -173,7 +173,14 @@ async function getJson(
     const limited = remaining === "0" ? ", rate limit reached" : "";
     throw new GitHubError(`GET ${path}: HTTP ${String(response.status)}${limited}`);
   }
-  return response.json();
+  // Reading the body can fail too (not JSON, or cut off by the timeout): that is
+  // a GitHub problem like any other, so it must lead to the saved copy.
+  try {
+    return (await response.json()) as unknown;
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    throw new GitHubError(`GET ${path}: unreadable answer (${reason})`);
+  }
 }
 
 /** Checks an answer against its schema, naming the request when it does not fit. */

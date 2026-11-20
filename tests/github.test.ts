@@ -39,7 +39,10 @@ const repositoryList = [
   },
 ];
 
-type Route = { status: number; body?: unknown; headers?: Record<string, string> } | "hang";
+/** An answer: JSON `body`, or `raw` text sent as it is (to send something that is not JSON). */
+type Route =
+  | { status: number; body?: unknown; raw?: string; headers?: Record<string, string> }
+  | "hang";
 
 /** A fetch that answers from a table of paths, and records what was asked. */
 function fakeFetch(routes: Record<string, Route>) {
@@ -58,7 +61,7 @@ function fakeFetch(routes: Record<string, Route>) {
       });
     }
     if (!route) return new Response("Not Found", { status: 404 });
-    return new Response(JSON.stringify(route.body ?? null), {
+    return new Response(route.raw ?? JSON.stringify(route.body ?? null), {
       status: route.status,
       headers: route.headers ?? {},
     });
@@ -155,6 +158,16 @@ describe("fetchGitHubSnapshot", () => {
     });
     await expect(fetchGitHubSnapshot([], { fetch, now })).rejects.toThrow(
       /HTTP 403, rate limit reached/,
+    );
+  });
+
+  it("fails as a GitHub problem, not a crash, on an answer that is not JSON", async () => {
+    const { fetch } = fakeFetch({
+      ...healthy,
+      "/repos/zxxdev/TrailMate/languages": { status: 200, raw: "<html>Unicorn!</html>" },
+    });
+    await expect(fetchGitHubSnapshot(["zxxdev/TrailMate"], { fetch, now })).rejects.toThrow(
+      GitHubError,
     );
   });
 
