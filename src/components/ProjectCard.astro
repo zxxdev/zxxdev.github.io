@@ -52,13 +52,11 @@ const { id, data } = Astro.props.project;
     <p class="mt-0.5 font-mono text-xs text-muted">{data.repo}</p>
     <p class="mt-2.5 text-sm leading-relaxed text-muted">{data.summary}</p>
     <ul aria-label="Stack" class="mt-4 flex flex-wrap gap-1.5">
-      {
-        data.stack.map((item) => (
-          <li>
-            <TechPill name={item} />
-          </li>
-        ))
-      }
+      {data.stack.map((item) => (
+        <li>
+          <TechPill name={item} />
+        </li>
+      ))}
     </ul>
   </div>
 </li>

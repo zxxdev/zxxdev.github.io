@@ -51,16 +51,14 @@ const repositoryUrl = `https://github.com/${data.repo}`;
           >
             View on GitHub
           </a>
-          {
-            data.demo && (
-              <a
-                href={data.demo}
-                class="inline-flex h-10 items-center rounded-full border border-border bg-surface-2 px-4.5 text-sm font-medium text-text no-underline transition-colors visited:text-text hover:border-border-strong"
-              >
-                Live demo
-              </a>
-            )
-          }
+          {data.demo && (
+            <a
+              href={data.demo}
+              class="inline-flex h-10 items-center rounded-full border border-border bg-surface-2 px-4.5 text-sm font-medium text-text no-underline transition-colors visited:text-text hover:border-border-strong"
+            >
+              Live demo
+            </a>
+          )}
         </div>
       </header>
 
@@ -73,9 +71,7 @@ const repositoryUrl = `https://github.com/${data.repo}`;
       </div>
     </div>
 
-    <div
-      class="mt-12 grid gap-10 border-t border-border pt-10 sm:mt-16 lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-16"
-    >
+    <div class="mt-12 grid gap-10 border-t border-border pt-10 sm:mt-16 lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-16">
       <div class="project-text max-w-[42rem]">
         <Content />
       </div>
@@ -86,32 +82,28 @@ const repositoryUrl = `https://github.com/${data.repo}`;
             <dt class="text-sm font-medium">Stack</dt>
             <dd class="mt-2.5">
               <ul class="flex flex-wrap gap-1.5">
-                {
-                  data.stack.map((item) => (
-                    <li>
-                      <TechPill name={item} />
-                    </li>
-                  ))
-                }
+                {data.stack.map((item) => (
+                  <li>
+                    <TechPill name={item} />
+                  </li>
+                ))}
               </ul>
             </dd>
           </div>
-          {
-            data.tooling.length > 0 && (
-              <div>
-                <dt class="text-sm font-medium">Tooling</dt>
-                <dd class="mt-2.5">
-                  <ul class="flex flex-wrap gap-1.5">
-                    {data.tooling.map((item) => (
-                      <li>
-                        <TechPill name={item} />
-                      </li>
-                    ))}
-                  </ul>
-                </dd>
-              </div>
-            )
-          }
+          {data.tooling.length > 0 && (
+            <div>
+              <dt class="text-sm font-medium">Tooling</dt>
+              <dd class="mt-2.5">
+                <ul class="flex flex-wrap gap-1.5">
+                  {data.tooling.map((item) => (
+                    <li>
+                      <TechPill name={item} />
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          )}
           <div>
             <dt class="text-sm font-medium">Source</dt>
             <dd class="mt-1.5 font-mono text-sm">

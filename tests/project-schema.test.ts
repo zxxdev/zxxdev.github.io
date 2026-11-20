@@ -96,9 +96,7 @@ describe("project schema", () => {
   });
 
   it("rejects a repository that is not owner/name", () => {
-    expect(failedFields({ ...valid, repo: "https://github.com/zxxdev/example" })).toContain(
-      "repo",
-    );
+    expect(failedFields({ ...valid, repo: "https://github.com/zxxdev/example" })).toContain("repo");
   });
 
   it("rejects a screenshot without alternative text", () => {

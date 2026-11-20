@@ -27,22 +27,23 @@ const { id, project, sizes } = Astro.props;
 const coverName = project.repo.split("/")[1] ?? project.title;
 ---
 
-{
-  project.cover.kind === "screenshot" ? (
-    <Image
-      src={project.cover.image}
-      alt={project.cover.alt}
-      widths={[400, 640, 960, 1280]}
-      {sizes}
-      class="absolute top-14 right-0 bottom-0 left-5 h-[calc(100%-3.5rem)] w-[calc(100%-1.25rem)] rounded-tl-lg border-t border-l border-tone-line/40 object-cover object-left-top"
-    />
-  ) : (
-    <>
-      <ProjectCover {id} art={project.cover.art} />
-      <div aria-hidden="true" class="absolute inset-y-0 left-5 flex max-w-[55%] flex-col justify-center">
-        <span class="text-h3 font-medium text-text">{coverName}</span>
-        <span class="mt-1 font-mono text-xs text-tone-text">{project.cover.caption}</span>
-      </div>
-    </>
-  )
-}
+{project.cover.kind === "screenshot" ? (
+  <Image
+    src={project.cover.image}
+    alt={project.cover.alt}
+    widths={[400, 640, 960, 1280]}
+    {sizes}
+    class="absolute top-14 right-0 bottom-0 left-5 h-[calc(100%-3.5rem)] w-[calc(100%-1.25rem)] rounded-tl-lg border-t border-l border-tone-line/40 object-cover object-left-top"
+  />
+) : (
+  <>
+    <ProjectCover {id} art={project.cover.art} />
+    <div
+      aria-hidden="true"
+      class="absolute inset-y-0 left-5 flex max-w-[55%] flex-col justify-center"
+    >
+      <span class="text-h3 font-medium text-text">{coverName}</span>
+      <span class="mt-1 font-mono text-xs text-tone-text">{project.cover.caption}</span>
+    </div>
+  </>
+)}
