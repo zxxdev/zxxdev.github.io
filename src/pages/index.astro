@@ -5,11 +5,18 @@ import ProjectCard from "../components/ProjectCard.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import TechPill from "../components/TechPill.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
 import { paths, profileUrl } from "../data/navigation";
-import { featuredProjects, principles, technologies } from "../data/profile";
+import { principles } from "../data/profile";
+import { sortProjects, technologiesInUse } from "../lib/projects";
+
+const projects = sortProjects(await getCollection("projects"));
+const featuredProjects = projects.filter((project) => project.data.featured);
+// Built from the projects: a technology no project uses is not listed.
+const technologies = technologiesInUse(projects.map((project) => project.data));
 
 // Counted from the data, never typed by hand.
-const projectCount = featuredProjects.length;
+const projectCount = projects.length;
 const statusLabel = `Building in public · ${String(projectCount)} ${projectCount === 1 ? "project" : "projects"}`;
 ---
 

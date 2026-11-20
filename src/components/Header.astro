@@ -1,5 +1,5 @@
 ---
-import { isCurrent, navigation, paths } from "../data/navigation";
+import { isCurrent, isInSection, navigation, paths } from "../data/navigation";
 import Avatar from "./Avatar.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 
@@ -49,12 +49,18 @@ const currentPath = Astro.url.pathname;
         data-menu-list
       >
         {navigation.map((item) => {
-          const current = isCurrent(item.href, currentPath);
+          // "page" on the page itself; "true" inside its section (a project's
+          // page is inside Projects). Both look the same.
+          const current = isCurrent(item.href, currentPath)
+            ? "page"
+            : isInSection(item.href, currentPath)
+              ? "true"
+              : undefined;
           return (
             <li>
               <a
                 href={item.href}
-                aria-current={current ? "page" : undefined}
+                aria-current={current}
                 class:list={[
                   "block rounded-md px-3 py-1.5 no-underline transition-colors",
                   current

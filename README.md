@@ -47,25 +47,28 @@ Today:
   switch; the choice is remembered and applied before the page is drawn, so there is no flash.
 - A header with the main navigation, which folds into a menu button on small screens, a skip link
   for keyboard users, a footer and a "page not found" page.
-- A home page with the headline, project cards, how I work and the technologies used in the repos,
-  and an About page with the story and the path so far. Their content lives in typed data files
-  (`src/data/profile.ts`), not in the markup.
+- A home page with the headline, the featured projects, how I work and the technologies the
+  projects use, and an About page with the story and the path so far. Their text lives in a typed
+  data file (`src/data/profile.ts`), not in the markup.
+- Projects written as Markdown files, one per project, checked against a schema while building: a
+  missing field, an unknown technology or an early version without its number stops the build and
+  says where. Adding a project is adding a file.
+- A Projects page with every project and a filter by technology (`/projects/?tech=lua`), and a page
+  per project with what it solves, how it works, the decisions behind it and its stack.
 - Project cards with a real screenshot as the cover when the project has one, or a cover generated
   in the project's colour until then, and a status tag built from the version the project declares
-  (for now copied into the data file; reading it from GitHub comes with the live data). The
-  Projects page lists them too.
+  (for now copied into the project file; reading it from GitHub comes with the live data).
 - An About page with links to its sections, which mark the one being read, and the Azure exams
   passed.
-- Automatic checks on every pull request: lint, formatting, type checking, a dependency audit, a
-  security scan and a full build.
+- Automatic checks on every pull request: lint, formatting, type checking, unit tests, a dependency
+  audit, a security scan and a full build.
 - Automatic publishing to GitHub Pages on every merge to `main`.
 
 <img src="docs/images/home-mobile.png" width="260" alt="The home page on a phone, in dark theme: the menu button, the alias, the headline and the three buttons.">
 
 <sub>The home page on a 390 px wide phone.</sub>
 
-Coming next (see [roadmap](#limitations-and-roadmap)): project pages written in Markdown, live data
-from GitHub, Spanish and English versions, end-to-end and accessibility tests, and search.
+Coming next (see [roadmap](#limitations-and-roadmap)): live data from GitHub, Spanish and English versions, end-to-end and accessibility tests, and search.
 
 ## How it works
 
@@ -98,6 +101,7 @@ More detail, including how a page is put together: [docs/architecture.md](docs/a
 | Design tokens and themes                | Colours are named and defined once; pages use names, so dark mode needs no extra classes. | [ADR 0002](docs/adr/0002-design-tokens-and-theme.md)          |
 | Self-hosted fonts                       | No request to a font server: the visitor's IP stays here and nothing else must be online. | [ADR 0002](docs/adr/0002-design-tokens-and-theme.md)          |
 | Sharp look, one colour per project kind | Nothing blurred, and colour that means something instead of decoration.                   | [ADR 0003](docs/adr/0003-sharp-redesign-and-project-tones.md) |
+| Projects as Markdown with a schema      | Adding a project is adding a file, and a broken file stops the build instead of the page. | [ADR 0004](docs/adr/0004-projects-as-a-content-collection.md) |
 | Strict TypeScript                       | Mistakes such as a possibly missing value are caught when building, not by a visitor.     | —                                                             |
 | Actions pinned by commit SHA            | A tag can be moved to different code; a commit SHA cannot.                                | —                                                             |
 | 7-day release cooldown for dependencies | A hijacked version is usually caught and removed before a week has passed.                | [Dependency security](#dependency-security)                   |
@@ -106,14 +110,16 @@ All records: [docs/adr](docs/adr/README.md).
 
 ## Quality
 
-| Check                 | Tool                                              | When                                    |
-| --------------------- | ------------------------------------------------- | --------------------------------------- |
-| Lint                  | ESLint with the strict TypeScript and Astro rules | Every pull request                      |
-| Formatting            | Prettier, with the Astro and Tailwind plugins     | Every pull request                      |
-| Types                 | `astro check` (TypeScript in strict mode)         | Every pull request                      |
-| Known vulnerabilities | `pnpm audit`, fails on high or critical           | Every pull request and weekly           |
-| Code scanning         | CodeQL for TypeScript and for the workflows       | Every pull request and weekly           |
-| Build                 | `astro build`                                     | Every pull request and every deployment |
+| Check                 | Tool                                                                  | When                                    |
+| --------------------- | --------------------------------------------------------------------- | --------------------------------------- |
+| Lint                  | ESLint with the strict TypeScript and Astro rules                     | Every pull request                      |
+| Formatting            | Prettier, with the Astro and Tailwind plugins                         | Every pull request                      |
+| Types                 | `astro check` (TypeScript in strict mode)                             | Every pull request                      |
+| Unit tests            | Vitest: the project schema, the list helpers and the top-level routes | Every pull request                      |
+| Project data          | The content schema, while building                                    | Every pull request and every deployment |
+| Known vulnerabilities | `pnpm audit`, fails on high or critical                               | Every pull request and weekly           |
+| Code scanning         | CodeQL for TypeScript and for the workflows                           | Every pull request and weekly           |
+| Build                 | `astro build`                                                         | Every pull request and every deployment |
 
 What is **not** checked yet: end-to-end tests, accessibility and performance scores. They arrive
 with the tests described in the roadmap, and their badges will be generated by CI, not written by
@@ -130,6 +136,7 @@ Requirements: Node.js 26 and pnpm 12 (the exact version is pinned in `package.js
 | `pnpm lint`                         | Runs ESLint.                                       |
 | `pnpm format` / `pnpm format:check` | Formats the code, or only checks it.               |
 | `pnpm check`                        | Type checks the TypeScript and Astro files.        |
+| `pnpm test`                         | Runs the unit tests (Vitest).                      |
 | `pnpm build`                        | Builds the site into `dist/`.                      |
 | `pnpm preview`                      | Serves the built site locally.                     |
 | `pnpm screenshots`                  | Remakes the screenshots from the running preview.  |
@@ -153,11 +160,15 @@ Requirements: Node.js 26 and pnpm 12 (the exact version is pinned in `package.js
 ├── src/
 │   ├── assets/projects/    # project cover screenshots, optimised by Astro when building
 │   ├── components/         # header, footer, theme switch, project card and cover, avatar
-│   ├── data/               # navigation, and the content of the home and about pages
+│   ├── content/projects/   # one Markdown file per project: its data and its page's text
+│   ├── content.config.ts   # the projects collection and its schema
+│   ├── data/               # navigation, technologies, tones, home and about page content
 │   ├── layouts/            # the HTML shell shared by every page
-│   ├── pages/              # one file per page; the path is the URL
+│   ├── lib/                # the project schema and list helpers, kept apart for unit tests
+│   ├── pages/              # one file per page; the path is the URL ([id] makes one per project)
 │   ├── scripts/            # browser code (theme handling)
 │   └── styles/             # design tokens, fonts and Tailwind
+├── tests/                  # unit tests (Vitest)
 ├── astro.config.mjs
 ├── eslint.config.js
 └── pnpm-workspace.yaml     # pnpm settings, including the supply-chain protections
@@ -199,23 +210,25 @@ days. When a security fix cannot wait, the exception is added explicitly
 
 ## Limitations and roadmap
 
-Done so far: the pipeline (checks and deployment), the visual design, and the home and about
-pages. Planned, in order:
+Done so far: the pipeline (checks and deployment), the visual design, the home and about pages, and
+the projects as Markdown files with their own pages. Planned, in order:
 
-1. Project pages from Markdown files with a validated schema.
-2. Data from the GitHub API at build time, with a cache and a fallback if the API fails.
-3. Spanish and English versions.
-4. End-to-end tests with Playwright, accessibility checks with axe and Lighthouse budgets.
-5. Search with Pagefind, sitemap and social preview images.
+1. Data from the GitHub API at build time, with a cache and a fallback if the API fails.
+2. Spanish and English versions.
+3. End-to-end tests with Playwright, accessibility checks with axe and Lighthouse budgets.
+4. Search with Pagefind, sitemap and social preview images.
 
 Known limitations today:
 
-- The site is in English only. Projects have cards but no page of their own yet. TrailMate's card
-  keeps a generated cover until there are in-game screenshots without character or realm names.
+- The site is in English only. TrailMate keeps a generated cover until there are in-game
+  screenshots without character or realm names.
 - Screenshots are remade by running the script, not on every build: after a design change, they
   are out of date until someone runs `pnpm screenshots`.
-- The technologies list on the home page is written in a data file; it will be built from the
-  project pages once they exist.
+- The test that keeps top-level routes clear of repository names only knows the repositories that
+  have a project file (and the profile repository). It will use the account's full list once the
+  site reads it from the GitHub API.
+- The project pages have no architecture diagram yet; each one links to its repository's
+  documentation instead.
 - Contrast was measured when the colours were chosen, but it is not yet checked automatically; that
   comes with the accessibility tests.
 - Open dependency advisories, if any, are tracked as issues with the

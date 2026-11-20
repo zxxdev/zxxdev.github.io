@@ -1,85 +1,58 @@
 ---
 /*
- * A project card: cover, status tag, title, repository and stack.
+ * A project card: cover, status tag, title, repository and stack. It opens the
+ * project's page on this site.
  *
  * - The whole card can be clicked: the title link is stretched over it with
  *   ::after, and the focus ring is drawn on the card when the link has
  *   keyboard focus (:has(:focus-visible)), not after a mouse click.
- * - A screenshot cover sits on the project's tone like a window peeking in from
- *   the bottom right: the status tag gets the space above it, and the card
- *   keeps its colour.
- * - The cover's name and caption are HTML at a fixed size, so they stay
- *   readable at any card width. The status tag, the name and the title all
- *   start 20 px from the edge.
- * - The status tag sits on a solid background, so its contrast does not depend
- *   on what the cover shows.
+ * - The status tag, the cover's name and the title all start 20 px from the
+ *   edge.
  * - On hover only the border changes, to the project's tone. No movement and
  *   no zoom: they make the page look soft.
+ * - data-technologies lists the stack as slugs, for the filter on the Projects
+ *   page.
  */
-import { Image } from "astro:assets";
-import { statusLabel, type FeaturedProject } from "../data/profile";
-import ProjectCover from "./ProjectCover.astro";
+import type { CollectionEntry } from "astro:content";
+import { projectPath } from "../data/navigation";
+import { technologySlug } from "../data/technologies";
+import ProjectVisual from "./ProjectVisual.astro";
+import StatusTag from "./StatusTag.astro";
 import TechPill from "./TechPill.astro";
 
 interface Props {
-  project: FeaturedProject;
+  project: CollectionEntry<"projects">;
 }
 
-const { project } = Astro.props;
-const id = project.repo.replace(/[^a-z0-9]+/gi, "-").toLowerCase();
-const coverName = project.repo.split("/")[1] ?? project.title;
+const { id, data } = Astro.props.project;
 ---
 
 <li
-  data-tone={project.tone}
+  data-tone={data.tone}
+  data-technologies={data.stack.map(technologySlug).join(" ")}
   class="relative overflow-hidden rounded-xl border border-border transition-colors hover:border-tone-line has-focus-visible:outline-2 has-focus-visible:outline-offset-3 has-focus-visible:outline-violet"
 >
   <div class="relative aspect-[16/10] border-b border-border bg-tone-bg">
-    {project.cover.kind === "screenshot" ? (
-      <Image
-        src={project.cover.image}
-        alt={project.cover.alt}
-        widths={[400, 640, 960, 1280]}
-        sizes="(min-width: 1024px) 476px, (min-width: 640px) 48vw, 95vw"
-        class="absolute top-14 right-0 bottom-0 left-5 h-[calc(100%-3.5rem)] w-[calc(100%-1.25rem)] rounded-tl-lg border-t border-l border-tone-line/40 object-cover object-left-top"
-      />
-    ) : (
-      <>
-        <ProjectCover id={id} art={project.cover.art} />
-        <div
-          aria-hidden="true"
-          class="absolute inset-y-0 left-5 flex max-w-[55%] flex-col justify-center"
-        >
-          <span class="text-h3 font-medium text-text">{coverName}</span>
-          <span class="mt-1 font-mono text-xs text-tone-text">{project.cover.caption}</span>
-        </div>
-      </>
-    )}
-    <span class="absolute top-5 left-5 inline-flex h-6 items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 font-mono text-xs text-text">
-      <!-- Live: a filled teal dot. Early: an empty ring, so the shape tells them apart too. -->
-      <span
-        aria-hidden="true"
-        class:list={[
-          "size-1.5 rounded-full",
-          project.status.kind === "live" ? "bg-status" : "border border-muted",
-        ]}
-      ></span>
-      {statusLabel(project.status)}
-    </span>
+    <ProjectVisual
+      {id}
+      project={data}
+      sizes="(min-width: 1024px) 476px, (min-width: 640px) 48vw, 95vw"
+    />
+    <StatusTag status={data.status} class="absolute top-5 left-5" />
   </div>
   <div class="px-5 pt-4.5 pb-5">
     <h3 class="text-h4 font-semibold tracking-tight">
       <a
-        href={project.href}
+        href={projectPath(id)}
         class="text-text no-underline visited:text-text after:absolute after:inset-0 focus-visible:outline-none"
       >
-        {project.title}
+        {data.title}
       </a>
     </h3>
-    <p class="mt-0.5 font-mono text-xs text-muted">{project.repo}</p>
-    <p class="mt-2.5 text-sm leading-relaxed text-muted">{project.summary}</p>
+    <p class="mt-0.5 font-mono text-xs text-muted">{data.repo}</p>
+    <p class="mt-2.5 text-sm leading-relaxed text-muted">{data.summary}</p>
     <ul aria-label="Stack" class="mt-4 flex flex-wrap gap-1.5">
-      {project.stack.map((item) => (
+      {data.stack.map((item) => (
         <li>
           <TechPill name={item} />
         </li>
