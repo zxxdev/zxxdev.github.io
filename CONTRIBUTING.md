@@ -25,8 +25,19 @@ pnpm install --frozen-lockfile
 pnpm lint          # ESLint
 pnpm format:check  # Prettier
 pnpm check         # astro check: TypeScript and Astro diagnostics
+pnpm test          # Vitest: unit tests
 pnpm build         # builds the static site into dist/
 ```
+
+## Adding a project
+
+Add one Markdown file to `src/content/projects/`. The file name becomes the project's address
+(`trailmate.md` is `/projects/trailmate/`). Copy the front matter of an existing file and change it;
+the body is the text of the project's page, usually "The problem", "How it works" and "Decisions".
+
+The schema in `src/lib/project-schema.ts` checks every file while building. If the build stops, the
+message names the file and the field. A technology must be in `src/data/technologies.ts` before a
+project can use it.
 
 ## Adding a dependency
 
