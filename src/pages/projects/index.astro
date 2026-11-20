@@ -84,8 +84,13 @@ const filterButton =
     const status = filter.querySelector<HTMLElement>("[data-filter-status]");
     const known = new Set(buttons.map((button) => button.dataset["technology"] ?? ""));
 
-    /** Shows the cards that use `technology` ("" shows all) and says how many. */
-    const apply = (technology: string, updateAddress: boolean): void => {
+    /**
+     * Shows the cards that use `technology` ("" shows all). `fromClick` is false
+     * on page load: then the address is left as it is, and the count is only
+     * written for a filtered list, so a screen reader does not announce
+     * anything before the visitor does something.
+     */
+    const apply = (technology: string, fromClick: boolean): void => {
       // An unknown ?tech= value (an old link, a typo) shows everything.
       const chosen = known.has(technology) ? technology : "";
 
@@ -100,7 +105,7 @@ const filterButton =
         if (!card.hidden) shown += 1;
       }
 
-      if (status) {
+      if (status && (fromClick || chosen !== "")) {
         const total = cards.length;
         status.textContent =
           chosen === ""
@@ -108,7 +113,7 @@ const filterButton =
             : `Showing ${String(shown)} of ${String(total)} projects.`;
       }
 
-      if (updateAddress) {
+      if (fromClick) {
         const url = new URL(window.location.href);
         if (chosen === "") url.searchParams.delete("tech");
         else url.searchParams.set("tech", chosen);

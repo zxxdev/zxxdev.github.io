@@ -79,7 +79,7 @@ describe("project schema", () => {
   });
 
   it("rejects a technology listed twice", () => {
-    expect(failedFields({ ...valid, tooling: ["Vitest"] })).not.toEqual([]);
+    expect(failedFields({ ...valid, tooling: ["Vitest"] })).toEqual(["tooling"]);
   });
 
   it("rejects an early project without a version", () => {

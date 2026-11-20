@@ -9,7 +9,7 @@
  * account's full repository list from the GitHub API, a repository with no
  * project file here is not covered.
  */
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const pagesDir = new URL("../src/pages/", import.meta.url);
@@ -28,10 +28,16 @@ function topLevelNames(pageEntries: readonly string[], publicEntries: readonly s
   return [...pages, ...publicEntries];
 }
 
+/** The entries of a folder, or none if it does not exist (public/ is optional). */
+function entriesOf(dir: URL): string[] {
+  return existsSync(dir) ? readdirSync(dir) : [];
+}
+
+const projectFiles = readdirSync(projectsDir).filter((name) => name.endsWith(".md"));
+
 /** The repository name of each project file, from its `repo: owner/name` line. */
 function projectRepositories(): string[] {
-  const files = readdirSync(projectsDir).filter((name) => name.endsWith(".md"));
-  return files.map((file) => {
+  return projectFiles.map((file) => {
     const text = readFileSync(new URL(file, projectsDir), "utf8");
     const match = /^repo:\s*["']?[\w.-]+\/([\w.-]+?)["']?\s*$/m.exec(text);
     // A file the test cannot read must fail, not be skipped without a word.
@@ -60,11 +66,19 @@ describe("top-level routes", () => {
   });
 
   it("reads a repository name from every project file", () => {
-    expect(projectRepositories()).toContain("TrailMate");
+    expect(projectFiles.length).toBeGreaterThan(0);
+    expect(projectRepositories()).toHaveLength(projectFiles.length);
+  });
+
+  it("has no dynamic route at the top level", () => {
+    // A top-level [slug].astro or [...rest].astro would answer any /<name>/,
+    // including every repository's address, and its name never matches one.
+    const dynamic = topLevelNames(entriesOf(pagesDir), []).filter((name) => name.startsWith("["));
+    expect(dynamic).toEqual([]);
   });
 
   it("never uses the name of one of the account's repositories", () => {
-    const routes = topLevelNames(readdirSync(pagesDir), readdirSync(publicDir));
+    const routes = topLevelNames(entriesOf(pagesDir), entriesOf(publicDir));
     const repositories = [...accountRepositories, ...projectRepositories()];
     expect(collisions(routes, repositories)).toEqual([]);
   });

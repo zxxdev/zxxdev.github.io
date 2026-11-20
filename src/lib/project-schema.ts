@@ -75,7 +75,12 @@ export function projectSchema({ image }: SchemaContext) {
       (project) =>
         new Set([...project.stack, ...project.tooling]).size ===
         project.stack.length + project.tooling.length,
-      { message: "A technology is listed twice (in stack, in tooling or in both)" },
+      {
+        message: "A technology is listed twice (in stack, in tooling or in both)",
+        // Named on tooling, where a repeated name usually belongs. This check
+        // only runs once every other field is valid.
+        path: ["tooling"],
+      },
     );
 }
 
