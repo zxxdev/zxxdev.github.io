@@ -67,7 +67,9 @@ describe("top-level routes", () => {
   it("has GitHub figures for every project in the saved copy", () => {
     // Otherwise a new project would show no GitHub data whenever GitHub is down.
     const saved = snapshotSchema.parse(snapshot);
-    const missing = projectRepositories().filter((fullName) => !(statsKey(fullName) in saved.stats));
+    const missing = projectRepositories().filter(
+      (fullName) => !(statsKey(fullName) in saved.stats),
+    );
     expect(missing, "run pnpm github:snapshot and commit the result").toEqual([]);
   });
 

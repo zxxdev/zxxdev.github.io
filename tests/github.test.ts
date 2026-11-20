@@ -41,8 +41,7 @@ const repositoryList = [
 
 /** An answer: JSON `body`, or `raw` text sent as it is (to send something that is not JSON). */
 type Route =
-  | { status: number; body?: unknown; raw?: string; headers?: Record<string, string> }
-  | "hang";
+  { status: number; body?: unknown; raw?: string; headers?: Record<string, string> } | "hang";
 
 /** A fetch that answers from a table of paths, and records what was asked. */
 function fakeFetch(routes: Record<string, Route>) {

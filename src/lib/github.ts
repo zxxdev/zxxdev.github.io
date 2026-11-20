@@ -215,7 +215,9 @@ async function fetchRepositoryList(options: FetchOptions) {
     all.push(...batch);
     if (batch.length < PAGE_SIZE) return all;
   }
-  throw new GitHubError(`more than ${String(PAGE_SIZE * MAX_PAGES)} repositories: list not complete`);
+  throw new GitHubError(
+    `more than ${String(PAGE_SIZE * MAX_PAGES)} repositories: list not complete`,
+  );
 }
 
 /**
