@@ -39,6 +39,20 @@ The schema in `src/lib/project-schema.ts` checks every file while building. If t
 message names the file and the field. A technology must be in `src/data/technologies.ts` before a
 project can use it.
 
+Every project file needs its Spanish version, with the same name, in `src/content/projects/es/`
+(`trailmate.md` is also `/es/proyectos/trailmate/`). It holds only the words: `summary`, `cover`
+(the picture's alternative text, or the generated cover's caption) and, if the name changes,
+`title`. Its body is the page's text in Spanish. The rest comes from the English file. The build
+and the unit tests fail if one of the two is missing.
+
+## Adding a page or interface text
+
+Every page exists in English and Spanish. Write its markup once in `src/views/`, add its path in
+each language to `src/i18n/routes.ts`, and add one small file per language in `src/pages/` that
+renders the view with its language. Words go in `src/i18n/ui.ts`, never in the markup; the Spanish
+dictionary must have the same entries as the English one, or the type check fails. A unit test
+fails if a page exists in one language only.
+
 ## Adding a dependency
 
 Fewer dependencies is better: if something takes a few lines, write it. If a new package is really
