@@ -83,12 +83,17 @@ export function stackOf(stats: RepositoryStats): Technology[] {
   return [...new Set(found)].slice(0, MAX_STACK);
 }
 
+/**
+ * True if `topic` is one of toneByTopic's own keys. Object.hasOwn, not `in`
+ * or a lookup: a topic called "constructor" must not find Object's method.
+ */
+function hasTone(topic: string): boolean {
+  return Object.hasOwn(toneByTopic, topic);
+}
+
 export function toneOf(topics: readonly string[]): Tone {
-  for (const topic of topics) {
-    const tone = toneByTopic[topic];
-    if (tone) return tone;
-  }
-  return DEFAULT_TONE;
+  const topic = topics.find(hasTone);
+  return topic === undefined ? DEFAULT_TONE : (toneByTopic[topic] ?? DEFAULT_TONE);
 }
 
 /** The latest release's version ("v1.0.0" → 1.0.0), or "in development" without one. */
@@ -142,7 +147,7 @@ export function captionOf(topics: readonly string[]): string {
     labels.length > 0
       ? labels
       : topics
-          .filter((topic) => !knownTechnology(topic) && !(topic in toneByTopic))
+          .filter((topic) => !knownTechnology(topic) && !hasTone(topic))
           .map((topic) => topic.replace(/-/g, " "));
   const caption = words.slice(0, 2);
   return caption.length > 0 ? caption.join(" · ") : "on github";
@@ -153,12 +158,15 @@ export function captionOf(topics: readonly string[]): string {
  * push first, after the project files. `stats` holds only the project files'
  * repositories and those the site lists on its own (fetchGitHubSnapshot sees
  * to that). `curatedRepositories` are the project files' owner/name;
- * `takenIds` their ids, so an address is never used twice.
+ * `takenIds` their ids, so an address is never used twice. A repository whose
+ * address is already taken is left out and reported through `warn`, never
+ * dropped in silence.
  */
 export function autoProjects(
   stats: Readonly<Record<string, RepositoryStats>>,
   curatedRepositories: readonly string[],
   takenIds: readonly string[],
+  warn: (message: string) => void = () => {},
 ): AutoProject[] {
   const curated = new Set(curatedRepositories.map(statsKey));
   const taken = new Set(takenIds);
@@ -171,7 +179,12 @@ export function autoProjects(
   for (const repository of candidates) {
     const name = repository.fullName.split("/")[1] ?? repository.fullName;
     const id = projectId(name);
-    if (id === "" || taken.has(id)) continue;
+    if (id === "" || taken.has(id)) {
+      warn(
+        `Projects: ${repository.fullName} is not listed, its address /projects/${id}/ is already taken.`,
+      );
+      continue;
+    }
     taken.add(id);
     const tone = toneOf(repository.topics);
     projects.push({

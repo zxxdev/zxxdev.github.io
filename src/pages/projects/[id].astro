@@ -38,7 +38,7 @@ const repositoryUrl = `https://github.com/${data.repo}`;
 const github = await getGitHubData();
 const stats = github.stats[statsKey(data.repo)];
 // A project from GitHub shows its whole description here; the card has the short one.
-const lead = project.description ?? data.summary;
+const lead = project.description || data.summary;
 ---
 
 <BaseLayout title={`${data.title} · Projects · zxxdev`} description={data.summary}>

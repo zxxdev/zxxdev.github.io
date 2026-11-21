@@ -35,6 +35,9 @@ export function getProjects(): Promise<SiteProject[]> {
       github.stats,
       entries.map((entry) => entry.data.repo),
       entries.map((entry) => entry.id),
+      (message) => {
+        console.warn(message);
+      },
     );
     return sortProjects([...curated, ...automatic]);
   })();

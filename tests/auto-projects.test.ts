@@ -76,6 +76,11 @@ describe("toneOf", () => {
   it("falls back to cobalt", () => {
     expect(toneOf(["something"])).toBe("cobalt");
   });
+
+  it("is not fooled by topics named like Object's own methods", () => {
+    expect(toneOf(["constructor", "tostring"])).toBe("cobalt");
+    expect(captionOf(["constructor", "pvp"])).toBe("constructor · pvp");
+  });
 });
 
 describe("statusOf", () => {
@@ -166,8 +171,12 @@ describe("autoProjects", () => {
     expect(Math.min(...projects.map((project) => project.data.order))).toBeGreaterThanOrEqual(1000);
   });
 
-  it("never reuses the address of a project file", () => {
-    const projects = autoProjects(stats, [], ["dispel-glow"]);
+  it("never reuses the address of a project file, and says which repository it left out", () => {
+    const warnings: string[] = [];
+    const projects = autoProjects(stats, [], ["dispel-glow"], (message) => warnings.push(message));
     expect(projects.map((project) => project.id)).not.toContain("dispel-glow");
+    expect(warnings).toEqual([
+      "Projects: zxxdev/DispelGlow is not listed, its address /projects/dispel-glow/ is already taken.",
+    ]);
   });
 });
