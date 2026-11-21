@@ -34,56 +34,68 @@ flowchart LR
 flowchart TB
     subgraph content[src/content/projects]
         MD[one Markdown file per project<br/>front matter + text]
+        ES[es/: its Spanish version<br/>words + text]
     end
     subgraph rules[Checks while building]
-        CC[content.config.ts<br/>the projects collection]
+        CC[content.config.ts<br/>projects and projectsEs]
         SC[lib/project-schema.ts<br/>fields, tones, versions]
         TC[data/technologies.ts<br/>closed list of technologies]
     end
-    subgraph data[src/data]
-        N[navigation.ts<br/>page paths, menu and links]
-        P[profile.ts<br/>path, principles, Azure exams]
+    subgraph i18n[src/i18n and src/data]
+        R[routes.ts<br/>every path in each language]
+        U[ui.ts<br/>interface text per language]
+        P[data/profile.ts<br/>path, principles, Azure exams]
     end
-    subgraph pages[src/pages]
-        I[index.astro]
-        AB[about.astro]
-        PL[projects/index.astro<br/>list and filter]
-        PD["projects/[id].astro<br/>one page per project"]
-        NF[404.astro]
+    subgraph lists[src/lib]
+        SP[site-projects.ts<br/>projects in one language]
+    end
+    subgraph views[src/views: each page written once]
+        I[HomePage]
+        AB[AboutPage]
+        PL[ProjectsPage<br/>list and filter]
+        PD[ProjectPage]
+    end
+    subgraph pages[src/pages: the address and the language]
+        PE["index, about, projects/…"]
+        PS["es/index, es/sobre-mi, es/proyectos/…"]
+        NF[404.astro<br/>both languages]
     end
     subgraph shell[src/layouts and src/components]
-        L[BaseLayout.astro<br/>head, theme script, fonts]
+        L[BaseLayout.astro<br/>lang, hreflang, theme script]
         PC[ProjectCard.astro]
-        PV[ProjectVisual.astro<br/>screenshot or generated cover]
-        ST[StatusTag.astro]
     end
 
     MD --> CC
+    ES --> CC
     SC --> CC
     TC --> SC
-    CC -->|getCollection| I
-    CC -->|getCollection| PL
-    CC -->|getStaticPaths| PD
+    CC --> SP
+    SP --> I
+    SP --> PL
+    SP -->|getStaticPaths| PS
+    SP -->|getStaticPaths| PE
+    PE -->|locale en| views
+    PS -->|locale es| views
+    R --> L
+    U --> views
     P --> I
     P --> AB
-    N --> I
-    N --> PC
     I --> PC
     PL --> PC
-    PC --> PV
-    PC --> ST
-    PD --> PV
-    PD --> ST
-    I --> L
-    AB --> L
-    PL --> L
-    PD --> L
+    views --> L
     NF --> L
     L --> O[dist/*.html]
 ```
 
-The header, footer, theme switch, avatar, icons and technology pills are left out of the diagram:
-every page gets them through `BaseLayout.astro` or uses them directly.
+The header (with the language switch), footer, theme switch, avatar, icons, status tags, covers
+and technology pills are left out of the diagram: every page gets them through `BaseLayout.astro` or
+uses them directly.
+
+- **Two languages, each page written once.** The markup of every page is a component in
+  `src/views/` that takes the language. The files in `src/pages/` only choose the address and the
+  language: `/about/` and `/es/sobre-mi/` render the same view. Paths come from
+  `src/i18n/routes.ts` and words from `src/i18n/ui.ts`, never from the markup. English keeps the
+  addresses it had before Spanish existed. Why: [ADR 0007](adr/0007-spanish-and-english.md).
 
 - **Projects are Markdown files checked by a schema.** Each file in `src/content/projects/` is one
   project: the front matter holds its data (title, repository, tone, status, stack, cover) and the
@@ -91,8 +103,11 @@ every page gets them through `BaseLayout.astro` or uses them directly.
   `src/lib/project-schema.ts`; a missing or misspelt field, an unknown tone or technology, or an
   early project without a version stops the build and names the file and the field. Why:
   [ADR 0004](adr/0004-projects-as-a-content-collection.md).
-- **One page per project, made while building.** `projects/[id].astro` returns one page per file
-  from `getStaticPaths`, at `/projects/<id>/`. Nothing is decided by a server later. Project pages
+  Its Spanish version, with the same name in `src/content/projects/es/`, holds only the words and
+  the page's text; the build stops if one of the pair is missing.
+- **One page per project and language, made while building.** `projects/[id].astro` and
+  `es/proyectos/[id].astro` return one page per project from `getStaticPaths`, at
+  `/projects/<id>/` and `/es/proyectos/<id>/`. Nothing is decided by a server later. Project pages
   are never at the top level: GitHub serves each repository's own Pages site at
   `zxxdev.github.io/<repo>/`, and a unit test fails if a top-level route takes a repository's name.
 - **Lists are built from the data.** The home page shows the projects marked `featured` and the
@@ -100,10 +115,12 @@ every page gets them through `BaseLayout.astro` or uses them directly.
   status pill is counted, not typed.
 - **Pages decide how things look; data files hold what they say.** The path on the About page, the
   "How I work" points and the Azure exams are typed arrays in `src/data/profile.ts`.
-- **One layout for every page.** `BaseLayout.astro` writes the `<head>`, applies a saved theme before
-  the page is painted, preloads the main font and adds the header and footer.
-- **JavaScript only where it is needed.** The theme switch, the mobile menu and the filter on the
-  Projects page ship a few lines of script each. Without JavaScript the menu stays a row of links
+- **One layout for every page.** `BaseLayout.astro` writes the `<head>` (with `<html lang>` and the
+  page's other-language version as `hreflang`), applies a saved theme before the page is painted,
+  preloads the main font and adds the header and footer. On the English home page only, it also
+  sends a visitor whose browser prefers Spanish to `/es/`, unless they chose a language already.
+- **JavaScript only where it is needed.** The theme switch, the mobile menu, the language switch
+  (only to remember the choice) and the filter on the Projects page ship a few lines of script each. Without JavaScript the menu stays a row of links
   and the Projects page shows the full list; everything else is plain HTML and CSS.
 
 ## Design
@@ -142,7 +159,3 @@ flowchart LR
 - In GitHub Actions the build uses the run's own read-only token (`GITHUB_TOKEN`). It stays on the
   build machine. `GITHUB_DATA=snapshot` skips the network, for a build with no connection.
 - Why it works this way: [ADR 0005](adr/0005-github-data-at-build-time.md).
-
-## What changes later
-
-- **Languages:** Spanish and English, each with its own path (`/es/…`, `/en/…`).

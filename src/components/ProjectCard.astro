@@ -13,8 +13,10 @@
  * - data-technologies lists the stack as slugs, for the filter on the Projects
  *   page.
  */
-import { projectPath } from "../data/navigation";
 import { technologySlug } from "../data/technologies";
+import type { Locale } from "../i18n/locales";
+import { projectPath } from "../i18n/routes";
+import { ui } from "../i18n/ui";
 import { formatDate, isoDate } from "../lib/format";
 import { repositoryStats } from "../lib/github-data";
 import type { SiteProject } from "../lib/site-projects";
@@ -24,9 +26,14 @@ import TechPill from "./TechPill.astro";
 
 interface Props {
   project: SiteProject;
+  locale: Locale;
 }
 
-const { id, data } = Astro.props.project;
+const { project, locale } = Astro.props;
+const { id, data } = project;
+const t = ui[locale].card;
+// A GitHub description is in English on every page: say so, for screen readers.
+const textLang = project.lang === locale ? undefined : project.lang;
 // From GitHub when the site was built (or the saved copy): never typed by hand.
 const stats = await repositoryStats(data.repo);
 ---
@@ -42,12 +49,12 @@ const stats = await repositoryStats(data.repo);
       project={data}
       sizes="(min-width: 1024px) 476px, (min-width: 640px) 48vw, 95vw"
     />
-    <StatusTag status={data.status} class="absolute top-5 left-5" />
+    <StatusTag status={data.status} {locale} class="absolute top-5 left-5" />
   </div>
   <div class="px-5 pt-4.5 pb-5">
     <h3 class="text-h4 font-semibold tracking-tight">
       <a
-        href={projectPath(id)}
+        href={projectPath(locale, id)}
         class="text-text no-underline visited:text-text after:absolute after:inset-0 focus-visible:outline-none"
       >
         {data.title}
@@ -61,15 +68,18 @@ const stats = await repositoryStats(data.repo);
           {" "}
           <span class="whitespace-nowrap">
             <span aria-hidden="true">· </span>
-            <span class="sr-only">, </span>updated{" "}
-            <time datetime={isoDate(stats.pushedAt)}>{formatDate(stats.pushedAt)}</time>
+            <span class="sr-only">, </span>
+            {t.updated}{" "}
+            <time datetime={isoDate(stats.pushedAt)}>{formatDate(stats.pushedAt, locale)}</time>
           </span>
         </>
       )}
     </p>
-    <p class="mt-2.5 text-sm leading-relaxed text-muted">{data.summary}</p>
+    <p lang={textLang} class="mt-2.5 text-sm leading-relaxed text-muted">
+      {data.summary}
+    </p>
     {data.stack.length > 0 && (
-      <ul aria-label="Stack" class="mt-4 flex flex-wrap gap-1.5">
+      <ul aria-label={t.stack} class="mt-4 flex flex-wrap gap-1.5">
         {data.stack.map((item) => (
           <li>
             <TechPill name={item} />

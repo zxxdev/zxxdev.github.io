@@ -85,6 +85,8 @@ try {
       deviceScaleFactor: shot.scale,
       colorScheme: shot.theme,
       reducedMotion: "reduce",
+      // An English browser: with a Spanish one, the home page would open /es/.
+      locale: "en-GB",
     });
     const url = new URL(shot.path, base).href;
     const response = await page.goto(url, { waitUntil: "networkidle" });

@@ -1,6 +1,13 @@
 ---
 import { repositoryUrl } from "../data/navigation";
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
 
+interface Props {
+  locale: Locale;
+}
+
+const t = ui[Astro.props.locale].footer;
 const year = new Date().getFullYear();
 ---
 
@@ -11,14 +18,14 @@ const year = new Date().getFullYear();
     </span>
     <span aria-hidden="true">·</span>
     <span>
-      Built with{" "}
+      {t.builtWith}{" "}
       <a href="https://astro.build" class="text-muted visited:text-muted">
         Astro
       </a>
     </span>
     <span aria-hidden="true">·</span>
     <a href={repositoryUrl} class="text-muted visited:text-muted">
-      Source on GitHub
+      {t.source}
     </a>
   </div>
 </footer>

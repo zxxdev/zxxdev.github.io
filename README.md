@@ -45,11 +45,16 @@ Today:
   self-hosted Geist fonts, and one colour per kind of project from a closed list.
 - Light and dark themes. The site follows the system setting until the visitor picks one with the
   switch; the choice is remembered and applied before the page is drawn, so there is no flash.
+- English and Spanish. English pages keep their addresses (`/about/`) and Spanish ones live under
+  `/es/` (`/es/sobre-mi/`). A link in the header opens the same page in the other language, each page
+  tells search engines about its other version (`hreflang`), and the English home page sends a
+  Spanish browser to `/es/` on its first visit. Unit tests fail if a page or a project file exists in
+  one language only ([ADR 0007](docs/adr/0007-spanish-and-english.md)).
 - A header with the main navigation, which folds into a menu button on small screens, a skip link
-  for keyboard users, a footer and a "page not found" page.
+  for keyboard users, a footer and a "page not found" page in both languages.
 - A home page with the headline, the featured projects, how I work and the technologies the
-  projects use, and an About page with the story and the path so far. Their text lives in a typed
-  data file (`src/data/profile.ts`), not in the markup.
+  projects use, and an About page with the story and the path so far. Their text lives in typed
+  data files (`src/data/profile.ts`, `src/i18n/ui.ts`), one version per language, not in the markup.
 - Every public repository of the account on the Projects page, with no file to write: its
   description, topics, languages and latest release come from GitHub while the site is built
   ([ADR 0006](docs/adr/0006-projects-from-the-repository-list.md)). A project that deserves its own
@@ -72,12 +77,12 @@ Today:
   audit, a security scan and a full build.
 - Automatic publishing to GitHub Pages on every merge to `main`.
 
-<img src="docs/images/home-mobile.png" width="260" alt="The home page on a phone, in dark theme: the menu button, the alias, the headline and the three buttons.">
+<img src="docs/images/home-mobile.png" width="260" alt="The home page on a phone, in dark theme: the menu button, the link to the Spanish version, the alias, the headline and the three buttons.">
 
 <sub>The home page on a 390 px wide phone.</sub>
 
-Coming next (see [roadmap](#limitations-and-roadmap)): Spanish and English versions, end-to-end and
-accessibility tests, and search.
+Coming next (see [roadmap](#limitations-and-roadmap)): end-to-end and accessibility tests, and
+search.
 
 ## How it works
 
@@ -112,6 +117,7 @@ More detail, including how a page is put together: [docs/architecture.md](docs/a
 | Sharp look, one colour per project kind    | Nothing blurred, and colour that means something instead of decoration.                       | [ADR 0003](docs/adr/0003-sharp-redesign-and-project-tones.md) |
 | GitHub data at build time, with a fallback | No API limit or token in the visitor's browser, and a GitHub outage never stops a deployment. | [ADR 0005](docs/adr/0005-github-data-at-build-time.md)        |
 | Projects as Markdown with a schema         | Adding a project is adding a file, and a broken file stops the build instead of the page.     | [ADR 0004](docs/adr/0004-projects-as-a-content-collection.md) |
+| English where it was, Spanish under `/es/` | No link already shared breaks, and each language can be linked and indexed on its own.        | [ADR 0007](docs/adr/0007-spanish-and-english.md)              |
 | Strict TypeScript                          | Mistakes such as a possibly missing value are caught when building, not by a visitor.         | —                                                             |
 | Actions pinned by commit SHA               | A tag can be moved to different code; a commit SHA cannot.                                    | —                                                             |
 | 7-day release cooldown for dependencies    | A hijacked version is usually caught and removed before a week has passed.                    | [Dependency security](#dependency-security)                   |
@@ -120,16 +126,16 @@ All records: [docs/adr](docs/adr/README.md).
 
 ## Quality
 
-| Check                 | Tool                                                                                                           | When                                    |
-| --------------------- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| Lint                  | ESLint with the strict TypeScript and Astro rules                                                              | Every pull request                      |
-| Formatting            | Prettier, with the Astro and Tailwind plugins                                                                  | Every pull request                      |
-| Types                 | `astro check` (TypeScript in strict mode)                                                                      | Every pull request                      |
-| Unit tests            | Vitest: the project schema, the list helpers, the top-level routes and the GitHub data, with the API simulated | Every pull request                      |
-| Project data          | The content schema, while building                                                                             | Every pull request and every deployment |
-| Known vulnerabilities | `pnpm audit`, fails on high or critical                                                                        | Every pull request and weekly           |
-| Code scanning         | CodeQL for TypeScript and for the workflows                                                                    | Every pull request and weekly           |
-| Build                 | `astro build`                                                                                                  | Every pull request and every deployment |
+| Check                 | Tool                                                                                                                                                      | When                                    |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| Lint                  | ESLint with the strict TypeScript and Astro rules                                                                                                         | Every pull request                      |
+| Formatting            | Prettier, with the Astro and Tailwind plugins                                                                                                             | Every pull request                      |
+| Types                 | `astro check` (TypeScript in strict mode)                                                                                                                 | Every pull request                      |
+| Unit tests            | Vitest: the project schema, the list helpers, the top-level routes, every page and project in both languages, and the GitHub data, with the API simulated | Every pull request                      |
+| Project data          | The content schema, while building                                                                                                                        | Every pull request and every deployment |
+| Known vulnerabilities | `pnpm audit`, fails on high or critical                                                                                                                   | Every pull request and weekly           |
+| Code scanning         | CodeQL for TypeScript and for the workflows                                                                                                               | Every pull request and weekly           |
+| Build                 | `astro build`                                                                                                                                             | Every pull request and every deployment |
 
 What is **not** checked yet: end-to-end tests, accessibility and performance scores. They arrive
 with the tests described in the roadmap, and their badges will be generated by CI, not written by
@@ -171,15 +177,18 @@ Requirements: Node.js 26 and pnpm 12 (the exact version is pinned in `package.js
 │   └── screenshots.ts      # Playwright: takes the screenshots from the running preview
 ├── src/
 │   ├── assets/projects/    # project cover screenshots, optimised by Astro when building
-│   ├── components/         # header, footer, theme switch, project card and cover, avatar
+│   ├── components/         # header, footer, theme and language switches, project card and cover
 │   ├── content/projects/   # one Markdown file per project: its data and its page's text
-│   ├── content.config.ts   # the projects collection and its schema
+│   │   └── es/             # the Spanish version of each project file: its words and text
+│   ├── content.config.ts   # the project collections and their schemas
 │   ├── data/               # navigation, technologies, tones, home and about page content
+│   ├── i18n/               # languages, every page's path in each, and the interface text
 │   ├── layouts/            # the HTML shell shared by every page
 │   ├── lib/                # project schema, list helpers and GitHub data, kept apart for unit tests
-│   ├── pages/              # one file per page; the path is the URL ([id] makes one per project)
+│   ├── pages/              # one file per address; es/ holds the Spanish ones ([id]: one per project)
 │   ├── scripts/            # browser code (theme handling)
-│   └── styles/             # design tokens, fonts and Tailwind
+│   ├── styles/             # design tokens, fonts and Tailwind
+│   └── views/              # each page's markup, written once and used in both languages
 ├── tests/                  # unit tests (Vitest)
 ├── astro.config.mjs
 ├── eslint.config.js
@@ -223,17 +232,17 @@ days. When a security fix cannot wait, the exception is added explicitly
 ## Limitations and roadmap
 
 Done so far: the pipeline (checks and deployment), the visual design, the home and about pages, the
-projects as Markdown files with their own pages, and GitHub data with a saved fallback. Planned, in
-order:
+projects with their own pages, GitHub data with a saved fallback, and the English and Spanish
+versions. Planned, in order:
 
-1. Spanish and English versions.
-2. End-to-end tests with Playwright, accessibility checks with axe and Lighthouse budgets.
-3. Search with Pagefind, sitemap and social preview images.
+1. End-to-end tests with Playwright, accessibility checks with axe and Lighthouse budgets. They will
+   also cover the redirect from the English home page, which unit tests cannot reach.
+2. Search with Pagefind, sitemap and social preview images.
 
 Known limitations today:
 
-- The site is in English only. TrailMate keeps a generated cover until there are in-game
-  screenshots without character or realm names.
+- On Spanish pages, what comes from GitHub stays in English: the descriptions of projects without a
+  project file (marked as English for screen readers) and the captions on generated covers.
 - Screenshots are remade by running the script, not on every build: after a design change, they
   are out of date until someone runs `pnpm screenshots`.
 - The saved copy of GitHub data is refreshed by hand (`pnpm github:snapshot`, then a pull request).
@@ -241,8 +250,8 @@ Known limitations today:
 - The test that keeps top-level routes clear of repository names reads the account's repository
   list from the saved copy, so a repository created after the last refresh is only covered once it
   has a project file or the copy is refreshed.
-- The version in each status tag is copied from the project into its file by hand; none of the
-  repositories has a GitHub release yet to read it from.
+- The version in the status tag of a project with a project file is copied into that file by hand;
+  projects without one read it from their latest GitHub release.
 - The project pages have no architecture diagram yet; each one links to its repository's
   documentation instead.
 - Contrast was measured when the colours were chosen, but it is not yet checked automatically; that

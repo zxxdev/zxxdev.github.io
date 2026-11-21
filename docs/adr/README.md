@@ -11,3 +11,4 @@ costs. New records copy [template.md](template.md) and take the next number.
 | [0004](0004-projects-as-a-content-collection.md)  | Keep each project in a Markdown file checked by a schema                  | accepted                            |
 | [0005](0005-github-data-at-build-time.md)         | Fetch GitHub data while building, with a committed fallback               | accepted, rebuild daily since 0006  |
 | [0006](0006-projects-from-the-repository-list.md) | List every public repository, with project files where they add something | accepted                            |
+| [0007](0007-spanish-and-english.md)               | Serve the site in English and Spanish, English at its existing addresses  | accepted                            |

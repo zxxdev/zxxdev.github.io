@@ -1,0 +1,50 @@
+---
+/*
+ * The link to this page in the other language. It shows that language's name
+ * written in that language ("Español" on an English page, "English" on a
+ * Spanish one): whoever cannot read the page must still be able to read the
+ * way out of it. So the link says which language it is in (lang) and which
+ * language it opens (hreflang).
+ *
+ * It is a plain link and works without JavaScript. The small script only
+ * remembers the choice, so the English home page stops sending a Spanish
+ * browser to the Spanish one once the visitor has picked English (ADR 0007).
+ */
+import { languageStorageKey, type Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
+
+interface Props {
+  /** The language the link opens. */
+  locale: Locale;
+  href: string;
+}
+
+const { locale, href } = Astro.props;
+---
+
+<a
+  {href}
+  lang={locale}
+  hreflang={locale}
+  data-language-switch={locale}
+  data-storage-key={languageStorageKey}
+  class="inline-flex h-10 shrink-0 items-center rounded-md border border-border bg-bg px-2.5 text-sm font-medium text-text no-underline transition-colors visited:text-text hover:border-border-strong"
+>
+  {ui[locale].languageName}
+</a>
+
+<script>
+  for (const link of document.querySelectorAll<HTMLAnchorElement>("[data-language-switch]")) {
+    link.addEventListener("click", () => {
+      const key = link.dataset["storageKey"];
+      const chosen = link.dataset["languageSwitch"];
+      if (!key || !chosen) return;
+      try {
+        localStorage.setItem(key, chosen);
+      } catch {
+        // Storage blocked: the link still opens the other language; the
+        // choice just is not remembered.
+      }
+    });
+  }
+</script>

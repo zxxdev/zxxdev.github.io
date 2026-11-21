@@ -3,12 +3,25 @@
  * Light/dark switch. Hidden until its script runs: without JavaScript the site
  * simply follows the system setting, and a button that does nothing is worse
  * than no button.
+ *
+ * Its label is in the page's language; the script reads both versions from
+ * data attributes, since it runs in the browser without the dictionary.
  */
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+
+const t = ui[Astro.props.locale];
 ---
 
 <button
   type="button"
   data-theme-toggle
+  data-label-dark={t.themeToDark}
+  data-label-light={t.themeToLight}
   hidden
   class="inline-flex size-10 items-center justify-center rounded-md border border-border bg-bg text-text transition-colors hover:border-border-strong"
 >
@@ -66,7 +79,10 @@
 
   function render(target: HTMLButtonElement): void {
     const current = effectiveTheme(document.documentElement.dataset["theme"], systemDark.matches);
-    const label = `Switch to ${otherTheme(current)} theme`;
+    const label =
+      (otherTheme(current) === "dark"
+        ? target.dataset["labelDark"]
+        : target.dataset["labelLight"]) ?? "";
     target.dataset["current"] = current;
     target.setAttribute("aria-label", label);
     target.title = label;

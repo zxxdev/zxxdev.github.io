@@ -10,23 +10,28 @@
  * `filter` marks the groups offered in the filter on the Projects page: what a
  * visitor looks for (a language, a framework), not the tools every repository
  * shares (test runners, CI).
+ *
+ * The groups' titles are interface text: src/i18n/ui.ts, under
+ * technologyGroups, by `id`. Technology names are never translated.
  */
 export const technologyGroups = [
-  { title: "Languages", filter: true, items: ["TypeScript", "Lua", "Go"] },
-  { title: "Web", filter: true, items: ["Astro", "Tailwind CSS"] },
+  { id: "languages", filter: true, items: ["TypeScript", "Lua", "Go"] },
+  { id: "web", filter: true, items: ["Astro", "Tailwind CSS"] },
   {
-    title: "Testing and code quality",
+    id: "quality",
     filter: false,
     items: ["Vitest", "Playwright", "ESLint", "Prettier", "luacheck", "busted"],
   },
   {
-    title: "CI and supply chain",
+    id: "ci",
     filter: false,
     items: ["GitHub Actions", "CodeQL", "Dependabot", "pnpm"],
   },
 ] as const;
 
 export type Technology = (typeof technologyGroups)[number]["items"][number];
+
+export type TechnologyGroupId = (typeof technologyGroups)[number]["id"];
 
 /** All the names, in screen order. */
 export const technologyNames: readonly Technology[] = technologyGroups.flatMap(

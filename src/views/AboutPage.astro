@@ -1,0 +1,213 @@
+---
+/*
+ * The About page, in either language. src/pages/about.astro and
+ * src/pages/es/sobre-mi.astro only choose the language.
+ */
+import Icon from "../components/Icon.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { profileUrl } from "../data/navigation";
+import { profile } from "../data/profile";
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = ui[locale].about;
+const { about, azureExams, path } = profile[locale];
+
+/** The page's sections, in order. The links work without JavaScript. */
+const sections = [
+  { id: "intro", label: t.sections.intro },
+  { id: "path", label: t.sections.path },
+  { id: "exams", label: t.sections.exams },
+] as const;
+
+// The exams sentence: each part of the text, then that exam's code. {" "}
+// before each code keeps the space: Astro drops a line break that sits next
+// to a tag, which would print "networking(AZ-700)".
+const examsSentence = about.examsSentence.parts.map((text, index) => ({
+  text,
+  code: azureExams[index]?.code ?? "",
+}));
+---
+
+<BaseLayout title={t.title} description={t.description} {locale} route={{ page: "about" }}>
+  <article class="max-w-[48rem] pt-10 sm:pt-18">
+    <h1 class="text-h2 font-medium tracking-[-0.02em]">{t.heading}</h1>
+
+    <!--
+      Section links. Sticky under the site header (56 px, 60 px from sm). Without
+      JavaScript they are plain anchor links; the script below only marks the
+      section being read with aria-current.
+
+      The sections use scroll-mt-32 (128 px) so a link does not hide the title:
+      header 56-60 px + this bar about 53 px (one row of text-sm links, py-2.5)
+      = about 113 px, plus some air. If the bar grows to two rows, raise it, and
+      ANCHOR_OFFSET in the script with it.
+    -->
+    <nav
+      aria-label={t.onThisPage}
+      class="sticky top-14 z-10 -mx-4 mt-5 border-b border-border bg-bg px-4 py-2.5 sm:top-15 sm:-mx-0 sm:px-0"
+      data-section-nav
+    >
+      <ul class="-ml-3 flex flex-wrap gap-1 text-sm font-medium">
+        {sections.map((section) => (
+          <li>
+            <a
+              href={`#${section.id}`}
+              class="block rounded-md px-3 py-1.5 text-muted no-underline visited:text-muted hover:text-text aria-[current=location]:bg-surface-2 aria-[current=location]:text-text"
+            >
+              {section.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div id="intro" class="mt-8 max-w-[42rem] scroll-mt-32 space-y-5 text-lead">
+      {about.intro.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+      <p>
+        {examsSentence.map((part) => (
+          <>
+            {part.text} <span class="whitespace-nowrap">({part.code})</span>
+          </>
+        ))}
+        {about.examsSentence.end}
+      </p>
+    </div>
+
+    <section id="path" aria-labelledby="path-title" class="mt-14 scroll-mt-32" data-tone="violet">
+      <h2
+        id="path-title"
+        class="border-b border-border pb-3.5 text-h3 font-medium tracking-[-0.01em]"
+      >
+        {t.pathHeading}
+      </h2>
+      <ol class="mt-6 max-w-[42rem]">
+        {path.map((stage, index) => (
+          <li class="relative border-l border-border pb-7 pl-6 last:pb-0">
+            <span
+              aria-hidden="true"
+              class="absolute top-1 -left-1 size-[9px] rounded-full bg-tone-line"
+            />
+            <p class="font-mono text-xs text-muted">{String(index + 1).padStart(2, "0")}</p>
+            <h3 class="font-semibold">{stage.title}</h3>
+            <p class="mt-1 text-sm text-muted">{stage.summary}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section id="exams" aria-labelledby="exams-title" class="mt-14 scroll-mt-32">
+      <h2
+        id="exams-title"
+        class="border-b border-border pb-3.5 text-h3 font-medium tracking-[-0.01em]"
+      >
+        {t.examsHeading}
+      </h2>
+      <p class="mt-3.5 text-sm text-muted">{t.examsNote}</p>
+      <ul class="mt-6 grid gap-4 sm:grid-cols-3">
+        {azureExams.map((exam) => (
+          <li data-tone="violet" class="flex items-start gap-3 rounded-xl border border-border p-5">
+            <span class="grid size-8 shrink-0 place-items-center rounded-md bg-tone-bg text-tone-line">
+              <Icon name="badge" />
+            </span>
+            <div>
+              <h3 class="text-sm font-semibold">{exam.area}</h3>
+              <p class="mt-1 font-mono text-xs text-muted">
+                {exam.code}
+                {exam.retired && <span class="whitespace-nowrap"> · {t.retiredExam}</span>}
+              </p>
+              <!-- The official title, as Microsoft lists it: always in English. -->
+              <p
+                lang={locale === "en" ? undefined : "en"}
+                class="mt-1 text-sm leading-relaxed text-muted"
+              >
+                {exam.name}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <p class="mt-14">
+      {t.contactBefore}
+      <a href={profileUrl}>GitHub</a>
+      {t.contactAfter}
+    </p>
+  </article>
+</BaseLayout>
+
+<script>
+  // Marks the section being read in the "On this page" links. Progressive:
+  // without this script the links still work, they just are not highlighted.
+  const links = [
+    ...document.querySelectorAll<HTMLAnchorElement>("[data-section-nav] a[href^='#']"),
+  ];
+  const targets = links
+    .map((link) => document.getElementById(link.hash.slice(1)))
+    .filter((target): target is HTMLElement => target !== null);
+
+  const mark = (id: string): void => {
+    for (const link of links) {
+      if (link.hash === `#${id}`) link.setAttribute("aria-current", "location");
+      else link.removeAttribute("aria-current");
+    }
+  };
+
+  /** Where a section lands after its link is clicked: the scroll-mt-32 offset, 128 px. */
+  const ANCHOR_OFFSET = 128;
+
+  /**
+   * The current section is the last one whose top has passed a line a third of
+   * the way down the screen, and never above the anchor offset, so the section
+   * a link just jumped to is the one marked even on a short screen. At the very
+   * bottom of a page that scrolls, it is the last section, which may be too
+   * short to ever reach that line.
+   */
+  const update = (): void => {
+    const first = targets[0];
+    const last = targets[targets.length - 1];
+    // A page that fits on the screen has nothing to follow: mark the first section.
+    const scrollable = document.documentElement.scrollHeight > window.innerHeight + 2;
+    if (!scrollable) {
+      if (first) mark(first.id);
+      return;
+    }
+    const scrolled = window.scrollY > 0;
+    const atBottom =
+      window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+    if (scrolled && atBottom && last) {
+      mark(last.id);
+      return;
+    }
+    const line = Math.max(window.innerHeight / 3, ANCHOR_OFFSET + 1);
+    let current = first;
+    for (const target of targets) {
+      if (target.getBoundingClientRect().top <= line) current = target;
+    }
+    if (current) mark(current.id);
+  };
+
+  if (targets.length > 0) {
+    let queued = false;
+    // At most one update per frame, on scroll and when the window changes size.
+    const schedule = (): void => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        update();
+      });
+    };
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+    update();
+  }
+</script>

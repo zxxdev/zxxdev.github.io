@@ -2,36 +2,105 @@
 import geistLatin from "@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
+import { opensSpanishHome } from "../i18n/home-redirect";
+import {
+  defaultLocale,
+  languageStorageKey,
+  locales,
+  otherLocale,
+  type Locale,
+} from "../i18n/locales";
+import { alternates, pagePaths, routePath, type Route } from "../i18n/routes";
+import { ui } from "../i18n/ui";
 import "../styles/global.css";
 
 interface Props {
   title: string;
   description: string;
+  locale: Locale;
+  /**
+   * The page, so the head can list its version in every language and the
+   * header can link the other one. Left out on the "page not found" page,
+   * which has no address of its own.
+   */
+  route?: Route;
 }
 
-const { title, description } = Astro.props;
+const { title, description, locale, route } = Astro.props;
+const t = ui[locale];
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const versions = route ? alternates(route) : [];
+// The language switch opens this page in the other language, or that language's home.
+const other = otherLocale(locale);
+const otherPath = route ? routePath(other, route) : pagePaths[other].home;
+// Only the English home page sends a Spanish browser to the Spanish one (ADR 0007).
+const isEnglishHome = locale === defaultLocale && route?.page === "home";
+/*
+ * The redirect runs before the page is drawn, so it is an inline script. Its
+ * decision is opensSpanishHome() itself, written into the page with
+ * toString(): the code the unit tests check is the code the browser runs.
+ * Every value it needs goes in as JSON.
+ */
+const sitePaths = [...new Set(locales.flatMap((each) => Object.values(pagePaths[each])))];
+const redirectScript = `(() => {
+  try {
+    const opensSpanishHome = ${opensSpanishHome.toString()};
+    const go = opensSpanishHome({
+      saved: localStorage.getItem(${JSON.stringify(languageStorageKey)}),
+      languages: navigator.languages,
+      referrer: document.referrer,
+      origin: window.location.origin,
+      sitePaths: ${JSON.stringify(sitePaths)},
+    });
+    if (go) window.location.replace(${JSON.stringify(pagePaths.es.home)});
+  } catch {
+    /* Storage cannot be read: stay on this page. */
+  }
+})();`;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={locale}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    <!--
+      The same page in each language, so search engines show the right one and
+      do not treat them as duplicates. x-default is the version for a language
+      the site does not have: English.
+    -->
+    {versions.map((version) => (
+      <link rel="alternate" hreflang={version.locale} href={new URL(version.path, Astro.site)} />
+    ))}
+    {route && (
+      <link
+        rel="alternate"
+        hreflang="x-default"
+        href={new URL(routePath(defaultLocale, route), Astro.site)}
+      />
+    )}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#080808" media="(prefers-color-scheme: dark)" />
     <!-- Only the main font is preloaded; the rest load when a page needs them. -->
     <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin />
     <!--
+      English home page only: a visitor from outside the site whose browser
+      prefers Spanish, and who never chose a language, goes to /es/ before
+      anything is drawn. See src/i18n/home-redirect.ts.
+    -->
+    {isEnglishHome && <script is:inline set:html={redirectScript} />}
+    <!--
       Runs before the page is painted, so a saved theme is applied without a flash
       of the other one. With no saved choice it does nothing and CSS follows the
-      system setting.
+      system setting. It also marks the page as having JavaScript ("js"), so CSS
+      can fold the mobile menu from the first frame (Header.astro).
     -->
     <script is:inline>
+      document.documentElement.classList.add("js");
       try {
         const saved = localStorage.getItem("theme");
         if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
@@ -46,9 +115,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       href="#content"
       class="sr-only rounded-md bg-accent px-4 py-2 font-medium text-on-accent no-underline focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-30 visited:text-on-accent"
     >
-      Skip to content
+      {t.skipToContent}
     </a>
-    <Header />
+    <Header {locale} {otherPath} />
     <main
       id="content"
       tabindex="-1"
@@ -56,6 +125,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     >
       <slot />
     </main>
-    <Footer />
+    <Footer {locale} />
   </body>
 </html>
