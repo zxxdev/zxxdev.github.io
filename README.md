@@ -117,7 +117,7 @@ More detail, including how a page is put together: [docs/architecture.md](docs/a
 | Sharp look, one colour per project kind    | Nothing blurred, and colour that means something instead of decoration.                       | [ADR 0003](docs/adr/0003-sharp-redesign-and-project-tones.md) |
 | GitHub data at build time, with a fallback | No API limit or token in the visitor's browser, and a GitHub outage never stops a deployment. | [ADR 0005](docs/adr/0005-github-data-at-build-time.md)        |
 | Projects as Markdown with a schema         | Adding a project is adding a file, and a broken file stops the build instead of the page.     | [ADR 0004](docs/adr/0004-projects-as-a-content-collection.md) |
-| English where it was, Spanish under `/es/` | No link already shared breaks, and each language can be linked and indexed on its own. | [ADR 0007](docs/adr/0007-spanish-and-english.md) |
+| English where it was, Spanish under `/es/` | No link already shared breaks, and each language can be linked and indexed on its own.        | [ADR 0007](docs/adr/0007-spanish-and-english.md)              |
 | Strict TypeScript                          | Mistakes such as a possibly missing value are caught when building, not by a visitor.         | —                                                             |
 | Actions pinned by commit SHA               | A tag can be moved to different code; a commit SHA cannot.                                    | —                                                             |
 | 7-day release cooldown for dependencies    | A hijacked version is usually caught and removed before a week has passed.                    | [Dependency security](#dependency-security)                   |
@@ -126,16 +126,16 @@ All records: [docs/adr](docs/adr/README.md).
 
 ## Quality
 
-| Check                 | Tool                                                                                                           | When                                    |
-| --------------------- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| Lint                  | ESLint with the strict TypeScript and Astro rules                                                              | Every pull request                      |
-| Formatting            | Prettier, with the Astro and Tailwind plugins                                                                  | Every pull request                      |
-| Types                 | `astro check` (TypeScript in strict mode)                                                                      | Every pull request                      |
+| Check                 | Tool                                                                                                                                                      | When                                    |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| Lint                  | ESLint with the strict TypeScript and Astro rules                                                                                                         | Every pull request                      |
+| Formatting            | Prettier, with the Astro and Tailwind plugins                                                                                                             | Every pull request                      |
+| Types                 | `astro check` (TypeScript in strict mode)                                                                                                                 | Every pull request                      |
 | Unit tests            | Vitest: the project schema, the list helpers, the top-level routes, every page and project in both languages, and the GitHub data, with the API simulated | Every pull request                      |
-| Project data          | The content schema, while building                                                                             | Every pull request and every deployment |
-| Known vulnerabilities | `pnpm audit`, fails on high or critical                                                                        | Every pull request and weekly           |
-| Code scanning         | CodeQL for TypeScript and for the workflows                                                                    | Every pull request and weekly           |
-| Build                 | `astro build`                                                                                                  | Every pull request and every deployment |
+| Project data          | The content schema, while building                                                                                                                        | Every pull request and every deployment |
+| Known vulnerabilities | `pnpm audit`, fails on high or critical                                                                                                                   | Every pull request and weekly           |
+| Code scanning         | CodeQL for TypeScript and for the workflows                                                                                                               | Every pull request and weekly           |
+| Build                 | `astro build`                                                                                                                                             | Every pull request and every deployment |
 
 What is **not** checked yet: end-to-end tests, accessibility and performance scores. They arrive
 with the tests described in the roadmap, and their badges will be generated by CI, not written by
