@@ -5,13 +5,22 @@ import ProjectCard from "../components/ProjectCard.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import TechPill from "../components/TechPill.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
 import { paths, profileUrl } from "../data/navigation";
 import { principles } from "../data/profile";
-import { sortProjects, technologiesInUse } from "../lib/projects";
+import { technologiesInUse } from "../lib/projects";
+import { getProjects } from "../lib/site-projects";
 
-const projects = sortProjects(await getCollection("projects"));
-const featuredProjects = projects.filter((project) => project.data.featured);
+/** Cards on the home page: the featured projects, then the latest others up to this many. */
+const HOME_CARDS = 4;
+
+const projects = await getProjects();
+const featured = projects.filter((project) => project.data.featured);
+// Projects from GitHub come last in the list, newest push first, so a new
+// repository reaches the home page without anyone choosing it.
+const featuredProjects = [
+  ...featured,
+  ...projects.filter((project) => !project.data.featured),
+].slice(0, Math.max(featured.length, HOME_CARDS));
 // Built from the projects: a technology no project uses is not listed.
 const technologies = technologiesInUse(projects.map((project) => project.data));
 

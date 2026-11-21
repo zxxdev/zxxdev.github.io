@@ -21,8 +21,8 @@ flowchart LR
 
 - `ci.yml` runs on every pull request, on every push to `main` and once a week, because new
   vulnerabilities are published after dependencies are installed.
-- `deploy.yml` runs on every push to `main`, every Monday (so the GitHub data is at most a week
-  old), and can also be started by hand from the Actions tab (`workflow_dispatch`) to republish
+- `deploy.yml` runs on every push to `main`, every day (so a new repository appears on the site by
+  the next day, and the GitHub data is at most a day old), and can also be started by hand from the Actions tab (`workflow_dispatch`) to republish
   `main` without a new change. It is the only workflow that can
   write to Pages. Its build job has read access only; the deploy job gets `pages: write` and
   `id-token: write`, and nothing else.

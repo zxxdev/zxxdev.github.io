@@ -4,10 +4,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-  # Weekly rebuild, so the GitHub data on the site (last change, stars, releases)
-  # is never more than a week old even when nothing else changes.
+  # Daily rebuild: a new repository appears on the site by the next day, and
+  # the GitHub data (last change, stars, releases) is never more than a day old.
   schedule:
-    - cron: "41 5 * * 1"
+    - cron: "41 5 * * *"
 
 # Only one deployment at a time; never cancel one that is already running.
 concurrency:

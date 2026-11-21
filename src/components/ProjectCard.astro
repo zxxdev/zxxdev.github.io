@@ -13,17 +13,17 @@
  * - data-technologies lists the stack as slugs, for the filter on the Projects
  *   page.
  */
-import type { CollectionEntry } from "astro:content";
 import { projectPath } from "../data/navigation";
 import { technologySlug } from "../data/technologies";
 import { formatDate, isoDate } from "../lib/format";
 import { repositoryStats } from "../lib/github-data";
+import type { SiteProject } from "../lib/site-projects";
 import ProjectVisual from "./ProjectVisual.astro";
 import StatusTag from "./StatusTag.astro";
 import TechPill from "./TechPill.astro";
 
 interface Props {
-  project: CollectionEntry<"projects">;
+  project: SiteProject;
 }
 
 const { id, data } = Astro.props.project;
@@ -68,12 +68,14 @@ const stats = await repositoryStats(data.repo);
       )}
     </p>
     <p class="mt-2.5 text-sm leading-relaxed text-muted">{data.summary}</p>
-    <ul aria-label="Stack" class="mt-4 flex flex-wrap gap-1.5">
-      {data.stack.map((item) => (
-        <li>
-          <TechPill name={item} />
-        </li>
-      ))}
-    </ul>
+    {data.stack.length > 0 && (
+      <ul aria-label="Stack" class="mt-4 flex flex-wrap gap-1.5">
+        {data.stack.map((item) => (
+          <li>
+            <TechPill name={item} />
+          </li>
+        ))}
+      </ul>
+    )}
   </div>
 </li>

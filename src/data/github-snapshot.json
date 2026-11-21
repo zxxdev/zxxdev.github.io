@@ -1,13 +1,75 @@
 {
-  "fetchedAt": "2026-11-20T18:49:53.576Z",
+  "fetchedAt": "2026-11-21T00:22:45.523Z",
   "repositories": [
+    "DispelGlow",
+    "RetailArenaCountdown",
     "TrailMate",
     "zxxdev",
     "zxxdev.github.io"
   ],
   "stats": {
+    "zxxdev/dispelglow": {
+      "fullName": "zxxdev/DispelGlow",
+      "description": "World of Warcraft 3.3.5a (Wrath of the Lich King) addon: enemy Magic buffs glow on your target and focus frames when your character can purge or dispel them.",
+      "topics": [
+        "addon",
+        "arena",
+        "dispel",
+        "lua",
+        "purge",
+        "pvp",
+        "world-of-warcraft",
+        "wotlk",
+        "wow-3-3-5a",
+        "wow-addon"
+      ],
+      "pushedAt": "2026-11-21T00:16:29Z",
+      "stars": 0,
+      "languages": [
+        {
+          "name": "Lua",
+          "share": 1
+        }
+      ],
+      "latestRelease": {
+        "tag": "v1.0.0",
+        "url": "https://github.com/zxxdev/DispelGlow/releases/tag/v1.0.0",
+        "publishedAt": "2026-11-21T00:16:36Z"
+      }
+    },
+    "zxxdev/retailarenacountdown": {
+      "fullName": "zxxdev/RetailArenaCountdown",
+      "description": "World of Warcraft 3.3.5a (Wrath of the Lich King) addon: the modern arena countdown, with big numbers, sounds and your faction's crest when the gates open. Works without Gladdy.",
+      "topics": [
+        "addon",
+        "arena",
+        "countdown",
+        "gladdy",
+        "lua",
+        "pvp",
+        "world-of-warcraft",
+        "wotlk",
+        "wow-3-3-5a",
+        "wow-addon"
+      ],
+      "pushedAt": "2026-11-21T00:16:32Z",
+      "stars": 0,
+      "languages": [
+        {
+          "name": "Lua",
+          "share": 1
+        }
+      ],
+      "latestRelease": {
+        "tag": "v1.0.0",
+        "url": "https://github.com/zxxdev/RetailArenaCountdown/releases/tag/v1.0.0",
+        "publishedAt": "2026-11-21T00:16:40Z"
+      }
+    },
     "zxxdev/trailmate": {
       "fullName": "zxxdev/TrailMate",
+      "description": "Leveling coach addon for World of Warcraft: Forever: quest guides, its own arrow and map marks, talents, dungeons and an optional AI companion chat. Alpha.",
+      "topics": [],
       "pushedAt": "2026-11-18T21:18:02Z",
       "stars": 0,
       "languages": [
@@ -24,24 +86,33 @@
     },
     "zxxdev/zxxdev.github.io": {
       "fullName": "zxxdev/zxxdev.github.io",
-      "pushedAt": "2026-11-20T18:35:08Z",
+      "description": "Personal site and project portfolio, built with Astro and deployed to GitHub Pages.",
+      "topics": [
+        "astro",
+        "github-pages",
+        "personal-website",
+        "portfolio",
+        "tailwindcss",
+        "typescript"
+      ],
+      "pushedAt": "2026-11-20T18:59:48Z",
       "stars": 0,
       "languages": [
         {
-          "name": "Astro",
-          "share": 0.5902691887959258
+          "name": "TypeScript",
+          "share": 0.487027058932652
         },
         {
-          "name": "TypeScript",
-          "share": 0.24683521280465623
+          "name": "Astro",
+          "share": 0.4230182219861206
         },
         {
           "name": "CSS",
-          "share": 0.14872680974899963
+          "share": 0.08338603458888805
         },
         {
           "name": "Other",
-          "share": 0.014168788650418334
+          "share": 0.0065686844923393455
         }
       ],
       "latestRelease": null

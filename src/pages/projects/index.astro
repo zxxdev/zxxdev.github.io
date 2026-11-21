@@ -8,13 +8,14 @@
  * a filtered list can be linked; replaceState keeps the Back button for leaving
  * the page, not for undoing filters.
  */
-import { getCollection } from "astro:content";
 import ProjectCard from "../../components/ProjectCard.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { technologySlug } from "../../data/technologies";
-import { filterTechnologies, sortProjects } from "../../lib/projects";
+import { filterTechnologies } from "../../lib/projects";
+import { getProjects } from "../../lib/site-projects";
 
-const projects = sortProjects(await getCollection("projects"));
+// The project files and every other public repository, from GitHub.
+const projects = await getProjects();
 const technologies = filterTechnologies(projects.map((project) => project.data));
 
 /*

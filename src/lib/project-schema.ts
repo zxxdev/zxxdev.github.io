@@ -22,11 +22,18 @@ const version = z
  * - live: published and in use as it is.
  * - early: an alpha or a first version, with the version exactly as the
  *   project declares it. The label on screen is built from it, never typed.
+ * - development: no version published yet.
  */
 const status = z.discriminatedUnion("kind", [
   z.strictObject({ kind: z.literal("live") }),
   z.strictObject({ kind: z.literal("early"), version }),
+  z.strictObject({ kind: z.literal("development") }),
 ]);
+
+/** True for a version the status can hold: 0.1.0, 1.0.0, 0.1.0-alpha. */
+export function isVersion(value: string): boolean {
+  return version.safeParse(value).success;
+}
 
 /** The drawing on a generated cover. */
 export const coverArts = ["browser", "arrow"] as const;
