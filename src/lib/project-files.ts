@@ -7,6 +7,9 @@ import { readdirSync, readFileSync } from "node:fs";
 
 export const projectsDir = new URL("../content/projects/", import.meta.url);
 
+/** The Spanish versions of the project files, with the same names. */
+export const spanishProjectsDir = new URL("../content/projects/es/", import.meta.url);
+
 /** The project files: one Markdown file per project. */
 export function projectFiles(dir: URL = projectsDir): string[] {
   return readdirSync(dir)

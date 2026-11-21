@@ -1,24 +1,79 @@
 import { describe, expect, it } from "vitest";
-import { isInSection, projectPath } from "../src/data/navigation";
 import { technologySlug, type Technology } from "../src/data/technologies";
 import {
+  applyTranslation,
   filterTechnologies,
   sortProjects,
   statusLabel,
   technologiesInUse,
 } from "../src/lib/projects";
+import type { Project } from "../src/lib/project-schema";
 
 describe("statusLabel", () => {
-  it("says Live for a live project", () => {
-    expect(statusLabel({ kind: "live" })).toBe("Live");
+  it("says Live for a live project, in the page's language", () => {
+    expect(statusLabel({ kind: "live" }, "en")).toBe("Live");
+    expect(statusLabel({ kind: "live" }, "es")).toBe("Publicado");
   });
 
-  it("turns a pre-release tag into a word before the version", () => {
-    expect(statusLabel({ kind: "early", version: "0.1.0-alpha" })).toBe("Alpha · 0.1.0");
+  it("says In development without a version, in the page's language", () => {
+    expect(statusLabel({ kind: "development" }, "en")).toBe("In development");
+    expect(statusLabel({ kind: "development" }, "es")).toBe("En desarrollo");
+  });
+
+  it("turns a pre-release tag into a word before the version, the same in every language", () => {
+    expect(statusLabel({ kind: "early", version: "0.1.0-alpha" }, "en")).toBe("Alpha · 0.1.0");
+    expect(statusLabel({ kind: "early", version: "0.1.0-alpha" }, "es")).toBe("Alpha · 0.1.0");
   });
 
   it("shows a plain version with a v", () => {
-    expect(statusLabel({ kind: "early", version: "0.3.0" })).toBe("v0.3.0");
+    expect(statusLabel({ kind: "early", version: "0.3.0" }, "en")).toBe("v0.3.0");
+  });
+});
+
+describe("applyTranslation", () => {
+  const base: Project = {
+    title: "Portfolio site",
+    repo: "zxxdev/zxxdev.github.io",
+    summary: "This site.",
+    tone: "violet",
+    status: { kind: "live" },
+    stack: ["Astro"],
+    tooling: [],
+    cover: { kind: "generated", caption: "github pages", art: "browser" },
+    featured: true,
+    order: 1,
+  };
+
+  it("takes the words from the translation and everything else from the project file", () => {
+    const translated = applyTranslation(base, {
+      title: "Web personal",
+      summary: "Esta web.",
+      cover: "github pages en español",
+    });
+    expect(translated).toEqual({
+      ...base,
+      title: "Web personal",
+      summary: "Esta web.",
+      cover: { kind: "generated", caption: "github pages en español", art: "browser" },
+    });
+  });
+
+  it("keeps the English title when the translation has none", () => {
+    expect(applyTranslation(base, { summary: "Esta web.", cover: "x" }).title).toBe(
+      "Portfolio site",
+    );
+  });
+
+  it("puts the cover text in the alternative text of a picture", () => {
+    const withPicture: Project = {
+      ...base,
+      cover: { kind: "repository", url: "https://raw.githubusercontent.com/a/b/c.png", alt: "A" },
+    };
+    expect(applyTranslation(withPicture, { summary: "S", cover: "Una imagen" }).cover).toEqual({
+      kind: "repository",
+      url: "https://raw.githubusercontent.com/a/b/c.png",
+      alt: "Una imagen",
+    });
   });
 });
 
@@ -45,10 +100,10 @@ describe("technologies built from the projects", () => {
 
   it("lists only what some project uses, in catalog order, without empty groups", () => {
     expect(technologiesInUse(projects)).toEqual([
-      { title: "Languages", items: ["TypeScript", "Lua"] },
-      { title: "Web", items: ["Astro"] },
-      { title: "Testing and code quality", items: ["Vitest", "busted"] },
-      { title: "CI and supply chain", items: ["GitHub Actions"] },
+      { id: "languages", items: ["TypeScript", "Lua"] },
+      { id: "web", items: ["Astro"] },
+      { id: "quality", items: ["Vitest", "busted"] },
+      { id: "ci", items: ["GitHub Actions"] },
     ]);
   });
 
@@ -63,17 +118,5 @@ describe("technologySlug", () => {
     expect(technologySlug("Tailwind CSS")).toBe("tailwind-css");
     expect(technologySlug("GitHub Actions")).toBe("github-actions");
     expect(technologySlug("pnpm")).toBe("pnpm");
-  });
-});
-
-describe("project addresses", () => {
-  it("puts a project's page under /projects/", () => {
-    expect(projectPath("trailmate")).toBe("/projects/trailmate/");
-  });
-
-  it("marks Projects as the section of a project's page, but not Home", () => {
-    expect(isInSection("/projects/", "/projects/trailmate/")).toBe(true);
-    expect(isInSection("/projects/", "/about/")).toBe(false);
-    expect(isInSection("/", "/projects/trailmate/")).toBe(false);
   });
 });

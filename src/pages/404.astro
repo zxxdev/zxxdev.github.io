@@ -1,15 +1,32 @@
 ---
+/*
+ * GitHub Pages serves this one page for every missing address, in either
+ * language (/es/proyectos/old/ gets it too). So it says the same in both,
+ * each part marked with its language, and links both home pages.
+ */
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { paths } from "../data/navigation";
+import { pagePaths } from "../i18n/routes";
 ---
 
-<BaseLayout title="Page not found · zxxdev" description="This page doesn't exist.">
+<BaseLayout
+  title="Page not found · Página no encontrada · zxxdev"
+  description="This page doesn't exist. Esta página no existe."
+  locale="en"
+>
   <section class="max-w-[42rem] pt-10 sm:pt-18">
     <p class="font-mono text-sm text-muted">404</p>
     <h1 class="mt-2 text-h2 font-medium tracking-[-0.02em]">This page doesn't exist.</h1>
     <p class="mt-4 text-muted">The link may be out of date.</p>
-    <p class="mt-8">
-      <a href={paths.home}>Back to home</a>
+    <p class="mt-4">
+      <a href={pagePaths.en.home}>Back to home</a>
     </p>
+
+    <div lang="es" class="mt-12 border-t border-border pt-8">
+      <p class="text-h3 font-medium tracking-[-0.01em]">Esta página no existe.</p>
+      <p class="mt-4 text-muted">Puede que el enlace sea antiguo.</p>
+      <p class="mt-4">
+        <a href={pagePaths.es.home}>Volver al inicio</a>
+      </p>
+    </div>
   </section>
 </BaseLayout>

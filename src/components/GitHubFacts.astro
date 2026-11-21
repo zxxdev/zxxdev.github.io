@@ -15,14 +15,20 @@
  *   same in words. Each language keeps one shade of the project's tone, with
  *   the same swatch in the list; "Other" is not a language, so it is grey.
  */
+import type { Locale } from "../i18n/locales";
+import { ui } from "../i18n/ui";
 import { formatDate, formatShare, isoDate } from "../lib/format";
 import type { RepositoryStats } from "../lib/github";
 
 interface Props {
   stats: RepositoryStats;
+  locale: Locale;
 }
 
-const { stats } = Astro.props;
+const { stats, locale } = Astro.props;
+const t = ui[locale].github;
+// "Other" is GitHub's name for the rest of the code, not a language: translate it.
+const languageName = (name: string): string => (name === "Other" ? t.otherLanguages : name);
 // Shade per position: the main language solid, then lighter. 25% is the
 // lightest that still stands out from the empty track on a dark background.
 const shades = ["opacity-100", "opacity-65", "opacity-40", "opacity-25"];
@@ -32,24 +38,24 @@ const shadeOf = (name: string, index: number): string[] =>
 
 <dl class="grid gap-2 text-sm">
   <div class="flex justify-between gap-4">
-    <dt class="text-muted">Last updated</dt>
+    <dt class="text-muted">{t.lastUpdated}</dt>
     <dd class="font-mono">
-      <time datetime={isoDate(stats.pushedAt)}>{formatDate(stats.pushedAt)}</time>
+      <time datetime={isoDate(stats.pushedAt)}>{formatDate(stats.pushedAt, locale)}</time>
     </dd>
   </div>
   <div class="flex justify-between gap-4">
-    <dt class="text-muted">GitHub release</dt>
+    <dt class="text-muted">{t.release}</dt>
     <dd class="font-mono">
       {stats.latestRelease ? (
         <a href={stats.latestRelease.url}>{stats.latestRelease.tag}</a>
       ) : (
-        <span class="font-sans text-muted">None yet</span>
+        <span class="font-sans text-muted">{t.noRelease}</span>
       )}
     </dd>
   </div>
   {stats.stars > 0 && (
     <div class="flex justify-between gap-4">
-      <dt class="text-muted">Stars</dt>
+      <dt class="text-muted">{t.stars}</dt>
       <dd class="font-mono">{stats.stars}</dd>
     </div>
   )}
@@ -58,7 +64,7 @@ const shadeOf = (name: string, index: number): string[] =>
 {stats.languages.length > 0 && (
   <div class="mt-5">
     <p id="github-languages" class="text-sm text-muted">
-      Languages
+      {t.languages}
     </p>
     <div aria-hidden="true" class="mt-2.5 flex h-2 gap-0.5 overflow-hidden rounded-full">
       {stats.languages.map((language, index) => (
@@ -76,9 +82,9 @@ const shadeOf = (name: string, index: number): string[] =>
               aria-hidden="true"
               class:list={["size-2 shrink-0 rounded-xs", shadeOf(language.name, index)]}
             />
-            {language.name}
+            {languageName(language.name)}
           </span>
-          <span class="font-mono text-xs leading-5 text-muted">{formatShare(language.share)}</span>
+          <span class="font-mono text-xs leading-5 text-muted">{formatShare(language.share, locale)}</span>
         </li>
       ))}
     </ul>

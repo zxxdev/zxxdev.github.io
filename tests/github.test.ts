@@ -413,13 +413,22 @@ describe("languageShares", () => {
 
 describe("format", () => {
   it("writes dates as day, short month and year, in UTC", () => {
-    expect(formatDate("2026-11-18T23:30:00Z")).toBe("18 Nov 2026");
+    expect(formatDate("2026-11-18T23:30:00Z", "en")).toBe("18 Nov 2026");
     expect(isoDate("2026-11-18T23:30:00Z")).toBe("2026-11-18");
   });
 
+  it("writes dates the Spanish way on Spanish pages", () => {
+    expect(formatDate("2026-11-18T23:30:00Z", "es")).toBe("18 nov 2026");
+  });
+
   it("writes shares with one decimal, never a nonzero share as 0.0%", () => {
-    expect(formatShare(0.7843)).toBe("78.4%");
-    expect(formatShare(1)).toBe("100.0%");
-    expect(formatShare(0.0004)).toBe("<0.1%");
+    expect(formatShare(0.7843, "en")).toBe("78.4%");
+    expect(formatShare(1, "en")).toBe("100.0%");
+    expect(formatShare(0.0004, "en")).toBe("<0.1%");
+  });
+
+  it("writes shares with a decimal comma and a non-breaking space in Spanish", () => {
+    expect(formatShare(0.7843, "es")).toBe("78,4 %");
+    expect(formatShare(0.0004, "es")).toBe("<0,1 %");
   });
 });

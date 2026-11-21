@@ -1,23 +1,35 @@
 ---
-import { isCurrent, isInSection, navigation, paths } from "../data/navigation";
+import { navigation } from "../data/navigation";
+import { otherLocale, type Locale } from "../i18n/locales";
+import { isCurrent, isInSection, pagePaths } from "../i18n/routes";
+import { ui } from "../i18n/ui";
 import Avatar from "./Avatar.astro";
+import LanguageSwitch from "./LanguageSwitch.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 
+interface Props {
+  locale: Locale;
+  /** This page in the other language. */
+  otherPath: string;
+}
+
+const { locale, otherPath } = Astro.props;
+const t = ui[locale];
 const currentPath = Astro.url.pathname;
 ---
 
 <!-- Sticky with a solid background: a translucent, blurred header looks soft. -->
 <header class="sticky top-0 z-20 border-b border-border bg-bg">
-  <div class="mx-auto flex h-14 max-w-5xl items-center gap-3 px-4 sm:h-15 sm:gap-6 sm:px-6">
+  <div class="mx-auto flex h-14 max-w-5xl items-center gap-2 px-4 sm:h-15 sm:gap-6 sm:px-6">
     <a
-      href={paths.home}
+      href={pagePaths[locale].home}
       class="flex items-center gap-2.5 font-mono text-[0.9375rem] font-medium text-text no-underline visited:text-text"
     >
       <Avatar size={28} />
       zxxdev
     </a>
 
-    <nav aria-label="Main" class="ml-auto" data-site-nav>
+    <nav aria-label={t.mainNavigation} class="ml-auto" data-site-nav>
       <button
         type="button"
         data-menu-button
@@ -40,7 +52,7 @@ const currentPath = Astro.url.pathname;
           <path d="M4 7h16M4 12h16M4 17h16"></path>
         </svg>
         <!-- Fixed label: whether it is open is told by aria-expanded, not by the text. -->
-        <span>Menu</span>
+        <span>{t.menu}</span>
       </button>
 
       <ul
@@ -48,7 +60,7 @@ const currentPath = Astro.url.pathname;
         class="nav-list flex items-center gap-1 text-sm font-medium"
         data-menu-list
       >
-        {navigation.map((item) => {
+        {navigation(locale).map((item) => {
           // "page" on the page itself; "true" inside its section (a project's
           // page is inside Projects). Both look the same.
           const current = isCurrent(item.href, currentPath)
@@ -76,7 +88,8 @@ const currentPath = Astro.url.pathname;
       </ul>
     </nav>
 
-    <ThemeToggle />
+    <LanguageSwitch locale={otherLocale(locale)} href={otherPath} />
+    <ThemeToggle {locale} />
   </div>
 </header>
 

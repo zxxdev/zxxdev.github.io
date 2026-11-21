@@ -27,6 +27,8 @@ nothing to host, leave nothing to patch and read well on a phone.
   Pages. There is no server and no database behind it.
 - Each project is a Markdown file checked against a schema. If a file misses a field or names a
   technology the site does not know, the build stops and says which file and which field.
+- The site is in English and Spanish, each language at its own addresses. Each language's words are
+  kept in one place, and a test fails if a page or a project is missing in either.
 - The technologies on the home page are collected from the projects, so nothing is listed that no
   project uses.
 - The filter on the Projects page is a small script. Without JavaScript the whole list still shows.
@@ -48,9 +50,10 @@ nothing to host, leave nothing to patch and read well on a phone.
   one Markdown file per project, with a schema the build enforces.
 - [GitHub data at build time](https://github.com/zxxdev/zxxdev.github.io/blob/main/docs/adr/0005-github-data-at-build-time.md):
   no rate limit or token in the browser, and a GitHub outage never stops a deployment.
+- [Spanish and English](https://github.com/zxxdev/zxxdev.github.io/blob/main/docs/adr/0007-spanish-and-english.md):
+  English keeps its addresses and Spanish lives under `/es/`.
 
 ## Not done yet
 
-The Spanish version, end-to-end and accessibility tests, and search.
-They are listed in order in the
+End-to-end and accessibility tests, and search. They are listed in order in the
 [roadmap](https://github.com/zxxdev/zxxdev.github.io#limitations-and-roadmap).

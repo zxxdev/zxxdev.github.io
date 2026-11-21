@@ -100,6 +100,22 @@ export function projectSchema({ image }: SchemaContext) {
     );
 }
 
+/**
+ * A project file's translation (src/content/projects/es/<id>.md): only the
+ * words, and the text of the page as its body. Everything else (repository,
+ * tone, status, technologies, cover image, order) comes from the English file
+ * with the same name, so it is never written twice and cannot drift.
+ */
+export const projectTranslationSchema = z.strictObject({
+  /** Only when the name itself is translated; otherwise the English title is used. */
+  title: z.string().min(1).optional(),
+  summary: z.string().min(1).max(140),
+  /** The cover's alternative text (screenshot) or caption (generated cover), in this language. */
+  cover: z.string().min(1),
+});
+
+export type ProjectTranslation = z.output<typeof projectTranslationSchema>;
+
 /** A project's data once the schema has checked it. */
 export type Project = z.output<ReturnType<typeof projectSchema>>;
 export type ProjectStatus = Project["status"];
