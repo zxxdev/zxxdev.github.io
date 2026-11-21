@@ -77,7 +77,7 @@ Today:
   audit, a security scan and a full build.
 - Automatic publishing to GitHub Pages on every merge to `main`.
 
-<img src="docs/images/home-mobile.png" width="260" alt="The home page on a phone, in dark theme: the menu button, the alias, the headline and the three buttons.">
+<img src="docs/images/home-mobile.png" width="260" alt="The home page on a phone, in dark theme: the menu button, the link to the Spanish version, the alias, the headline and the three buttons.">
 
 <sub>The home page on a 390 px wide phone.</sub>
 
