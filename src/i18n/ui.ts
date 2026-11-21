@@ -133,7 +133,8 @@ const es: UiStrings = {
       "Ingeniero de sistemas. Servicios backend y plataformas, con tests, CI y decisiones documentadas.",
     building: (count: number) =>
       `Construyendo en público · ${String(count)} ${count === 1 ? "proyecto" : "proyectos"}`,
-    headline: "Ingeniero de sistemas. Construyo servicios backend y las plataformas donde se ejecutan.",
+    headline:
+      "Ingeniero de sistemas. Construyo servicios backend y las plataformas donde se ejecutan.",
     lead: "Pasé años en operaciones: administrar sistemas, dar soporte y hacer webs. Ahora construyo el software para los problemas que antes resolvía a mano.",
     viewProjects: "Ver proyectos",
     about: "Sobre mí",

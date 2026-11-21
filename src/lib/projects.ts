@@ -2,11 +2,7 @@
  * Helpers for the project collection that do not need Astro, so they can be
  * unit tested on their own.
  */
-import {
-  technologyGroups,
-  type Technology,
-  type TechnologyGroupId,
-} from "../data/technologies";
+import { technologyGroups, type Technology, type TechnologyGroupId } from "../data/technologies";
 import type { Locale } from "../i18n/locales";
 import { ui } from "../i18n/ui";
 import type { Project, ProjectStatus, ProjectTranslation } from "./project-schema";

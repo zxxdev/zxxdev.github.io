@@ -43,59 +43,50 @@ const isEnglishHome = locale === defaultLocale && route?.page === "home";
       do not treat them as duplicates. x-default is the version for a language
       the site does not have: English.
     -->
-    {
-      versions.map((version) => (
-        <link rel="alternate" hreflang={version.locale} href={new URL(version.path, Astro.site)} />
-      ))
-    }
-    {
-      route && (
-        <link
-          rel="alternate"
-          hreflang="x-default"
-          href={new URL(routePath(defaultLocale, route), Astro.site)}
-        />
-      )
-    }
+    {versions.map((version) => (
+      <link rel="alternate" hreflang={version.locale} href={new URL(version.path, Astro.site)} />
+    ))}
+    {route && (
+      <link
+        rel="alternate"
+        hreflang="x-default"
+        href={new URL(routePath(defaultLocale, route), Astro.site)}
+      />
+    )}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#080808" media="(prefers-color-scheme: dark)" />
     <!-- Only the main font is preloaded; the rest load when a page needs them. -->
     <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin />
-    {
-      isEnglishHome && (
-        <script
-          is:inline
-          define:vars={{ storageKey: languageStorageKey, spanishHome: pagePaths.es.home }}
-        >
-          // Runs before the page is drawn. A visitor arriving from outside the
-          // site, who has never used the language switch, and whose browser
-          // prefers Spanish over English, goes to the Spanish home page. Only
-          // here: a link to any other page opens what was linked, and moving
-          // around the site never changes the language by itself.
-          // The language choice repeats preferredLocale() in src/i18n/locales.ts.
-          try {
-            const fromThisSite =
-              document.referrer !== "" &&
-              new URL(document.referrer).origin === window.location.origin;
-            let wanted = localStorage.getItem(storageKey);
-            if (wanted !== "en" && wanted !== "es") {
-              wanted = "en";
-              for (const language of navigator.languages) {
-                const main = language.toLowerCase().split("-")[0];
-                if (main === "en" || main === "es") {
-                  wanted = main;
-                  break;
-                }
-              }
+    {isEnglishHome && <script
+      is:inline
+      define:vars={{ storageKey: languageStorageKey, spanishHome: pagePaths.es.home }}
+    >
+      // Runs before the page is drawn. A visitor arriving from outside the
+      // site, who has never used the language switch, and whose browser
+      // prefers Spanish over English, goes to the Spanish home page. Only
+      // here: a link to any other page opens what was linked, and moving
+      // around the site never changes the language by itself.
+      // The language choice repeats preferredLocale() in src/i18n/locales.ts.
+      try {
+        const fromThisSite =
+          document.referrer !== "" && new URL(document.referrer).origin === window.location.origin;
+        let wanted = localStorage.getItem(storageKey);
+        if (wanted !== "en" && wanted !== "es") {
+          wanted = "en";
+          for (const language of navigator.languages) {
+            const main = language.toLowerCase().split("-")[0];
+            if (main === "en" || main === "es") {
+              wanted = main;
+              break;
             }
-            if (wanted === "es" && !fromThisSite) window.location.replace(spanishHome);
-          } catch {
-            /* Storage or the referrer cannot be read: stay on this page. */
           }
-        </script>
-      )
-    }
+        }
+        if (wanted === "es" && !fromThisSite) window.location.replace(spanishHome);
+      } catch {
+        /* Storage or the referrer cannot be read: stay on this page. */
+      }
+    </script>}
     <!--
       Runs before the page is painted, so a saved theme is applied without a flash
       of the other one. With no saved choice it does nothing and CSS follows the

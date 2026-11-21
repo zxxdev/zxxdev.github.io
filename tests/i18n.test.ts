@@ -130,7 +130,8 @@ describe("interface text", () => {
 function pageFiles(dir: URL = pagesDir, prefix = ""): string[] {
   return readdirSync(dir).flatMap((name) => {
     const child = new URL(name, dir);
-    if (statSync(child).isDirectory()) return pageFiles(new URL(`${name}/`, dir), `${prefix}${name}/`);
+    if (statSync(child).isDirectory())
+      return pageFiles(new URL(`${name}/`, dir), `${prefix}${name}/`);
     return name.endsWith(".astro") ? [`${prefix}${name}`] : [];
   });
 }
@@ -138,7 +139,8 @@ function pageFiles(dir: URL = pagesDir, prefix = ""): string[] {
 /** The file that answers a path: "/es/sobre-mi/" is es/sobre-mi.astro or es/sobre-mi/index.astro. */
 function pageFileFor(path: string, files: readonly string[]): string | undefined {
   const inside = path.slice(1);
-  const candidates = inside === "" ? ["index.astro"] : [`${inside}index.astro`, `${inside.slice(0, -1)}.astro`];
+  const candidates =
+    inside === "" ? ["index.astro"] : [`${inside}index.astro`, `${inside.slice(0, -1)}.astro`];
   return candidates.find((candidate) => files.includes(candidate));
 }
 

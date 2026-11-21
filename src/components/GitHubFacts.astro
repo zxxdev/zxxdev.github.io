@@ -84,7 +84,9 @@ const shadeOf = (name: string, index: number): string[] =>
             />
             {languageName(language.name)}
           </span>
-          <span class="font-mono text-xs leading-5 text-muted">{formatShare(language.share, locale)}</span>
+          <span class="font-mono text-xs leading-5 text-muted">
+            {formatShare(language.share, locale)}
+          </span>
         </li>
       ))}
     </ul>

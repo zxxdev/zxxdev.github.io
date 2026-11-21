@@ -68,7 +68,8 @@ const stats = await repositoryStats(data.repo);
           {" "}
           <span class="whitespace-nowrap">
             <span aria-hidden="true">· </span>
-            <span class="sr-only">, </span>{t.updated}{" "}
+            <span class="sr-only">, </span>
+            {t.updated}{" "}
             <time datetime={isoDate(stats.pushedAt)}>{formatDate(stats.pushedAt, locale)}</time>
           </span>
         </>

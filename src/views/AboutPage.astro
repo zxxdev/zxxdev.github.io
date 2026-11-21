@@ -74,8 +74,7 @@ const examsSentence = about.examsSentence.parts.map((text, index) => ({
       <p>
         {examsSentence.map((part) => (
           <>
-            {part.text}{" "}
-            <span class="whitespace-nowrap">({part.code})</span>
+            {part.text} <span class="whitespace-nowrap">({part.code})</span>
           </>
         ))}
         {about.examsSentence.end}
@@ -125,7 +124,10 @@ const examsSentence = about.examsSentence.parts.map((text, index) => ({
                 {exam.retired ? ` · ${t.retiredExam}` : ""}
               </p>
               <!-- The official title, as Microsoft lists it: always in English. -->
-              <p lang={locale === "en" ? undefined : "en"} class="mt-1 text-sm leading-relaxed text-muted">
+              <p
+                lang={locale === "en" ? undefined : "en"}
+                class="mt-1 text-sm leading-relaxed text-muted"
+              >
                 {exam.name}
               </p>
             </div>
@@ -135,7 +137,9 @@ const examsSentence = about.examsSentence.parts.map((text, index) => ({
     </section>
 
     <p class="mt-14">
-      {t.contactBefore}<a href={profileUrl}>GitHub</a>{t.contactAfter}
+      {t.contactBefore}
+      <a href={profileUrl}>GitHub</a>
+      {t.contactAfter}
     </p>
   </article>
 </BaseLayout>
