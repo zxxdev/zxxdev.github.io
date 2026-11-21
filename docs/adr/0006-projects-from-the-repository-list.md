@@ -28,16 +28,19 @@ Option 3.
   the profile repository. For one without a project file it takes the description (cut at a word
   for the card), the topics, the languages with at least 10% of the code that the site knows, and
   the latest release, from which the status tag is built ("v1.0.0", or "In development" without a
-  release). The tone comes from topics such as `world-of-warcraft` or `website`; the cover is
-  generated in that tone.
+  release). The tone comes from topics such as `world-of-warcraft` or `website`.
+- The cover is the first picture in the repository's README that is one of its own files (png,
+  jpg, webp or gif; badges and outside images are skipped), with the README's alternative text. It
+  is shown as GitHub serves it, whole and never enlarged, and is not processed while building, so a
+  slow GitHub cannot stop a build. Without such a picture, the cover is generated in the tone.
 - Each of these projects gets a page under `/projects/` with its description and a link to its
   README, and the same GitHub facts as the others.
 - They come after the project files, newest push first. The home page shows the featured projects
   and fills up to four cards with the latest others, so a new repository reaches it too.
 - The site rebuilds every day instead of every Monday, so a new repository appears by the next day.
   Starting the deploy workflow by hand publishes it at once.
-- The saved copy of GitHub data now keeps the description and topics of every listed repository, so
-  the automatic projects still appear when GitHub does not answer.
+- The saved copy of GitHub data now keeps the description, topics and README picture of every listed
+  repository, so the automatic projects still appear when GitHub does not answer.
 
 ## Consequences
 
@@ -46,4 +49,7 @@ Option 3.
   and points to the README.
 - What a repository is called on GitHub is what the site shows: a misleading description or topic
   shows up on the site too. Hiding a repository means archiving it or making it private.
-- A daily build costs one workflow run a day, about a minute, with a few dozen API requests.
+- A daily build costs one workflow run a day, about a minute, with three API requests per
+  repository.
+- A README picture is loaded from raw.githubusercontent.com by the visitor's browser. If GitHub
+  moves or deletes it, that cover breaks until the next build; the README is the place to fix it.
