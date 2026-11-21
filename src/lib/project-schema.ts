@@ -11,6 +11,7 @@ import type { SchemaContext } from "astro:content";
 import { z } from "astro/zod";
 import { technologyNames } from "../data/technologies";
 import { tones } from "../data/tones";
+import { RAW_ORIGIN } from "./github";
 
 /** A semantic version, optionally with a pre-release tag: 0.3.0, 0.1.0-alpha. */
 const version = z
@@ -54,6 +55,14 @@ export function projectSchema({ image }: SchemaContext) {
     z.strictObject({
       kind: z.literal("screenshot"),
       image: image(),
+      alt: z.string().min(1),
+    }),
+    /** A picture the repository's README shows, served by GitHub (projects made from GitHub). */
+    z.strictObject({
+      kind: z.literal("repository"),
+      url: z
+        .url()
+        .refine((url) => url.startsWith(`${RAW_ORIGIN}/`), { message: "Expected a raw file link" }),
       alt: z.string().min(1),
     }),
   ]);

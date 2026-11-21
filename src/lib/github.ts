@@ -45,6 +45,83 @@ const releaseSchema = z.object({
   published_at: z.iso.datetime().nullable(),
 });
 
+/** Where GitHub serves a repository's files as they are. */
+export const RAW_ORIGIN = "https://raw.githubusercontent.com";
+/** Picture formats a browser shows in an <img> without surprises. */
+const PICTURE_PATH = /\.(?:png|jpe?g|webp|gif)$/i;
+
+const readmeSchema = z.object({
+  encoding: z.literal("base64"),
+  content: z.string(),
+  download_url: z
+    .url()
+    .refine((url) => url.startsWith(`${RAW_ORIGIN}/`), { message: "Expected a raw file link" }),
+});
+
+/** The first picture of a README, as the site shows it: its file on GitHub and its text. */
+export interface RepositoryImage {
+  readonly url: string;
+  readonly alt: string;
+}
+
+/** True for a link to a picture inside the repository: a relative path to a png, jpg, webp or gif. */
+function isRepositoryPicture(src: string): boolean {
+  const path = src.split(/[?#]/)[0] ?? "";
+  // A scheme (https:, data:) or // is outside the repository: badges, for one.
+  return !/^[a-z][a-z0-9+.-]*:/i.test(src) && !src.startsWith("//") && PICTURE_PATH.test(path);
+}
+
+/**
+ * The first picture in a README that is a file of the repository, with its
+ * alternative text: from an HTML <img> or a Markdown ![alt](path), whichever
+ * comes first. Badges and other outside images are skipped.
+ */
+export function firstReadmePicture(readme: string): { src: string; alt: string } | null {
+  const found: { index: number; src: string; alt: string }[] = [];
+  for (const match of readme.matchAll(/<img\b[^>]*>/gi)) {
+    const tag = match[0];
+    // The value ends at the same kind of quote it started with, so an
+    // apostrophe inside alt="The addon's images" does not cut it.
+    const src = /\bsrc\s*=\s*(["'])(.+?)\1/i.exec(tag)?.[2];
+    const alt = /\balt\s*=\s*(["'])(.*?)\1/i.exec(tag)?.[2] ?? "";
+    if (src) found.push({ index: match.index, src, alt });
+  }
+  for (const match of readme.matchAll(
+    /!\[([^\]]*)\]\(\s*<?([^)\s>]+)>?(?:\s+["'][^"']*["'])?\s*\)/g,
+  )) {
+    found.push({ index: match.index, src: match[2] ?? "", alt: match[1] ?? "" });
+  }
+  found.sort((a, b) => a.index - b.index);
+  const first = found.find((picture) => isRepositoryPicture(picture.src));
+  return first ? { src: first.src, alt: first.alt } : null;
+}
+
+/**
+ * The address of a README's picture on raw.githubusercontent.com, from the
+ * README's own address there (which names the owner, repository and branch).
+ * A path that leaves the repository gives null.
+ */
+export function readmePictureUrl(readmeUrl: string, src: string): string | null {
+  const path = src.split(/[?#]/)[0] ?? "";
+  try {
+    const readme = new URL(readmeUrl);
+    // /owner/name/branch/: everything the repository serves starts with this.
+    const root = `${readme.pathname.split("/").slice(0, 4).join("/")}/`;
+    const url = path.startsWith("/")
+      ? new URL(`.${path}`, `${RAW_ORIGIN}${root}`)
+      : new URL(path, readme);
+    return url.origin === RAW_ORIGIN && url.pathname.startsWith(root) ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Base64 (as the API sends file contents, with line breaks) to text. */
+function decodeBase64(content: string): string {
+  const bytes = Uint8Array.from(atob(content.replace(/\s/g, "")), (char) => char.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+
 /** One language and its share of the repository's code, from 0 to 1. */
 export interface LanguageShare {
   readonly name: string;
@@ -70,6 +147,8 @@ export interface RepositoryStats {
   readonly stars: number;
   readonly languages: readonly LanguageShare[];
   readonly latestRelease: Release | null;
+  /** The first picture of its README, if it shows one of its own files. */
+  readonly image: RepositoryImage | null;
 }
 
 /** Everything fetched in one build, or kept in the saved copy. */
@@ -107,6 +186,12 @@ export const snapshotSchema = z.strictObject({
           tag: z.string().min(1),
           url: z.url(),
           publishedAt: z.iso.datetime().nullable(),
+        })
+        .nullable(),
+      image: z
+        .strictObject({
+          url: z.url().refine((url) => url.startsWith(`${RAW_ORIGIN}/`)),
+          alt: z.string().min(1),
         })
         .nullable(),
     }),
@@ -248,13 +333,33 @@ export function isListedAutomatically(repository: {
 }
 
 /**
+ * The first picture of a repository's README that is one of its own files,
+ * or null (no README, or no such picture). Its text is the README's own
+ * alternative text, or says where the picture comes from.
+ */
+async function readmeImage(
+  fullName: string,
+  name: string,
+  options: FetchOptions,
+): Promise<RepositoryImage | null> {
+  const path = `/repos/${fullName}/readme`;
+  const answer = await getJson(path, options, true);
+  if (answer === null) return null;
+  const readme = parse(readmeSchema, answer, path);
+  const picture = firstReadmePicture(decodeBase64(readme.content));
+  const url = picture ? readmePictureUrl(readme.download_url, picture.src) : null;
+  if (!picture || !url) return null;
+  return { url, alt: picture.alt.trim() || `A picture from the README of ${name}.` };
+}
+
+/**
  * Fetches the account's repository list, then languages and latest release
  * for each repository in `fullNames` (owner/name, the project files) and for
  * every repository the site lists on its own. Throws GitHubError on any
  * failure, so the caller can fall back to the saved copy as a whole.
  *
- * Requests: 1 for the list (one more per extra 100 repositories) plus 2 per
- * repository.
+ * Requests: 1 for the list (one more per extra 100 repositories) plus 3 per
+ * repository (languages, latest release, README).
  */
 export async function fetchGitHubSnapshot(
   fullNames: readonly string[],
@@ -284,6 +389,7 @@ export async function fetchGitHubSnapshot(
     const releaseAnswer = await getJson(releasePath, options, true);
     const release =
       releaseAnswer === null ? null : parse(releaseSchema, releaseAnswer, releasePath);
+    const image = await readmeImage(repository.full_name, repository.name, options);
 
     stats[key] = {
       fullName: repository.full_name,
@@ -295,6 +401,7 @@ export async function fetchGitHubSnapshot(
       latestRelease: release
         ? { tag: release.tag_name, url: release.html_url, publishedAt: release.published_at }
         : null,
+      image,
     };
   }
 

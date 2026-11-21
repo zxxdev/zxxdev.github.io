@@ -24,6 +24,7 @@ function repository(fullName: string, overrides: Partial<RepositoryStats> = {}):
     stars: 0,
     languages: [],
     latestRelease: null,
+    image: null,
     ...overrides,
   };
 }
@@ -164,6 +165,15 @@ describe("autoProjects", () => {
       stack: ["Lua"],
       featured: false,
     });
+  });
+
+  it("uses the README's picture as the cover when there is one", () => {
+    const image = {
+      url: "https://raw.githubusercontent.com/zxxdev/Older/main/docs/shot.png",
+      alt: "A shot.",
+    };
+    const [older] = autoProjects({ "zxxdev/older": repository("zxxdev/Older", { image }) }, [], []);
+    expect(older?.data.cover).toEqual({ kind: "repository", ...image });
   });
 
   it("puts them after every project file", () => {

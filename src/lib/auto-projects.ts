@@ -198,11 +198,14 @@ export function autoProjects(
         status: statusOf(repository.latestRelease),
         stack: stackOf(repository),
         tooling: [],
-        cover: {
-          kind: "generated",
-          caption: captionOf(repository.topics),
-          art: tone === "violet" ? "browser" : "arrow",
-        },
+        // The README's first picture when it has one; a generated cover otherwise.
+        cover: repository.image
+          ? { kind: "repository", url: repository.image.url, alt: repository.image.alt }
+          : {
+              kind: "generated",
+              caption: captionOf(repository.topics),
+              art: tone === "violet" ? "browser" : "arrow",
+            },
         featured: false,
         order: FIRST_AUTOMATIC_ORDER + projects.length,
       },
