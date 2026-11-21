@@ -20,7 +20,10 @@ const currentPath = Astro.url.pathname;
 
 <!-- Sticky with a solid background: a translucent, blurred header looks soft. -->
 <header class="sticky top-0 z-20 border-b border-border bg-bg">
-  <div class="mx-auto flex h-14 max-w-5xl items-center gap-2 px-4 sm:h-15 sm:gap-6 sm:px-6">
+  <div
+    class="mx-auto flex h-14 max-w-5xl items-center gap-2 px-4 sm:h-15 sm:gap-6 sm:px-6"
+    data-header-row
+  >
     <a
       href={pagePaths[locale].home}
       class="flex items-center gap-2.5 font-mono text-[0.9375rem] font-medium text-text no-underline visited:text-text"
@@ -35,8 +38,7 @@ const currentPath = Astro.url.pathname;
         data-menu-button
         aria-expanded="false"
         aria-controls="site-nav-list"
-        hidden
-        class="inline-flex h-10 items-center gap-2 rounded-md border border-border bg-bg px-3 text-sm font-medium text-text sm:hidden"
+        class="hidden h-10 items-center gap-2 rounded-md border border-border bg-bg px-3 text-sm font-medium text-text"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -88,27 +90,60 @@ const currentPath = Astro.url.pathname;
       </ul>
     </nav>
 
-    <LanguageSwitch locale={otherLocale(locale)} href={otherPath} />
-    <ThemeToggle {locale} />
+    <!-- Page settings, kept together: 8 px apart at every width. -->
+    <div class="flex shrink-0 items-center gap-2" data-header-tools>
+      <LanguageSwitch locale={otherLocale(locale)} href={otherPath} />
+      <ThemeToggle {locale} />
+    </div>
   </div>
 </header>
 
 <style>
   /*
-   * Small screens: once the script runs, the list collapses behind the menu
-   * button and opens as a panel below the header. Without JavaScript the links
-   * stay visible in a row, which still fits at 360 px.
+   * Small screens. BaseLayout's first script puts the class "js" on <html>
+   * before the page is drawn, so the menu is folded from the first frame (no
+   * row of links that jumps away once this file's script loads):
+   * - With JavaScript, the list hides behind the menu button and opens as a
+   *   panel below the header.
+   * - Without it, the header takes two rows: logo and language on top, the
+   *   links below. In one row they would not fit at 360 px.
    */
   @media (width < 40rem) {
     [data-site-nav] {
       position: relative;
     }
 
-    [data-site-nav].has-menu .nav-list {
+    :global(.js) [data-menu-button] {
+      display: inline-flex;
+    }
+
+    :global(.js) [data-site-nav] .nav-list {
       display: none;
     }
 
-    [data-site-nav].has-menu.is-open .nav-list {
+    :global(html:not(.js)) [data-header-row] {
+      flex-wrap: wrap;
+      height: auto;
+      padding-block: 8px;
+      row-gap: 4px;
+    }
+
+    :global(html:not(.js)) [data-site-nav] {
+      order: 3;
+      flex-basis: 100%;
+      margin-left: 0;
+    }
+
+    /* The first link's text lines up with the logo. */
+    :global(html:not(.js)) [data-site-nav] .nav-list {
+      margin-left: -12px;
+    }
+
+    :global(html:not(.js)) [data-header-tools] {
+      margin-left: auto;
+    }
+
+    :global(.js) [data-site-nav].is-open .nav-list {
       display: flex;
       flex-direction: column;
       align-items: stretch;
@@ -125,7 +160,7 @@ const currentPath = Astro.url.pathname;
     }
 
     /* Touch targets of 44 px in the open panel. */
-    [data-site-nav].has-menu.is-open .nav-list a {
+    :global(.js) [data-site-nav].is-open .nav-list a {
       padding-block: 0.625rem;
       font-size: 1rem;
     }
@@ -140,9 +175,6 @@ const currentPath = Astro.url.pathname;
       nav.classList.toggle("is-open", open);
       button.setAttribute("aria-expanded", String(open));
     };
-
-    nav.classList.add("has-menu");
-    button.hidden = false;
 
     button.addEventListener("click", () => {
       setOpen(button.getAttribute("aria-expanded") !== "true");

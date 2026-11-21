@@ -90,9 +90,11 @@ const isEnglishHome = locale === defaultLocale && route?.page === "home";
     <!--
       Runs before the page is painted, so a saved theme is applied without a flash
       of the other one. With no saved choice it does nothing and CSS follows the
-      system setting.
+      system setting. It also marks the page as having JavaScript ("js"), so CSS
+      can fold the mobile menu from the first frame (Header.astro).
     -->
     <script is:inline>
+      document.documentElement.classList.add("js");
       try {
         const saved = localStorage.getItem("theme");
         if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;

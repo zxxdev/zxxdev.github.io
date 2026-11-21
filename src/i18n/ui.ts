@@ -158,7 +158,8 @@ const es: UiStrings = {
       "De administrar sistemas y dar soporte a construir servicios backend y plataformas.",
     heading: "Sobre mí",
     onThisPage: "En esta página",
-    sections: { intro: "Presentación", path: "Trayectoria", exams: "Exámenes de Azure" },
+    // Short, so the three fit in one row on a 360 px phone.
+    sections: { intro: "Presentación", path: "Trayectoria", exams: "Exámenes" },
     pathHeading: "La trayectoria hasta ahora",
     examsHeading: "Exámenes de Azure",
     examsNote:

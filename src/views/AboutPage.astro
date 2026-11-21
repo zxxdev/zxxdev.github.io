@@ -121,7 +121,7 @@ const examsSentence = about.examsSentence.parts.map((text, index) => ({
               <h3 class="text-sm font-semibold">{exam.area}</h3>
               <p class="mt-1 font-mono text-xs text-muted">
                 {exam.code}
-                {exam.retired ? ` · ${t.retiredExam}` : ""}
+                {exam.retired && <span class="whitespace-nowrap"> · {t.retiredExam}</span>}
               </p>
               <!-- The official title, as Microsoft lists it: always in English. -->
               <p
