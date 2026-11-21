@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-21T00:22:45.523Z",
+  "fetchedAt": "2026-11-21T00:41:50.841Z",
   "repositories": [
     "DispelGlow",
     "RetailArenaCountdown",
@@ -35,6 +35,10 @@
         "tag": "v1.0.0",
         "url": "https://github.com/zxxdev/DispelGlow/releases/tag/v1.0.0",
         "publishedAt": "2026-11-21T00:16:36Z"
+      },
+      "image": {
+        "url": "https://raw.githubusercontent.com/zxxdev/DispelGlow/main/docs/images/target-frame-glow.png",
+        "alt": "An enemy target frame in the game, with its health bar, resource bar and portrait. Below them, the buffs that are Magic effects have a bright yellow border around their icons; the other buffs have none."
       }
     },
     "zxxdev/retailarenacountdown": {
@@ -64,6 +68,10 @@
         "tag": "v1.0.0",
         "url": "https://github.com/zxxdev/RetailArenaCountdown/releases/tag/v1.0.0",
         "publishedAt": "2026-11-21T00:16:40Z"
+      },
+      "image": {
+        "url": "https://raw.githubusercontent.com/zxxdev/RetailArenaCountdown/main/docs/images/countdown-images.png",
+        "alt": "The addon's own images on a dark background: the number 45 in golden two-digit form, a larger single 3, and the Alliance crest, labelled 60 to 10 seconds, 9 to 1, and gates open."
       }
     },
     "zxxdev/trailmate": {
@@ -82,7 +90,8 @@
           "share": 0.02904844276654779
         }
       ],
-      "latestRelease": null
+      "latestRelease": null,
+      "image": null
     },
     "zxxdev/zxxdev.github.io": {
       "fullName": "zxxdev/zxxdev.github.io",
@@ -95,7 +104,7 @@
         "tailwindcss",
         "typescript"
       ],
-      "pushedAt": "2026-11-20T18:59:48Z",
+      "pushedAt": "2026-11-21T00:34:06Z",
       "stars": 0,
       "languages": [
         {
@@ -115,7 +124,11 @@
           "share": 0.0065686844923393455
         }
       ],
-      "latestRelease": null
+      "latestRelease": null,
+      "image": {
+        "url": "https://raw.githubusercontent.com/zxxdev/zxxdev.github.io/main/docs/images/home-light.png",
+        "alt": "The home page of zxxdev.github.io: the alias, the headline 'Systems engineer building backend services and the platforms they run on', a short introduction, three buttons and the first project cards."
+      }
     }
   }
 }

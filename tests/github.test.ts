@@ -5,9 +5,11 @@
 import { describe, expect, it } from "vitest";
 import {
   fetchGitHubSnapshot,
+  firstReadmePicture,
   GitHubError,
   languageShares,
   loadGitHubData,
+  readmePictureUrl,
   type GitHubSnapshot,
 } from "../src/lib/github";
 import { formatDate, formatShare, isoDate } from "../src/lib/format";
@@ -95,6 +97,7 @@ const saved: GitHubSnapshot = {
       stars: 1,
       languages: [{ name: "Lua", share: 1 }],
       latestRelease: null,
+      image: null,
     },
   },
 };
@@ -123,8 +126,37 @@ describe("fetchGitHubSnapshot", () => {
             url: "https://github.com/zxxdev/TrailMate/releases/tag/v0.1.0-alpha",
             publishedAt: "2026-11-18T22:00:00Z",
           },
+          // No README route in this fake GitHub: a 404, so no picture.
+          image: null,
         },
       },
+    });
+  });
+
+  it("takes the first picture of the README that is one of the repository's files", async () => {
+    const readme = [
+      "# TrailMate",
+      "[![CI](https://github.com/zxxdev/TrailMate/actions/workflows/ci.yml/badge.svg)](x)",
+      '<p align="center"><img src="docs/images/arrow.png" alt="The arrow in the game."></p>',
+      "![Second](docs/images/other.png)",
+    ].join("\n");
+    const { fetch } = fakeFetch({
+      ...healthy,
+      "/repos/zxxdev/TrailMate/readme": {
+        status: 200,
+        body: {
+          encoding: "base64",
+          content: Buffer.from(readme)
+            .toString("base64")
+            .replace(/(.{60})/g, "$1\n"),
+          download_url: "https://raw.githubusercontent.com/zxxdev/TrailMate/main/README.md",
+        },
+      },
+    });
+    const result = await fetchGitHubSnapshot(["zxxdev/TrailMate"], { fetch, now });
+    expect(result.stats["zxxdev/trailmate"]?.image).toEqual({
+      url: "https://raw.githubusercontent.com/zxxdev/TrailMate/main/docs/images/arrow.png",
+      alt: "The arrow in the game.",
     });
   });
 
@@ -239,6 +271,50 @@ describe("fetchGitHubSnapshot", () => {
     await expect(fetchGitHubSnapshot(["zxxdev/TrailMate"], { fetch, now })).rejects.toThrow(
       /releases\/latest: unexpected answer at html_url/,
     );
+  });
+});
+
+describe("the README's picture", () => {
+  const readmeUrl = "https://raw.githubusercontent.com/zxxdev/DispelGlow/main/README.md";
+
+  it("skips badges and other outside images", () => {
+    const readme = [
+      "[![CI](https://img.shields.io/badge/ci-green.svg)](x)",
+      "![Remote](https://example.com/a.png)",
+      "![Drawing](docs/diagram.svg)",
+      "![Shot](./docs/images/glow.png)",
+    ].join("\n");
+    expect(firstReadmePicture(readme)).toEqual({ src: "./docs/images/glow.png", alt: "Shot" });
+  });
+
+  it("reads an <img> with its attributes in any order", () => {
+    expect(firstReadmePicture("<img width='340' alt='Glow' src='docs/g.webp'>")).toEqual({
+      src: "docs/g.webp",
+      alt: "Glow",
+    });
+  });
+
+  it("keeps an apostrophe inside the alternative text", () => {
+    expect(firstReadmePicture(`<img src="a.png" alt="The addon's own images">`)?.alt).toBe(
+      "The addon's own images",
+    );
+  });
+
+  it("finds none when there is none", () => {
+    expect(firstReadmePicture("# Just text")).toBeNull();
+  });
+
+  it("builds the raw address from the README's, for relative and root paths", () => {
+    expect(readmePictureUrl(readmeUrl, "docs/images/glow.png")).toBe(
+      "https://raw.githubusercontent.com/zxxdev/DispelGlow/main/docs/images/glow.png",
+    );
+    expect(readmePictureUrl(readmeUrl, "/docs/a.png?raw=true")).toBe(
+      "https://raw.githubusercontent.com/zxxdev/DispelGlow/main/docs/a.png",
+    );
+  });
+
+  it("refuses a path that leaves the repository", () => {
+    expect(readmePictureUrl(readmeUrl, "../../other/main/x.png")).toBeNull();
   });
 });
 
