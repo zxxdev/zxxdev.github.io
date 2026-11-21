@@ -21,7 +21,9 @@ const repositoryList = [
     pushed_at: "2026-11-18T21:18:02Z",
     stargazers_count: 3,
     fork: false,
-    description: "ignored: the site only reads the fields it shows",
+    description: "Leveling coach.",
+    topics: ["lua", "world-of-warcraft"],
+    license: { key: "mit" }, // ignored: the site only reads the fields it shows
   },
   {
     name: "zxxdev",
@@ -87,6 +89,8 @@ const saved: GitHubSnapshot = {
   stats: {
     "zxxdev/trailmate": {
       fullName: "zxxdev/TrailMate",
+      description: "Leveling coach.",
+      topics: [],
       pushedAt: "2026-11-09T10:00:00Z",
       stars: 1,
       languages: [{ name: "Lua", share: 1 }],
@@ -105,6 +109,8 @@ describe("fetchGitHubSnapshot", () => {
       stats: {
         "zxxdev/trailmate": {
           fullName: "zxxdev/TrailMate",
+          description: "Leveling coach.",
+          topics: ["lua", "world-of-warcraft"],
           pushedAt: "2026-11-18T21:18:02Z",
           stars: 3,
           languages: [
@@ -126,6 +132,13 @@ describe("fetchGitHubSnapshot", () => {
     const { fetch } = fakeFetch(healthy);
     const result = await fetchGitHubSnapshot([], { fetch, now });
     expect(result.repositories).not.toContain("someone-elses-tool");
+  });
+
+  it("fetches the figures of every repository listed on its own, with no project file", async () => {
+    // TrailMate is listed on its own; the profile repository and the fork are not.
+    const { fetch } = fakeFetch(healthy);
+    const result = await fetchGitHubSnapshot([], { fetch, now });
+    expect(Object.keys(result.stats)).toEqual(["zxxdev/trailmate"]);
   });
 
   it("treats a repository with no release as having none, not as an error", async () => {
@@ -201,6 +214,8 @@ describe("fetchGitHubSnapshot", () => {
       pushed_at: "2026-11-01T00:00:00Z",
       stargazers_count: 0,
       fork: false,
+      // Archived, so the site does not list them and asks nothing more about them.
+      archived: true,
     }));
     const { fetch, calls } = fakeFetch({
       ...healthy,

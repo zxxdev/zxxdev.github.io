@@ -25,9 +25,12 @@ export const DEFAULT_TIMEOUT_MS = 5000;
 const repositorySchema = z.object({
   name: z.string().min(1),
   full_name: z.string().min(1),
+  description: z.string().nullable().default(null),
+  topics: z.array(z.string().min(1)).default([]),
   pushed_at: z.iso.datetime(),
   stargazers_count: z.number().int().nonnegative(),
   fork: z.boolean(),
+  archived: z.boolean().default(false),
 });
 const repositoryListSchema = z.array(repositorySchema);
 /** Language name → bytes of code in it, as GitHub's linguist counts them. */
@@ -58,6 +61,10 @@ export interface Release {
 export interface RepositoryStats {
   /** owner/name, as GitHub spells it. */
   readonly fullName: string;
+  /** The repository's description on GitHub, if it has one. */
+  readonly description: string | null;
+  /** Its GitHub topics, as GitHub lists them. */
+  readonly topics: readonly string[];
   /** Last push to any branch, ISO 8601. */
   readonly pushedAt: string;
   readonly stars: number;
@@ -88,6 +95,8 @@ export const snapshotSchema = z.strictObject({
     z.string(),
     z.strictObject({
       fullName: z.string().min(1),
+      description: z.string().nullable(),
+      topics: z.array(z.string().min(1)),
       pushedAt: z.iso.datetime(),
       stars: z.number().int().nonnegative(),
       languages: z.array(
@@ -221,8 +230,27 @@ async function fetchRepositoryList(options: FetchOptions) {
 }
 
 /**
+ * True for a repository the site lists on its own, without a project file:
+ * the account's own public work. Forks are someone else's code, an archived
+ * repository is finished with, and the profile repository (named like the
+ * account) only holds the profile page.
+ */
+export function isListedAutomatically(repository: {
+  readonly name: string;
+  readonly fork: boolean;
+  readonly archived: boolean;
+}): boolean {
+  return (
+    !repository.fork &&
+    !repository.archived &&
+    repository.name.toLowerCase() !== ACCOUNT.toLowerCase()
+  );
+}
+
+/**
  * Fetches the account's repository list, then languages and latest release
- * for each repository in `fullNames` (owner/name). Throws GitHubError on any
+ * for each repository in `fullNames` (owner/name, the project files) and for
+ * every repository the site lists on its own. Throws GitHubError on any
  * failure, so the caller can fall back to the saved copy as a whole.
  *
  * Requests: 1 for the list (one more per extra 100 repositories) plus 2 per
@@ -235,10 +263,20 @@ export async function fetchGitHubSnapshot(
   const list = await fetchRepositoryList(options);
   const byName = new Map(list.map((repository) => [statsKey(repository.full_name), repository]));
 
-  const stats: Record<string, RepositoryStats> = {};
   for (const fullName of fullNames) {
-    const repository = byName.get(statsKey(fullName));
-    if (!repository) throw new GitHubError(`${fullName} is not a public repository of ${ACCOUNT}`);
+    if (!byName.has(statsKey(fullName))) {
+      throw new GitHubError(`${fullName} is not a public repository of ${ACCOUNT}`);
+    }
+  }
+  const wanted = new Set(fullNames.map(statsKey));
+  for (const repository of list) {
+    if (isListedAutomatically(repository)) wanted.add(statsKey(repository.full_name));
+  }
+
+  const stats: Record<string, RepositoryStats> = {};
+  for (const key of [...wanted].sort()) {
+    const repository = byName.get(key);
+    if (!repository) continue; // cannot happen: every key comes from the list
 
     const languagesPath = `/repos/${repository.full_name}/languages`;
     const releasePath = `/repos/${repository.full_name}/releases/latest`;
@@ -247,8 +285,10 @@ export async function fetchGitHubSnapshot(
     const release =
       releaseAnswer === null ? null : parse(releaseSchema, releaseAnswer, releasePath);
 
-    stats[statsKey(fullName)] = {
+    stats[key] = {
       fullName: repository.full_name,
+      description: repository.description,
+      topics: repository.topics,
       pushedAt: repository.pushed_at,
       stars: repository.stargazers_count,
       languages: languageShares(languages),
