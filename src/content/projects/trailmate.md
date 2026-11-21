@@ -10,10 +10,10 @@ status:
 stack: [Lua, Go, luacheck, busted]
 tooling: [GitHub Actions]
 cover:
-  # Generated until there are in-game screenshots without character or realm names.
-  kind: generated
-  caption: wow forever · leveling coach
-  art: arrow
+  # Cropped from an in-game screenshot at its real size, with no character, guild or realm names.
+  kind: screenshot
+  image: ../../assets/projects/trailmate.png
+  alt: "TrailMate's step window in the game: 33-34 Stranglethorn Vale, step 22 of 92, do Bloody Bone Necklaces, with the next steps, Done and Skip buttons, and a bar below saying the bags are full, with a Take me button."
 featured: true
 order: 2
 ---
