@@ -70,7 +70,9 @@ describe("the English home page's redirect", () => {
    * checks it uses nothing from outside its body, and every case below runs
    * against both versions.
    */
-  const rebuilt = new Function(`return ${opensSpanishHome.toString()}`)() as typeof opensSpanishHome;
+  const rebuilt = new Function(
+    `return ${opensSpanishHome.toString()}`,
+  )() as typeof opensSpanishHome;
 
   for (const [name, decide] of [
     ["as imported", opensSpanishHome],
