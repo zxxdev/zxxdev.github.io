@@ -1,6 +1,6 @@
 ---
 summary: "Addon de World of Warcraft: Forever para subir de nivel: guías de misiones, flecha y marcas en el mapa propias, talentos y mazmorras."
-cover: "La ventana de pasos de TrailMate en el juego: 33-34 Stranglethorn Vale, paso 22 de 92, hacer Bloody Bone Necklaces, con los pasos siguientes, los botones Done y Skip, y debajo una barra que avisa de que las bolsas están llenas, con un botón Take me."
+cover: "La ventana de pasos de TrailMate en el juego: la guía de Tuercespina, 83 de 91 pasos hechos, entregar Investigate the Camp a Krazek, los pasos siguientes y los botones Undo, Done y Skip."
 ---
 
 ## El problema
@@ -13,8 +13,10 @@ buscarlo. TrailMate da esos consejos dentro del juego y explica cada recomendaci
 
 - **Aconseja, nunca juega.** Lee lo que el juego muestra y dibuja texto, una flecha y marcas en el
   mapa. Nunca pulsa teclas, mueve al personaje, compra, vende ni entrena.
-- **Guías de misiones** para las dos facciones del nivel 1 al 60, y una ruta montada a partir del
-  registro de misiones cuando no hay guía.
+- **Guías de misiones** para las dos facciones del nivel 1 al 60, elegidas según la zona donde está el
+  jugador, y una ruta montada a partir del registro de misiones cuando no hay guía.
+- **Seguir una misión elegida por el jugador.** Al hacer clic en una misión del rastreador del juego,
+  la flecha va a ella; con un clic se vuelve a la guía.
 - **Flecha y marcas en el mapa propias.** No necesita ningún otro addon.
 - **Consejos en el instructor y en el vendedor:** qué aprender, qué saltarse o dejar para más tarde,
   y qué vender, guardar o llevar a la casa de subastas, cada cosa con su motivo.
@@ -33,5 +35,9 @@ comprueba con `go vet` y sus tests. Los dos pasan por la CI en cada pull request
 
 ## Estado
 
-Alfa. Se juega y se prueba con un solo personaje, así que tendrá fallos. Los problemas conocidos
-están en el [repositorio](https://github.com/zxxdev/TrailMate#known-issues), en inglés.
+Alfa, versión 0.2.0. Se puede descargar desde las
+[versiones publicadas](https://github.com/zxxdev/TrailMate/releases), con lo que cambia en cada una en el
+[registro de cambios](https://github.com/zxxdev/TrailMate/blob/main/CHANGELOG.md) (en inglés). Se juega y
+se prueba con un solo personaje, así que tendrá fallos; los problemas conocidos están en el
+[repositorio](https://github.com/zxxdev/TrailMate#known-issues), en inglés. Siguiente paso: que
+TrailMate decida por sí mismo qué hacer, con las guías como ayuda opcional.

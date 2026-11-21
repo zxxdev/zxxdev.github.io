@@ -5,15 +5,15 @@ summary: "A leveling coach addon for World of Warcraft: Forever, with quest guid
 tone: amber
 status:
   kind: early
-  # As declared in the addon's TrailMate.toc ("## Version: 0.1.0-alpha").
-  version: 0.1.0-alpha
+  # As declared in the addon's TrailMate.toc ("## Version: 0.2.0-alpha") and its latest release.
+  version: 0.2.0-alpha
 stack: [Lua, Go, luacheck, busted]
 tooling: [GitHub Actions]
 cover:
   # Cropped from an in-game screenshot at its real size, with no character, guild or realm names.
   kind: screenshot
   image: ../../assets/projects/trailmate.png
-  alt: "TrailMate's step window in the game: 33-34 Stranglethorn Vale, step 22 of 92, do Bloody Bone Necklaces, with the next steps, Done and Skip buttons, and a bar below saying the bags are full, with a Take me button."
+  alt: "TrailMate's step window in the game: the guide for Stranglethorn Vale, 83 of 91 steps done, turn in Investigate the Camp to Krazek, the next steps, and the Undo, Done and Skip buttons."
 featured: true
 order: 2
 ---
@@ -28,8 +28,10 @@ things up. TrailMate gives that advice inside the game and explains each recomme
 
 - **It advises, it never plays.** It reads what the game shows and draws text, an arrow and marks
   on the map. It never presses keys, moves the character, buys, sells or trains.
-- **Quest guides** for both factions from level 1 to 60, and a route built from the quest log when
-  there is no guide.
+- **Quest guides** for both factions from level 1 to 60, picked for the zone the player is in, and a
+  route built from the quest log when there is no guide.
+- **Follow a quest of your own.** Clicking a quest in the game's tracker points the arrow at it; one
+  click brings the guide back.
 - **Its own arrow and map marks.** It needs no other addon.
 - **Advice at the trainer and the vendor:** what to learn, skip or leave for later, and what to
   sell, keep or take to the auction house, each with its reason.
@@ -48,5 +50,9 @@ checked with `go vet` and its tests. Both run in CI on every pull request.
 
 ## Status
 
-Alpha. It is played and tested on one character, so expect rough edges. The known issues are listed
-in the [repository](https://github.com/zxxdev/TrailMate#known-issues).
+Alpha, version 0.2.0. It can be downloaded from the
+[releases](https://github.com/zxxdev/TrailMate/releases), with what changed in each version in the
+[changelog](https://github.com/zxxdev/TrailMate/blob/main/CHANGELOG.md). It is played and tested on
+one character, so expect rough edges; the known issues are listed in the
+[repository](https://github.com/zxxdev/TrailMate#known-issues). Next: TrailMate deciding by itself
+what to do next, with the guides as optional help.
