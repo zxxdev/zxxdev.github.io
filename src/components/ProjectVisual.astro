@@ -34,6 +34,10 @@ interface Props {
 
 const { id, project, sizes, loading = "lazy", tagSpace = true } = Astro.props;
 const coverName = project.repo.split("/")[1] ?? project.title;
+// Places where a long name may wrap: between a lower-case letter and a
+// capital ("Retail|Arena|Countdown") and after a dot or a dash. Without them a
+// one-word name runs into the drawing on a phone.
+const coverNameParts = coverName.split(/(?<=[a-z0-9])(?=[A-Z])|(?<=[.-])/);
 ---
 
 {project.cover.kind === "screenshot" ? (
@@ -56,9 +60,20 @@ const coverName = project.repo.split("/")[1] ?? project.title;
     <ProjectCover {id} art={project.cover.art} />
     <div
       aria-hidden="true"
-      class="absolute inset-y-0 left-5 flex max-w-[55%] flex-col justify-center"
+      class="absolute inset-y-0 left-5 flex max-w-[calc(57.5%-36px)] flex-col justify-center"
     >
-      <span class="text-h3 font-medium text-text">{coverName}</span>
+      <!--
+        The drawing starts at 57.5% of the cover: the name stops 16 px before
+        it (20 px margin + 16 px gap).
+      -->
+      <span class="text-h3 font-medium text-text [overflow-wrap:anywhere]">
+        {coverNameParts.map((part, index) => (
+          <>
+            {index > 0 && <wbr />}
+            {part}
+          </>
+        ))}
+      </span>
       <span class="mt-1 font-mono text-xs text-tone-text">{project.cover.caption}</span>
     </div>
   </>

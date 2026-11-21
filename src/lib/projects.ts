@@ -10,9 +10,11 @@ import type { ProjectStatus } from "./project-schema";
  * - live: "Live".
  * - early with a pre-release tag: "0.1.0-alpha" becomes "Alpha · 0.1.0".
  * - early without one: "0.3.0" becomes "v0.3.0".
+ * - development: "In development".
  */
 export function statusLabel(status: ProjectStatus): string {
   if (status.kind === "live") return "Live";
+  if (status.kind === "development") return "In development";
   const [core = status.version, pre] = status.version.split("-", 2);
   if (!pre) return `v${core}`;
   return `${pre.charAt(0).toUpperCase()}${pre.slice(1)} · ${core}`;
