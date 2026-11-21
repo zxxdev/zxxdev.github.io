@@ -1,5 +1,5 @@
 ---
-summary: "Addon de World of Warcraft: Forever que acompaña la subida de nivel: guías de misiones, flecha y marcas en el mapa propias, talentos y mazmorras."
+summary: "Addon de World of Warcraft: Forever para subir de nivel: guías de misiones, flecha y marcas en el mapa propias, talentos y mazmorras."
 cover: "La ventana de pasos de TrailMate en el juego: 33-34 Stranglethorn Vale, paso 22 de 92, hacer Bloody Bone Necklaces, con los pasos siguientes, los botones Done y Skip, y debajo una barra que avisa de que las bolsas están llenas, con un botón Take me."
 ---
 
