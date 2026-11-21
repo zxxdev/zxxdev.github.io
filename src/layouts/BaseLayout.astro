@@ -2,7 +2,14 @@
 import geistLatin from "@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
-import { defaultLocale, languageStorageKey, otherLocale, type Locale } from "../i18n/locales";
+import { opensSpanishHome } from "../i18n/home-redirect";
+import {
+  defaultLocale,
+  languageStorageKey,
+  locales,
+  otherLocale,
+  type Locale,
+} from "../i18n/locales";
 import { alternates, pagePaths, routePath, type Route } from "../i18n/routes";
 import { ui } from "../i18n/ui";
 import "../styles/global.css";
@@ -28,6 +35,28 @@ const other = otherLocale(locale);
 const otherPath = route ? routePath(other, route) : pagePaths[other].home;
 // Only the English home page sends a Spanish browser to the Spanish one (ADR 0007).
 const isEnglishHome = locale === defaultLocale && route?.page === "home";
+/*
+ * The redirect runs before the page is drawn, so it is an inline script. Its
+ * decision is opensSpanishHome() itself, written into the page with
+ * toString(): the code the unit tests check is the code the browser runs.
+ * Every value it needs goes in as JSON.
+ */
+const sitePaths = [...new Set(locales.flatMap((each) => Object.values(pagePaths[each])))];
+const redirectScript = `(() => {
+  try {
+    const opensSpanishHome = ${opensSpanishHome.toString()};
+    const go = opensSpanishHome({
+      saved: localStorage.getItem(${JSON.stringify(languageStorageKey)}),
+      languages: navigator.languages,
+      referrer: document.referrer,
+      origin: window.location.origin,
+      sitePaths: ${JSON.stringify(sitePaths)},
+    });
+    if (go) window.location.replace(${JSON.stringify(pagePaths.es.home)});
+  } catch {
+    /* Storage cannot be read: stay on this page. */
+  }
+})();`;
 ---
 
 <!doctype html>
@@ -58,35 +87,12 @@ const isEnglishHome = locale === defaultLocale && route?.page === "home";
     <meta name="theme-color" content="#080808" media="(prefers-color-scheme: dark)" />
     <!-- Only the main font is preloaded; the rest load when a page needs them. -->
     <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin />
-    {isEnglishHome && <script
-      is:inline
-      define:vars={{ storageKey: languageStorageKey, spanishHome: pagePaths.es.home }}
-    >
-      // Runs before the page is drawn. A visitor arriving from outside the
-      // site, who has never used the language switch, and whose browser
-      // prefers Spanish over English, goes to the Spanish home page. Only
-      // here: a link to any other page opens what was linked, and moving
-      // around the site never changes the language by itself.
-      // The language choice repeats preferredLocale() in src/i18n/locales.ts.
-      try {
-        const fromThisSite =
-          document.referrer !== "" && new URL(document.referrer).origin === window.location.origin;
-        let wanted = localStorage.getItem(storageKey);
-        if (wanted !== "en" && wanted !== "es") {
-          wanted = "en";
-          for (const language of navigator.languages) {
-            const main = language.toLowerCase().split("-")[0];
-            if (main === "en" || main === "es") {
-              wanted = main;
-              break;
-            }
-          }
-        }
-        if (wanted === "es" && !fromThisSite) window.location.replace(spanishHome);
-      } catch {
-        /* Storage or the referrer cannot be read: stay on this page. */
-      }
-    </script>}
+    <!--
+      English home page only: a visitor from outside the site whose browser
+      prefers Spanish, and who never chose a language, goes to /es/ before
+      anything is drawn. See src/i18n/home-redirect.ts.
+    -->
+    {isEnglishHome && <script is:inline set:html={redirectScript} />}
     <!--
       Runs before the page is painted, so a saved theme is applied without a flash
       of the other one. With no saved choice it does nothing and CSS follows the

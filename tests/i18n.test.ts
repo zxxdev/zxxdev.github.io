@@ -6,7 +6,8 @@
 import { existsSync, readdirSync, statSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { profile } from "../src/data/profile";
-import { locales, otherLocale, preferredLocale } from "../src/i18n/locales";
+import { opensSpanishHome, type HomeVisit } from "../src/i18n/home-redirect";
+import { locales, otherLocale } from "../src/i18n/locales";
 import {
   alternates,
   isInSection,
@@ -51,21 +52,66 @@ describe("addresses", () => {
   });
 });
 
-describe("the language for a browser", () => {
-  it("takes the first language the site has, in the browser's order", () => {
-    expect(preferredLocale(["es-ES", "en-GB"])).toBe("es");
-    expect(preferredLocale(["en-US", "es"])).toBe("en");
-    expect(preferredLocale(["fr-FR", "es-MX", "en"])).toBe("es");
+describe("the English home page's redirect", () => {
+  const site = "https://zxxdev.github.io";
+  const sitePaths = [...new Set(locales.flatMap((locale) => Object.values(pagePaths[locale])))];
+  const visit = (changes: Partial<HomeVisit>): HomeVisit => ({
+    saved: null,
+    languages: ["es-ES", "en"],
+    referrer: "",
+    origin: site,
+    sitePaths,
+    ...changes,
   });
 
-  it("falls back to English when the browser has none of them", () => {
-    expect(preferredLocale(["fr-FR", "de"])).toBe("en");
-    expect(preferredLocale([])).toBe("en");
-  });
+  /*
+   * The page runs the function rebuilt from its own text (BaseLayout writes
+   * opensSpanishHome.toString() into an inline script). Rebuilding it here
+   * checks it uses nothing from outside its body, and every case below runs
+   * against both versions.
+   */
+  const rebuilt = new Function(`return ${opensSpanishHome.toString()}`)() as typeof opensSpanishHome;
 
-  it("ignores case and the region", () => {
-    expect(preferredLocale(["ES-ar"])).toBe("es");
-  });
+  for (const [name, decide] of [
+    ["as imported", opensSpanishHome],
+    ["rebuilt from its text, as the page runs it", rebuilt],
+  ] as const) {
+    describe(name, () => {
+      it("sends a browser that prefers Spanish to /es/", () => {
+        expect(decide(visit({ languages: ["es-ES", "en-GB"] }))).toBe(true);
+        expect(decide(visit({ languages: ["fr-FR", "es-MX", "en"] }))).toBe(true);
+        expect(decide(visit({ languages: ["ES-ar"] }))).toBe(true);
+      });
+
+      it("keeps a browser that prefers English, or has neither language", () => {
+        expect(decide(visit({ languages: ["en-US", "es"] }))).toBe(false);
+        expect(decide(visit({ languages: ["fr-FR", "de"] }))).toBe(false);
+        expect(decide(visit({ languages: [] }))).toBe(false);
+      });
+
+      it("follows the choice made with the switch over the browser", () => {
+        expect(decide(visit({ saved: "en" }))).toBe(false);
+        expect(decide(visit({ saved: "es", languages: ["en-GB"] }))).toBe(true);
+        expect(decide(visit({ saved: "something else" }))).toBe(true);
+      });
+
+      it("never moves a visitor who came from another page of the site", () => {
+        expect(decide(visit({ referrer: `${site}/about/` }))).toBe(false);
+        expect(decide(visit({ referrer: `${site}/projects/trailmate/` }))).toBe(false);
+        expect(decide(visit({ referrer: `${site}/es/sobre-mi/` }))).toBe(false);
+        expect(decide(visit({ referrer: `${site}/` }))).toBe(false);
+      });
+
+      it("treats another repository's Pages site on the same origin as outside", () => {
+        expect(decide(visit({ referrer: `${site}/TrailMate/` }))).toBe(true);
+      });
+
+      it("treats another site, or an unreadable referrer, as outside", () => {
+        expect(decide(visit({ referrer: "https://github.com/zxxdev" }))).toBe(true);
+        expect(decide(visit({ referrer: "not a url" }))).toBe(true);
+      });
+    });
+  }
 
   it("offers the other language in the switch", () => {
     expect(otherLocale("en")).toBe("es");

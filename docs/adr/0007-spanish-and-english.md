@@ -49,7 +49,10 @@ Option 2, with a small module of our own instead of Astro's i18n routing.
 - **The browser's language, only on the English home page.** Before the page is drawn, an inline
   script sends the visitor to `/es/` when they arrive from outside the site, have never used the
   switch, and their browser lists Spanish before English. A link to any other page opens what was
-  linked, and moving around the site never changes the language on its own.
+  linked, and moving around the site never changes the language on its own. Other repositories'
+  Pages sites share this origin (`/<repo>/`), so "from the site" also checks the path. The decision
+  is one function, `opensSpanishHome()` in `src/i18n/home-redirect.ts`, written into the page with
+  `toString()`: the code the unit tests check is the code the browser runs.
 - **The "page not found" page** is a single file for the whole site (GitHub Pages serves one
   `404.html`), so it says the same in both languages.
 
@@ -60,9 +63,12 @@ Option 2, with a small module of our own instead of Astro's i18n routing.
   the dictionaries differ in shape.
 - English and Spanish are not symmetric: English has no prefix. Adding a third language would follow
   the Spanish pattern (`/xx/…`).
-- The inline redirect script repeats the language choice of `preferredLocale()` in plain JavaScript,
-  because it must run before the page is drawn. The two have to change together; the unit tests
-  cover the TypeScript one, and the end-to-end tests in the roadmap should cover the redirect.
+- The redirect function must not use anything outside its own body, because it is copied into the
+  page as text. A unit test rebuilds it from that text and runs every case, so breaking the rule
+  fails in CI. The end-to-end tests in the roadmap should still cover the redirect in a browser.
+- If the header's script fails to load while the rest of the page works, the mobile menu stays
+  folded with a button that does nothing. Accepted as a small risk: the alternative brings back a
+  row of links that jumps away on every page load.
 - A Spanish visitor who arrives on an inner English page stays there; the switch is one click away.
 - Texts that come from GitHub (descriptions) and the generated covers' captions stay in English.
 - Every page is built twice, so the build takes a little longer.

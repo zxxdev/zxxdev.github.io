@@ -20,20 +20,3 @@ export function isLocale(value: unknown): value is Locale {
 export function otherLocale(locale: Locale): Locale {
   return locale === "en" ? "es" : "en";
 }
-
-/**
- * The first of the browser's languages (navigator.languages, in the visitor's
- * order of preference) that the site has, or the default. Only the main part
- * counts: "es-MX" and "es" are both Spanish.
- *
- * The inline script on the English home page repeats this in plain
- * JavaScript, because it must run before the page is drawn
- * (src/layouts/BaseLayout.astro). Change both together.
- */
-export function preferredLocale(languages: readonly string[]): Locale {
-  for (const language of languages) {
-    const main = language.toLowerCase().split("-")[0];
-    if (isLocale(main)) return main;
-  }
-  return defaultLocale;
-}
