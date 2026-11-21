@@ -50,9 +50,12 @@ Today:
 - A home page with the headline, the featured projects, how I work and the technologies the
   projects use, and an About page with the story and the path so far. Their text lives in a typed
   data file (`src/data/profile.ts`), not in the markup.
-- Projects written as Markdown files, one per project, checked against a schema while building: a
-  missing field, an unknown technology or an early version without its number stops the build and
-  says where. Adding a project is adding a file.
+- Every public repository of the account on the Projects page, with no file to write: its
+  description, topics, languages and latest release come from GitHub while the site is built
+  ([ADR 0006](docs/adr/0006-projects-from-the-repository-list.md)). A project that deserves its own
+  text and screenshot gets a Markdown file, checked against a schema while building: a missing
+  field, an unknown technology or an early version without its number stops the build and says
+  where.
 - A Projects page with every project and a filter by technology (`/projects/?tech=lua`), and a page
   per project with what it solves, how it works, the decisions behind it and its stack.
 - Project cards with a real screenshot as the cover when the project has one, or a cover generated
@@ -61,7 +64,8 @@ Today:
 - Data from GitHub for each project, asked for while the site is built: the date of the last change
   on every card, and the latest release, stars and languages on each project page. If GitHub does
   not answer, the build uses a saved copy (`src/data/github-snapshot.json`), still publishes, and
-  the page says which one it shows and from when. The site rebuilds every week to keep it fresh.
+  the page says which one it shows and from when. The site rebuilds every day, so a new repository
+  appears by the next day.
 - An About page with links to its sections, which mark the one being read, and the Azure exams
   passed.
 - Automatic checks on every pull request: lint, formatting, type checking, unit tests, a dependency
