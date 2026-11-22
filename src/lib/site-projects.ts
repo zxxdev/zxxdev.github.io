@@ -46,9 +46,7 @@ async function loadProjects(locale: Locale): Promise<SiteProject[]> {
   const entries = await getCollection("projects");
   const github = await getGitHubData();
   // A project file's version is only a fallback: its latest release wins.
-  const curated = (
-    locale === "en" ? englishProjects(entries) : await spanishProjects(entries)
-  ).map(
+  const curated = (locale === "en" ? englishProjects(entries) : await spanishProjects(entries)).map(
     (project): SiteProject => ({
       ...project,
       data: {
