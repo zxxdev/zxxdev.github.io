@@ -6,6 +6,7 @@ import {
   sortProjects,
   statusLabel,
   technologiesInUse,
+  withReleaseVersion,
 } from "../src/lib/projects";
 import type { Project } from "../src/lib/project-schema";
 
@@ -27,6 +28,33 @@ describe("statusLabel", () => {
 
   it("shows a plain version with a v", () => {
     expect(statusLabel({ kind: "early", version: "0.3.0" }, "en")).toBe("v0.3.0");
+  });
+});
+
+describe("withReleaseVersion", () => {
+  const written = { kind: "early", version: "0.2.0-alpha" } as const;
+
+  it("shows the latest release's version over the one written in the file", () => {
+    expect(withReleaseVersion(written, "v0.3.0-alpha")).toEqual({
+      kind: "early",
+      version: "0.3.0-alpha",
+    });
+  });
+
+  it("turns a project in development into an early one once it has a release", () => {
+    expect(withReleaseVersion({ kind: "development" }, "v0.1.0")).toEqual({
+      kind: "early",
+      version: "0.1.0",
+    });
+  });
+
+  it("keeps the file's status without a release, or with a tag that is not a version", () => {
+    expect(withReleaseVersion(written, undefined)).toBe(written);
+    expect(withReleaseVersion(written, "nightly")).toBe(written);
+  });
+
+  it("keeps a live project live", () => {
+    expect(withReleaseVersion({ kind: "live" }, "v2.0.0")).toEqual({ kind: "live" });
   });
 });
 

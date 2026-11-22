@@ -35,7 +35,7 @@ comprueba con `go vet` y sus tests. Los dos pasan por la CI en cada pull request
 
 ## Estado
 
-Alfa, versión 0.2.0. Se puede descargar desde las
+Alfa. Cada versión se puede descargar desde las
 [versiones publicadas](https://github.com/zxxdev/TrailMate/releases), con lo que cambia en cada una en el
 [registro de cambios](https://github.com/zxxdev/TrailMate/blob/main/CHANGELOG.md) (en inglés). Se juega y
 se prueba con un solo personaje, así que tendrá fallos; los problemas conocidos están en el

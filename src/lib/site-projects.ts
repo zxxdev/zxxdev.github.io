@@ -15,9 +15,10 @@ import { getCollection, type CollectionEntry } from "astro:content";
 import type { Locale } from "../i18n/locales";
 import { ui } from "../i18n/ui";
 import { autoProjects } from "./auto-projects";
+import { statsKey } from "./github";
 import { getGitHubData } from "./github-data";
 import type { Project } from "./project-schema";
-import { applyTranslation, sortProjects } from "./projects";
+import { applyTranslation, sortProjects, withReleaseVersion } from "./projects";
 
 export interface SiteProject {
   readonly id: string;
@@ -44,7 +45,19 @@ export function getProjects(locale: Locale): Promise<SiteProject[]> {
 async function loadProjects(locale: Locale): Promise<SiteProject[]> {
   const entries = await getCollection("projects");
   const github = await getGitHubData();
-  const curated = locale === "en" ? englishProjects(entries) : await spanishProjects(entries);
+  // A project file's version is only a fallback: its latest release wins.
+  const curated = (locale === "en" ? englishProjects(entries) : await spanishProjects(entries)).map(
+    (project): SiteProject => ({
+      ...project,
+      data: {
+        ...project.data,
+        status: withReleaseVersion(
+          project.data.status,
+          github.stats[statsKey(project.data.repo)]?.latestRelease?.tag,
+        ),
+      },
+    }),
+  );
   const automatic = autoProjects(
     github.stats,
     entries.map((entry) => entry.data.repo),

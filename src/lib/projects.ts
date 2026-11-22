@@ -5,7 +5,12 @@
 import { technologyGroups, type Technology, type TechnologyGroupId } from "../data/technologies";
 import type { Locale } from "../i18n/locales";
 import { ui } from "../i18n/ui";
-import type { Project, ProjectStatus, ProjectTranslation } from "./project-schema";
+import {
+  isVersion,
+  type Project,
+  type ProjectStatus,
+  type ProjectTranslation,
+} from "./project-schema";
 
 /**
  * A project's data with the words of its translation: title (if it has one),
@@ -38,6 +43,21 @@ export function statusLabel(status: ProjectStatus, locale: Locale): string {
   const [core = status.version, pre] = status.version.split("-", 2);
   if (!pre) return `v${core}`;
   return `${pre.charAt(0).toUpperCase()}${pre.slice(1)} · ${core}`;
+}
+
+/**
+ * A project file's status, brought up to date by its latest GitHub release
+ * ("v0.3.0-alpha" → early, 0.3.0-alpha), so publishing a release is enough to
+ * change the site: nobody has to remember to edit the file. A live project
+ * stays live, and a tag that is not a version leaves the file's status as it is.
+ */
+export function withReleaseVersion(
+  status: ProjectStatus,
+  releaseTag: string | undefined,
+): ProjectStatus {
+  if (status.kind === "live" || releaseTag === undefined) return status;
+  const version = releaseTag.replace(/^v/, "");
+  return isVersion(version) ? { kind: "early", version } : status;
 }
 
 /** Projects in their list order: `order` first, then title, so ties are stable. */

@@ -5,8 +5,8 @@ summary: "A leveling coach addon for World of Warcraft: Forever, with quest guid
 tone: amber
 status:
   kind: early
-  # As declared in the addon's TrailMate.toc ("## Version: 0.2.0-alpha") and its latest release.
-  version: 0.2.0-alpha
+  # Only a fallback: the site shows the version of the latest GitHub release.
+  version: 0.3.0-alpha
 stack: [Lua, Go, luacheck, busted]
 tooling: [GitHub Actions]
 cover:
@@ -50,7 +50,7 @@ checked with `go vet` and its tests. Both run in CI on every pull request.
 
 ## Status
 
-Alpha, version 0.2.0. It can be downloaded from the
+Alpha. Each version can be downloaded from the
 [releases](https://github.com/zxxdev/TrailMate/releases), with what changed in each version in the
 [changelog](https://github.com/zxxdev/TrailMate/blob/main/CHANGELOG.md). It is played and tested on
 one character, so expect rough edges; the known issues are listed in the
