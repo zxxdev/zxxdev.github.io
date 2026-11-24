@@ -57,13 +57,22 @@ export function projectSchema({ image }: SchemaContext) {
       image: image(),
       alt: z.string().min(1),
     }),
-    /** A picture the repository's README shows, served by GitHub (projects made from GitHub). */
+    /**
+     * A picture from the repository, served by GitHub: the README's first one
+     * for projects made from GitHub, or one a project's file names.
+     */
     z.strictObject({
       kind: z.literal("repository"),
       url: z
         .url()
         .refine((url) => url.startsWith(`${RAW_ORIGIN}/`), { message: "Expected a raw file link" }),
       alt: z.string().min(1),
+      /**
+       * false for a logo or an icon: shown at a fixed size with no frame,
+       * since a square frame round a round badge looks like an empty box.
+       * A screenshot keeps its frame (the default).
+       */
+      frame: z.boolean().optional(),
     }),
   ]);
 
