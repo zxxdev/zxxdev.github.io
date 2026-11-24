@@ -42,7 +42,8 @@ const coverNameParts = coverName.split(/(?<=[a-z0-9])(?=[A-Z])|(?<=[.-])/);
 // GitHub as it is. It is shown whole and never enlarged, since a small in-game
 // screenshot would blur, centred on the project's tone in the space the tag
 // leaves free. It is not processed at build time, so a slow GitHub cannot
-// stop a build.
+// stop a build. A logo (frame: false) has no frame and a fixed size, 128 px
+// on a card and 192 px on a project's page, so it does not fill the cover.
 ---
 
 {project.cover.kind === "screenshot" ? (
@@ -73,7 +74,14 @@ const coverNameParts = coverName.split(/(?<=[a-z0-9])(?=[A-Z])|(?<=[.-])/);
       {loading}
       decoding="async"
       referrerpolicy="no-referrer"
-      class="max-h-full max-w-full rounded-lg border border-tone-line/40 object-contain"
+      class:list={[
+        "max-h-full max-w-full object-contain",
+        project.cover.frame === false
+          ? tagSpace
+            ? "size-32"
+            : "size-48"
+          : "rounded-lg border border-tone-line/40",
+      ]}
     />
   </div>
 ) : (

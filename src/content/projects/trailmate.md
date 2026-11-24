@@ -10,10 +10,11 @@ status:
 stack: [Lua, Go, luacheck, busted]
 tooling: [GitHub Actions]
 cover:
-  # Cropped from an in-game screenshot at its real size, with no character, guild or realm names.
-  kind: screenshot
-  image: ../../assets/projects/trailmate.png
-  alt: "TrailMate's step window in the game: the guide for Stranglethorn Vale, 83 of 91 steps done, turn in Investigate the Camp to Krazek, the next steps, and the Undo, Done and Skip buttons."
+  # The addon's logo, the same picture the README shows at the top.
+  kind: repository
+  url: https://raw.githubusercontent.com/zxxdev/TrailMate/main/docs/images/logo.png
+  alt: "TrailMate's logo: a round badge with a gold ring, a white paw print and a winding trail."
+  frame: false
 featured: true
 order: 2
 ---

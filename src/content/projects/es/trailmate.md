@@ -1,6 +1,6 @@
 ---
 summary: "Addon de World of Warcraft: Forever para subir de nivel: guías de misiones, flecha y marcas en el mapa propias, talentos y mazmorras."
-cover: "La ventana de pasos de TrailMate en el juego: la guía de Tuercespina, 83 de 91 pasos hechos, entregar Investigate the Camp a Krazek, los pasos siguientes y los botones Undo, Done y Skip."
+cover: "El logo de TrailMate: una insignia redonda con un aro dorado, una huella blanca y un sendero que serpentea."
 ---
 
 ## El problema
